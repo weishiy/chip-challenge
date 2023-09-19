@@ -262,32 +262,6 @@ ApplicationDebugger           -> Application itself should implement this interf
                                  schedule game updates, i.e. does not "tick". 
 ```
 
-It is also responsible for putting the system together:
-
-E.g. During a gameplay:
-
-* Create an instance of Persistence class (from persistence module)
-* Use above object's newGame(\*)/loadGame(\*) to create a Game (from domain module) object
-* Create GameWindow class (from renderer module) object and Recorder class (from recorder module) as needed, and set up
-  their members properly: Renderer needs Game as a member, Recorder needs Game and Persistence object as members
-* Holds a java.awt.Timer for scheduling game updates (ticks): In each tick, collect player and enemy inputs and feed
-  Game with those inputs via Game.update(*)
-* ...
-
-Have a look of the interfaces provided by other modules. They should be sufficient for application to work in full.
-
-IMPORTANT At the beginning of a gameplay/replay, Application needs to give Recorder object and GameWindow object created
-above a
-chance to prepare themselves for the show by calling:
-
-* Recorder.onStart()
-* GameWindow.setEnabled(true)
-
-And at the end, allow them to clean up themselves by calling:
-
-* Recorder.onDestory()
-* GameWindow.setEnabled(false)
-
 ### Renderer
 
 Renderer is responsible to render the game window. (PS: Application will render the outer application UI.)
