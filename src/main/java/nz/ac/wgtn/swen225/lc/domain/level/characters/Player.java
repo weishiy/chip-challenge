@@ -1,8 +1,9 @@
 package nz.ac.wgtn.swen225.lc.domain.level.characters;
 
-import nz.ac.wgtn.swen225.lc.domain.Vector2D;
+import nz.ac.wgtn.swen225.lc.domain.events.PlayerMovedEvent;
 import nz.ac.wgtn.swen225.lc.domain.level.items.Chip;
 import nz.ac.wgtn.swen225.lc.domain.level.items.Key;
+import nz.ac.wgtn.swen225.lc.domain.Vector2D;
 
 import java.util.Collections;
 import java.util.HashSet;
@@ -21,6 +22,13 @@ public final class Player extends Character {
         super(position);
         this.keys.addAll(keys);
         this.chips.addAll(chips);
+    }
+
+    @Override
+    public void setPosition(Vector2D position) {
+        var oldPosition = getPosition();
+        super.setPosition(position);
+        getGame().fire(new PlayerMovedEvent(this, oldPosition, getPosition()));
     }
 
     public Set<Key> getKeys() {

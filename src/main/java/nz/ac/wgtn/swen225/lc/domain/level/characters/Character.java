@@ -2,8 +2,8 @@ package nz.ac.wgtn.swen225.lc.domain.level.characters;
 
 import nz.ac.wgtn.swen225.lc.domain.Entity;
 import nz.ac.wgtn.swen225.lc.domain.Game;
-import nz.ac.wgtn.swen225.lc.domain.Vector2D;
 import nz.ac.wgtn.swen225.lc.domain.level.Level;
+import nz.ac.wgtn.swen225.lc.domain.Vector2D;
 
 public abstract class Character extends Entity {
 
@@ -15,16 +15,12 @@ public abstract class Character extends Entity {
         this.position = position;
     }
 
-    public Game getGame() {
-        return level.getGame();
-    }
-
     public Level getLevel() {
         return level;
     }
 
-    public void setLevel(Level level) {
-        this.level = level;
+    public Game getGame() {
+        return level.getGame();
     }
 
     public Vector2D getPosition() {
@@ -35,4 +31,7 @@ public abstract class Character extends Entity {
         this.position = position;
     }
 
+    public void setLevel(Level level) {
+        this.level = level;
+    }
 }

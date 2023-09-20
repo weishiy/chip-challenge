@@ -2,10 +2,10 @@ package nz.ac.wgtn.swen225.lc.domain.level;
 
 import nz.ac.wgtn.swen225.lc.domain.Entity;
 import nz.ac.wgtn.swen225.lc.domain.Game;
-import nz.ac.wgtn.swen225.lc.domain.Vector2D;
 import nz.ac.wgtn.swen225.lc.domain.level.characters.Enemy;
 import nz.ac.wgtn.swen225.lc.domain.level.characters.Player;
 import nz.ac.wgtn.swen225.lc.domain.level.tiles.Tile;
+import nz.ac.wgtn.swen225.lc.domain.Vector2D;
 
 import java.io.Serializable;
 import java.util.HashSet;
@@ -96,6 +96,30 @@ public class Level extends Entity implements Serializable {
 
     public void setGame(Game game) {
         this.game = game;
+    }
+
+    public void movePlayer(Vector2D movement) {
+        if (movement != null) {
+            var oldPosition = player.getPosition();
+            var newPosition = oldPosition.add(movement);
+            var oldTile = getTile(oldPosition);
+            var newTile = getTile(newPosition);
+            if (newTile == null || newTile.isEnterable(player)) {
+                if (oldTile != null) {
+                    oldTile.onExit(player);
+                }
+                player.setPosition(newPosition);
+                if (newTile != null) {
+                    newTile.onEnter(player);
+                }
+            }
+        }
+    }
+
+    public void move(Enemy enemy, Vector2D movement) {
+        if (movement != null) {
+            enemy.setPosition(enemy.getPosition().add(movement));
+        }
     }
 
 }
