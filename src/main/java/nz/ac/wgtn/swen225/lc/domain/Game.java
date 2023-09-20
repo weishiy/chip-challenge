@@ -25,7 +25,20 @@ public class Game extends Entity implements Serializable {
     }
 
     public void update(Vector2D playerMovement, Map<Enemy, Vector2D> enemyMovementMap) {
-        throw new UnsupportedOperationException();
+        if (gameOver) {
+            throw new IllegalStateException("Game is over");
+        }
+
+        level.movePlayer(playerMovement);
+        enemyMovementMap.forEach(level::move);
+        if (level.getEnemies().stream().anyMatch(e -> e.getPosition().equals(level.getPlayer().getPosition()))) {
+            fire(new PlayerDiedEvent(level.getPlayer()));
+        }
+        if (tickNo % FRAME_RATE == 0) {
+            fire(new CountDownEvent(getCountDown()));
+        }
+        tickNo++;
+        fire(new TickEvent(tickNo));
     }
 
     public Level getLevel() {
@@ -68,6 +81,10 @@ public class Game extends Entity implements Serializable {
 
     public int getChipsLeft() {
         return (int) getLevel().getTiles().stream().filter(t -> t instanceof ChipTile).count();
+    }
+
+    public List<GameEventListener> getListeners() {
+        return List.copyOf(listeners);
     }
 
 }

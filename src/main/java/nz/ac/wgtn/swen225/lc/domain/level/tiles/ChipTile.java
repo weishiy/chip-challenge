@@ -1,8 +1,9 @@
 package nz.ac.wgtn.swen225.lc.domain.level.tiles;
 
-import nz.ac.wgtn.swen225.lc.domain.Vector2D;
+import nz.ac.wgtn.swen225.lc.domain.events.ChipsPickedUpEvent;
 import nz.ac.wgtn.swen225.lc.domain.level.characters.Player;
 import nz.ac.wgtn.swen225.lc.domain.level.items.Chip;
+import nz.ac.wgtn.swen225.lc.domain.Vector2D;
 
 public final class ChipTile extends Tile {
     private final Chip chip;
@@ -14,17 +15,19 @@ public final class ChipTile extends Tile {
 
     @Override
     public boolean isEnterable(Player player) {
-        throw new UnsupportedOperationException();
+        return true;
     }
 
     @Override
     public void onEnter(Player player) {
-        throw new UnsupportedOperationException();
+        player.addChip(chip);
+        getLevel().removeTile(this);
+        getGame().fire(new ChipsPickedUpEvent(this, player));
     }
 
     @Override
     public void onExit(Player player) {
-        throw new UnsupportedOperationException();
+        // do nothing
     }
 
     public Chip getChip() {
