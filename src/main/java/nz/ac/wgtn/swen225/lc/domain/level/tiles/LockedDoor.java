@@ -23,10 +23,17 @@ public final class LockedDoor extends Tile {
     }
 
     public void onEnter(Player player) {
+        if (!isEnterable(player)) {
+            throw new IllegalStateException("Illegal movement!");
+        }
+
         var matchingKey = player.getKeys().stream().filter(k -> k.getColor() == color).findAny().orElse(null);
         assert matchingKey != null;
         player.removeKey(matchingKey);
+        // remove this tile from the level
         getLevel().removeTile(this);
+        setLevel(null);
+
         getGame().fire(new DockUnlockedEvent(this, player));
     }
 

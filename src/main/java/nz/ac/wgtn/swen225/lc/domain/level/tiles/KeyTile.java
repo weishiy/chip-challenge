@@ -25,8 +25,14 @@ public final class KeyTile extends Tile {
 
     @Override
     public void onEnter(Player player) {
+        if (getLevel() == null || !getLevel().getTiles().contains(this)) {
+            throw new IllegalStateException("Stale tile being used!");
+        }
+
         player.addKey(key);
         getLevel().removeTile(this);
+        setLevel(null);
+
         getGame().fire(new KeyPickedUpEvent(this, player));
     }
 

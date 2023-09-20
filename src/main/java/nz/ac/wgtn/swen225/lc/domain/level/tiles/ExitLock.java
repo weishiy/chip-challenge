@@ -17,7 +17,14 @@ public final class ExitLock extends Tile {
 
     @Override
     public void onEnter(Player player) {
+        if (!isEnterable(player)) {
+            throw new IllegalStateException("Illegal movement!");
+        }
+
+        // remove this tile from the level
         getLevel().removeTile(this);
+        setLevel(null);
+
         getGame().fire(new ExitLockUnlockedEvent(this, player));
     }
 

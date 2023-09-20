@@ -21,7 +21,11 @@ public final class ChipTile extends Tile {
     @Override
     public void onEnter(Player player) {
         player.addChip(chip);
+
+        // remove this tile from the level
         getLevel().removeTile(this);
+        setLevel(null);
+
         getGame().fire(new ChipsPickedUpEvent(this, player));
     }
 

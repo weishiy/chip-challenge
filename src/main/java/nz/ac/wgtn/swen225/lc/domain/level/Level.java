@@ -99,9 +99,15 @@ public class Level extends Entity implements Serializable {
     }
 
     public void movePlayer(Vector2D movement) {
-        if (movement != null) {
+        if (movement != null && movement != Vector2D.ZERO) {
             var oldPosition = player.getPosition();
             var newPosition = oldPosition.add(movement);
+
+            if (newPosition.x() < 0 || newPosition.x() >= width ||
+                    newPosition.y() < 0 || newPosition.y() >= width) {
+                throw new IllegalArgumentException("Player went outside the board");
+            }
+
             var oldTile = getTile(oldPosition);
             var newTile = getTile(newPosition);
             if (newTile == null || newTile.isEnterable(player)) {
@@ -117,8 +123,13 @@ public class Level extends Entity implements Serializable {
     }
 
     public void move(Enemy enemy, Vector2D movement) {
-        if (movement != null) {
-            enemy.setPosition(enemy.getPosition().add(movement));
+        if (movement != null && movement != Vector2D.ZERO) {
+            var newPosition = enemy.getPosition().add(movement);
+            if (newPosition.x() < 0 || newPosition.x() >= width ||
+                    newPosition.y() < 0 || newPosition.y() >= width) {
+                throw new IllegalArgumentException("Enemy went outside the board");
+            }
+            enemy.setPosition(newPosition);
         }
     }
 

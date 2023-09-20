@@ -21,6 +21,6 @@ public final class Exit extends Tile {
 
     @Override
     public void onExit(Player player) {
-        // do nothing
+        throw new IllegalStateException("Illegal movement!");
     }
 }

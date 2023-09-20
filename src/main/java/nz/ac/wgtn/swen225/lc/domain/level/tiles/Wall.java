@@ -16,12 +16,13 @@ public final class Wall extends Tile {
 
     @Override
     public void onEnter(Player player) {
-        throw new IllegalStateException(player + " shouldn't be seating on " + this);
+        throw new IllegalStateException("Illegal movement!");
+
     }
 
     @Override
     public void onExit(Player player) {
-        throw new IllegalStateException(player + " shouldn't be seating on " + this);
+        throw new IllegalStateException("Illegal movement!");
     }
 
 }
