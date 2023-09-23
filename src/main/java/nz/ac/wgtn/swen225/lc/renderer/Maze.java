@@ -3,18 +3,25 @@ package nz.ac.wgtn.swen225.lc.renderer;
 import nz.ac.wgtn.swen225.lc.domain.level.Level;
 
 import javax.swing.*;
+import java.awt.*;
 
 /**
  * Renders the entirety of the tiles on the level.
  */
 class Maze extends JPanel {
-    private static final int DEFAULT_TILE_LENGTH = 50;
 
+    /**
+     * By default, the length we set our tiles.
+     */
+    private static final int DEFAULT_TILE_LENGTH = 50;
+    /**
+     * The layout manager for this component.
+     */
+    private final GridLayout layout = new GridLayout();
     /**
      * The level this maze is rendering.
      */
     private Level level;
-
     /**
      * The length of a square tile. Changing this acts like a "zoom" feature, making the maze bigger
      * or smaller.
@@ -25,6 +32,7 @@ class Maze extends JPanel {
      * Constructor.
      */
     Maze() {
+        setLayout(layout);
         //TODO: stub
     }
 
@@ -62,6 +70,34 @@ class Maze extends JPanel {
      * tiles.
      */
     public void render() {
+        removeAll();
+
+        addTiles();
+
+        repaint();
         //TODO:stub
+    }
+
+    /*
+     * Adds tiles to this panel.
+     */
+    private void addTiles() {
+        if (level != null) {
+            int rows = level.getHeight();
+            int columns = level.getWidth();
+
+            layout.setRows(rows);
+            layout.setColumns(columns);
+
+            JComponent[][] board = Tiles.makeBoard(level);
+            assert board.length == columns;
+            assert board[0].length == rows;
+
+            for (int x = 0; x < columns; ++x) {
+                for (int y = 0; y < rows; ++y) {
+                    add(board[x][y]);
+                }
+            }
+        }
     }
 }
