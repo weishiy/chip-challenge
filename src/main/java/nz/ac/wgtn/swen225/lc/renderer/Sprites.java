@@ -12,7 +12,7 @@ import java.util.function.BiFunction;
 /**
  * Helper interface for making tiles for the maze.
  */
-interface Tiles {
+interface Sprites {
     /**
      * Creates a board representing the tiles in the level.
      *
@@ -29,7 +29,7 @@ interface Tiles {
                     return position.x() == x && position.y() == y;
                 })
                 //If tile present, calls `makeTile`, else, calls `emptyTile`.
-                .findFirst().map(Tiles::makeTile).orElseGet(Tiles::emptyTile);
+                .findFirst().map(Sprites::makeTile).orElseGet(Sprites::emptyTile);
 
         int width = level.getWidth();
         int height = level.getHeight();

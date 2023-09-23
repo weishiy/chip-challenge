@@ -89,7 +89,7 @@ class Maze extends JPanel {
             layout.setRows(rows);
             layout.setColumns(columns);
 
-            JComponent[][] board = Tiles.makeBoard(level);
+            JComponent[][] board = Sprites.makeBoard(level);
             assert board.length == columns;
             assert board[0].length == rows;
 
