@@ -12,16 +12,28 @@ interface Tiles {
     /**
      * From the given <code>Tile</code>, constructs a new <code>JComponent</code> representing it.
      *
-     * <p>The specific subclass of <code>tile</code> provides information on what the tile will appear as.
+     * <p>The specific subclass of <code>tile</code> provides information on what the tile will
+     * appear as.
      *
      * @param tile The tile to make a component of.
      * @return A representation of the tile.
-     * @throws IllegalArgumentException If <code>tile</code> doesn't match any known subclass of <code>Tile</code>.
+     * @throws IllegalArgumentException If <code>tile</code> doesn't match any known subclass of
+     *                                  <code>Tile</code>.
      * @throws NullPointerException     If <code>tile</code> is null.
      */
     static JComponent makeTile(Tile tile) throws IllegalArgumentException {
         Objects.requireNonNull(tile);
         //TODO: Stub, final version should assign the label the image associated with the Tile.
         return new JLabel(tile.getClass().getName());
+    }
+
+    /**
+     * Creates component representing an empty tile.
+     *
+     * @return A component representing an empty tile.
+     */
+    static JComponent emptyTile() {
+        //TODO: add image
+        return new JLabel("EMPTY TILE");
     }
 }
