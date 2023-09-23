@@ -1,14 +1,49 @@
 package nz.ac.wgtn.swen225.lc.renderer;
 
+import nz.ac.wgtn.swen225.lc.domain.Vector2D;
+import nz.ac.wgtn.swen225.lc.domain.level.Level;
 import nz.ac.wgtn.swen225.lc.domain.level.tiles.Tile;
 
 import javax.swing.*;
 import java.util.Objects;
+import java.util.Set;
+import java.util.function.BiFunction;
 
 /**
  * Helper interface for making tiles for the maze.
  */
 interface Tiles {
+    /**
+     * Creates a board representing the tiles in the level.
+     *
+     * @param level The level to represent.
+     * @return 2D array of JComponents. The first dimension is <code>level.getWidth()</code> and the
+     * second dimension is <code>level.getHeight()</code>.
+     */
+    static JComponent[][] makeBoard(final Level level) {
+        Set<Tile> tiles = level.getTiles();
+        BiFunction<Integer, Integer, JComponent> getTile = (x, y) -> tiles.stream()
+                //Gets first tile that matches coordinates
+                .filter(t -> {
+                    Vector2D position = t.getPosition();
+                    return position.x() == x && position.y() == y;
+                })
+                //If tile present, calls `makeTile`, else, calls `emptyTile`.
+                .findFirst().map(Tiles::makeTile).orElseGet(Tiles::emptyTile);
+
+        int width = level.getWidth();
+        int height = level.getHeight();
+
+        var board = new JComponent[width][height];
+        for (int x = 0; x < width; ++x) {
+            for (int y = 0; y < height; ++y) {
+                board[x][y] = getTile.apply(x, y);
+            }
+        }
+
+        return board;
+    }
+
     /**
      * From the given <code>Tile</code>, constructs a new <code>JComponent</code> representing it.
      *
