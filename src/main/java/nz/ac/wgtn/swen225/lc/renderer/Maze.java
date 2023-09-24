@@ -28,6 +28,9 @@ class Maze extends JLayeredPane {
      */
     private int tileLength = DEFAULT_TILE_LENGTH;
 
+    /**
+     * Constructor.
+     */
     Maze() {
         setLayer(board, 1);
         add(board);
@@ -94,6 +97,9 @@ class Maze extends JLayeredPane {
          */
         public void render() {
             removeAll();
+
+            //The size of this board is the same as the parent layered pane.
+            setSize(Maze.this.getSize());
 
             addTiles();
 
