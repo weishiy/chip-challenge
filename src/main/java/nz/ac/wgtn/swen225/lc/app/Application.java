@@ -3,7 +3,7 @@ package nz.ac.wgtn.swen225.lc.app;
 import nz.ac.wgtn.swen225.lc.app.states.ApplicationState;
 import nz.ac.wgtn.swen225.lc.app.states.DebuggingState;
 import nz.ac.wgtn.swen225.lc.app.states.WelcomingState;
-import nz.ac.wgtn.swen225.lc.persistency.FileBasedPersistenceImpl;
+//import nz.ac.wgtn.swen225.lc.persistency.FileBasedPersistenceImpl; //FIXME
 import nz.ac.wgtn.swen225.lc.persistency.Persistence;
 
 import javax.swing.*;
@@ -28,7 +28,7 @@ public class Application extends JFrame implements ApplicationDebugger {
     public Application() {
         super("Chips Challenge");
 
-        this.persistence = new FileBasedPersistenceImpl();
+        this.persistence = null; //FIXEME new FileBasedPersistenceImpl();
 
         setResizable(false);
         getContentPane().setLayout(new BoxLayout(getContentPane(), BoxLayout.LINE_AXIS));

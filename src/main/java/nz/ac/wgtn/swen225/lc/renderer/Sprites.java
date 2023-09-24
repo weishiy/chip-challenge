@@ -8,6 +8,7 @@ import nz.ac.wgtn.swen225.lc.domain.level.tiles.Tile;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.image.BufferedImage;
 import java.util.Objects;
 import java.util.Set;
 import java.util.function.BiFunction;
@@ -90,48 +91,69 @@ interface Sprites {
      */
     class PlayerComponent extends JLabel {
 
-        //TODO: Icon made manually, should be taken from image
-        /**
-         * Default icon of the player.
-         */
-        private static final Icon DEFAULT_PLAYER_ICON = new Icon() {
-            public static final int VERTICAL_BORDER = 2;
-            public static final int HORIZONTAL_BORDER = 4;
-            private static final int WIDTH = 32;
-            private static final int HEIGHT = 32;
+        private static final int DEFAULT_SIZE = 480;
+        //TODO: Image made manually, should be taken from file
 
-            @Override
-            public void paintIcon(final Component c, final Graphics g, final int x, final int y) {
-                Graphics2D g2d = (Graphics2D) g.create();
+        private static final Image DEFAULT_PLAYER_IMAGE = new BufferedImage(DEFAULT_SIZE,
+                DEFAULT_SIZE, BufferedImage.TYPE_INT_ARGB) {
+            public static final int VERTICAL_BORDER = 30; // /1/16
+            public static final int HORIZONTAL_BORDER = 60; // 2/16
 
+            {
+                Graphics2D g2d = createGraphics();
                 g2d.setColor(Color.YELLOW);
 
-                g2d.fillOval(HORIZONTAL_BORDER, VERTICAL_BORDER, WIDTH - 2 * HORIZONTAL_BORDER,
-                        HEIGHT - 2 * VERTICAL_BORDER);
+                g2d.fillOval(HORIZONTAL_BORDER, VERTICAL_BORDER,
+                        DEFAULT_SIZE - 2 * HORIZONTAL_BORDER, DEFAULT_SIZE - 2 * VERTICAL_BORDER);
 
                 g2d.dispose();
             }
-
-            @Override
-            public int getIconWidth() {
-                return WIDTH;
-            }
-
-            @Override
-            public int getIconHeight() {
-                return HEIGHT;
-            }
         };
+
+
         /**
          * The player being represented.
          */
         private final Player player;
 
+        private Image currentImage;
+
         PlayerComponent(final Player player) {
             this.player = player;
 
             setOpaque(false);
-            setIcon(DEFAULT_PLAYER_ICON);
+            currentImage = DEFAULT_PLAYER_IMAGE;
+
+            onResize();
+        }
+        /*
+         * I've tried to resize automatically, but it doesn't work.
+         * For some reason, adding a component listener doesn't seem to detect any but the first
+         * resizing. Everytime after that it doesn't work.
+         *
+         * As a workaround, call onResize whenever this component has been resized.
+         */
+
+        /**
+         * Tell this component that it has been resized.
+         *
+         * <p>Workaround for failure of component listener. It's up to the user to call this
+         * method after this component has been resized.
+         */
+        public void onResize() {
+            int width = getWidth();
+            int height = getHeight();
+            System.out.println("width: " + width);
+            System.out.println("height: " + height);
+            //If image doesn't fit, don't draw it.
+            if (width <= 0 || height <= 0) {
+                setIcon(null);
+                return;
+            }
+
+            Icon newIcon = new ImageIcon(
+                    currentImage.getScaledInstance(width, height, Image.SCALE_DEFAULT));
+            setIcon(newIcon);
         }
 
         /**
@@ -142,9 +164,9 @@ interface Sprites {
         }
     }
 
-    public class EnemyComponent extends JLabel {
-        public EnemyComponent(final Enemy enemy) {
-        //TODO:stub
+    class EnemyComponent extends JLabel {
+        EnemyComponent(final Enemy enemy) {
+            //TODO:stub
         }
     }
 }

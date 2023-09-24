@@ -2,6 +2,7 @@ package nz.ac.wgtn.swen225.lc.renderer;
 
 import nz.ac.wgtn.swen225.lc.domain.Vector2D;
 import nz.ac.wgtn.swen225.lc.domain.level.Level;
+import nz.ac.wgtn.swen225.lc.domain.level.characters.Player;
 import nz.ac.wgtn.swen225.lc.domain.level.items.Key;
 import nz.ac.wgtn.swen225.lc.domain.level.tiles.*;
 
@@ -45,6 +46,8 @@ public class TestingLevels {
             addTile(new Exit(v(3, 5)));
 
             addTile(new ChipTile(v(10, 8), null));
+
+            setPlayer(new Player(v(1, 4)));
         }
 
     }

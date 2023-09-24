@@ -100,6 +100,7 @@ class Maze extends JLayeredPane {
             setSize(width, height);
         }
         board.render();
+        entities.render();
     }
 
     /**
@@ -167,8 +168,20 @@ class Maze extends JLayeredPane {
      * removing.
      */
     private class MazeEntities extends JPanel {
+        /**
+         * Shows the enemies and the components that represent them.
+         */
         private final Map<Enemy, Sprites.EnemyComponent> enemyComponents = new HashMap<>();
+        /**
+         * Current player.
+         */
         private Player player;
+        /**
+         * Component representing the current player.
+         *
+         * <p>Existence should coincide with <code>player</code>. In other words, it only should
+         * be non-null whenever <code>player</code> is non-null.
+         */
         private Sprites.PlayerComponent playerComponent;
 
         MazeEntities() {
@@ -200,6 +213,7 @@ class Maze extends JLayeredPane {
 
             if (player != null) {
                 playerComponent.setBounds(makeBounds(player.getPosition(), tileLength));
+                playerComponent.onResize();
                 add(playerComponent);
             }
 
@@ -220,7 +234,7 @@ class Maze extends JLayeredPane {
          */
         private void checkEnemies(final Set<Enemy> newEnemies) {
             //Remove any enemies that are no longer with us
-            for (var iterator = enemyComponents.entrySet().iterator(); iterator.hasNext();) {
+            for (var iterator = enemyComponents.entrySet().iterator(); iterator.hasNext(); ) {
                 Map.Entry<Enemy, Sprites.EnemyComponent> entry = iterator.next();
                 if (!newEnemies.contains(entry.getKey())) {
                     remove(entry.getValue());
@@ -245,7 +259,9 @@ class Maze extends JLayeredPane {
                 return;
             }
             //Remove old component.
-            remove(playerComponent);
+            if (playerComponent != null) {
+                remove(playerComponent);
+            }
             playerComponent = null;
 
             player = newPlayer;
