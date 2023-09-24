@@ -7,7 +7,7 @@ public class MazeTester {
         SwingUtilities.invokeLater(() -> {
             var mazeFrame = new JFrame();
             var maze = new Maze();
-            maze.setLevel(new TestingLevel());
+            maze.setLevel(new TestingLevels.LevelB());
             mazeFrame.add(maze);
             mazeFrame.pack();
 
