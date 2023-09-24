@@ -117,7 +117,9 @@ class Maze extends JLayeredPane {
 
                 for (int x = 0; x < columns; ++x) {
                     for (int y = 0; y < rows; ++y) {
-                        add(tiles[x][y]);
+                        JComponent tile = tiles[x][y];
+                        tile.setSize(tileLength, tileLength);
+                        add(tile);
                     }
                 }
             }
