@@ -115,8 +115,6 @@ class Maze extends JLayeredPane {
             removeAll();
 
             addTiles();
-
-            repaint();
         }
 
         /*
