@@ -136,7 +136,7 @@ class Maze extends JLayeredPane {
                     }
                 }
 
-                validate();
+                revalidate();
             }
         }
     }
