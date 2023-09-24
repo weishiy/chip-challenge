@@ -70,6 +70,13 @@ class Maze extends JLayeredPane {
      * tiles.
      */
     public void render() {
+        if (level != null) {
+            //Grows to fit tiles
+            int width = tileLength * level.getWidth();
+            int height = tileLength * level.getHeight();
+
+            setSize(width, height);
+        }
         board.render();
     }
 
@@ -128,6 +135,8 @@ class Maze extends JLayeredPane {
                         add(tile);
                     }
                 }
+
+                validate();
             }
         }
     }

@@ -5,6 +5,7 @@ import nz.ac.wgtn.swen225.lc.domain.level.Level;
 import nz.ac.wgtn.swen225.lc.domain.level.tiles.Tile;
 
 import javax.swing.*;
+import java.awt.*;
 import java.util.Objects;
 import java.util.Set;
 import java.util.function.BiFunction;
@@ -59,7 +60,12 @@ interface Sprites {
     static JComponent makeTile(Tile tile) throws IllegalArgumentException {
         Objects.requireNonNull(tile);
         //TODO: Stub, final version should assign the label the image associated with the Tile.
-        return new JLabel(tile.getClass().getName());
+        return new JLabel(tile.getClass().getName()) {
+            {
+                setBorder(BorderFactory.createLineBorder(Color.BLUE));
+                setToolTipText(getText());
+            }
+        };
     }
 
     /**
@@ -69,6 +75,11 @@ interface Sprites {
      */
     static JComponent emptyTile() {
         //TODO: add image
-        return new JLabel("EMPTY TILE");
+        return new JLabel("EMPTY TILE") {
+            {
+                setBorder(BorderFactory.createLineBorder(Color.YELLOW));
+                setToolTipText(getText());
+            }
+        };
     }
 }
