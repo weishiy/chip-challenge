@@ -1,11 +1,15 @@
 package nz.ac.wgtn.swen225.lc.renderer;
 
+import nz.ac.wgtn.swen225.lc.domain.Vector2D;
 import nz.ac.wgtn.swen225.lc.domain.level.Level;
+import nz.ac.wgtn.swen225.lc.domain.level.characters.Enemy;
+import nz.ac.wgtn.swen225.lc.domain.level.characters.Player;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
+import java.util.*;
 
 /**
  * Renders the tiles and characters on a level.
@@ -20,6 +24,11 @@ class Maze extends JLayeredPane {
      * Layer which contains tiles, not entities.
      */
     private final MazeBoard board = new MazeBoard();
+
+    /**
+     * The layer which contains entities.
+     */
+    private final MazeEntities entities = new MazeEntities();
     /**
      * The level this maze is rendering.
      */
@@ -37,10 +46,14 @@ class Maze extends JLayeredPane {
         setLayer(board, 1);
         add(board);
 
+        setLayer(entities, 2);
+        add(entities);
+
         addComponentListener(new ComponentAdapter() {
             @Override
-            public void componentResized(ComponentEvent e) {
+            public void componentResized(final ComponentEvent e) {
                 board.setSize(getSize());
+                entities.setSize(getSize());
             }
         });
     }
@@ -144,5 +157,102 @@ class Maze extends JLayeredPane {
                 revalidate();
             }
         }
+    }
+
+    /**
+     * Renders entities, such as players and enemies.
+     *
+     * <p>Unlike tiles, entities must be persistent (to ensure smooth animations), so instead of
+     * the remove-all-then-add-again strategy, we check to see if an entity is gone before
+     * removing.
+     */
+    private class MazeEntities extends JPanel {
+        private final Map<Enemy, Sprites.EnemyComponent> enemyComponents = new HashMap<>();
+        private Player player;
+        private Sprites.PlayerComponent playerComponent;
+
+        MazeEntities() {
+            setLayout(null);
+            setOpaque(false);
+        }
+
+        /*
+         * Creates bounds for an object with its top-left at <code>position</code> and square
+         * length on <code>length</code>.
+         */
+        private static Rectangle makeBounds(final Vector2D position, final int length) {
+            int left = position.x() * length;
+            int top = position.y() * length;
+
+            return new Rectangle(left, top, length, length);
+        }
+
+        /**
+         * Update entities to account to changes in level.
+         */
+        public void render() {
+            final Player newPlayer = level.getPlayer();
+            final Set<Enemy> newEnemies = Set.copyOf(level.getEnemies());
+
+            //Validate existing entities
+            checkPlayer(newPlayer);
+            checkEnemies(newEnemies);
+
+            if (player != null) {
+                playerComponent.setBounds(makeBounds(player.getPosition(), tileLength));
+                add(playerComponent);
+            }
+
+            for (var entry : enemyComponents.entrySet()) {
+                Sprites.EnemyComponent component = entry.getValue();
+                component.setBounds(makeBounds(entry.getKey().getPosition(), tileLength));
+                add(component);
+            }
+
+            revalidate();
+        }
+
+        /**
+         * Removes any enemies not in <code>newEnemies</code>, adds any new enemies from
+         * <code>newEnemies</code>.
+         *
+         * @param newEnemies The set of enemies that should exist.
+         */
+        private void checkEnemies(final Set<Enemy> newEnemies) {
+            //Remove any enemies that are no longer with us
+            for (var iterator = enemyComponents.entrySet().iterator(); iterator.hasNext();) {
+                Map.Entry<Enemy, Sprites.EnemyComponent> entry = iterator.next();
+                if (!newEnemies.contains(entry.getKey())) {
+                    remove(entry.getValue());
+                    iterator.remove();
+                }
+            }
+            //Add enemies that we don't have already
+            for (Enemy enemy : newEnemies) {
+                enemyComponents.computeIfAbsent(enemy, Sprites.EnemyComponent::new);
+            }
+        }
+
+        /**
+         * Replaces <code>player</code> and <code>playerComponent</code> if they don't equal
+         * <code>newPlayer</code>.
+         *
+         * @param newPlayer The (possibly null) player to check if different.
+         */
+        private void checkPlayer(final Player newPlayer) {
+            //If both players are equal, there's no change, so return early.
+            if (Objects.equals(player, newPlayer)) {
+                return;
+            }
+            //Remove old component.
+            remove(playerComponent);
+            playerComponent = null;
+
+            player = newPlayer;
+            if (player != null) {
+                playerComponent = new Sprites.PlayerComponent(player);
+            }
+        }
+
     }
 }

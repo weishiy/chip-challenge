@@ -2,6 +2,7 @@ package nz.ac.wgtn.swen225.lc.renderer;
 
 import nz.ac.wgtn.swen225.lc.domain.Vector2D;
 import nz.ac.wgtn.swen225.lc.domain.level.Level;
+import nz.ac.wgtn.swen225.lc.domain.level.characters.Enemy;
 import nz.ac.wgtn.swen225.lc.domain.level.characters.Player;
 import nz.ac.wgtn.swen225.lc.domain.level.tiles.Tile;
 
@@ -138,6 +139,12 @@ interface Sprites {
          */
         public void update() {
             //TODO: stub
+        }
+    }
+
+    public class EnemyComponent extends JLabel {
+        public EnemyComponent(final Enemy enemy) {
+        //TODO:stub
         }
     }
 }
