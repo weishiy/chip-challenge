@@ -4,9 +4,12 @@ import nz.ac.wgtn.swen225.lc.domain.Game;
 import nz.ac.wgtn.swen225.lc.domain.events.GameEvent;
 import nz.ac.wgtn.swen225.lc.domain.events.GameEventListener;
 import nz.ac.wgtn.swen225.lc.domain.events.TickEvent;
+import nz.ac.wgtn.swen225.lc.domain.level.Level;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent;
 
 
 /**
@@ -22,6 +25,11 @@ public class GameWindow extends JPanel implements GameEventListener {
     private final Game game;
 
     /**
+     * Shows the entire level.
+     */
+    private final Maze maze = new Maze();
+
+    /**
      * Constructor.
      *
      * <p>Only shows the maze when enabled.
@@ -32,6 +40,15 @@ public class GameWindow extends JPanel implements GameEventListener {
         setEnabled(false);
 
         this.game = game;
+
+        add(maze);
+
+        addComponentListener(new ComponentAdapter() {
+            @Override
+            public void componentResized(ComponentEvent e) {
+                fitMaze();
+            }
+        });
         //TODO:stub
     }
 
@@ -44,6 +61,17 @@ public class GameWindow extends JPanel implements GameEventListener {
     public GameWindow(final Game game, final int windowSize) {
         this(game);
         setSize(windowSize, windowSize);
+    }
+
+    private void fitMaze() {
+        Level level = game.getLevel();
+
+        int xRatio = getWidth() / level.getWidth();
+        int yRatio = getHeight() / level.getHeight();
+
+        int tileLength = Math.min(xRatio, yRatio);
+
+        maze.setTileLength(tileLength);
     }
 
     /**
@@ -69,8 +97,10 @@ public class GameWindow extends JPanel implements GameEventListener {
         super.setEnabled(enabled);
         if (enabled) {
             game.addListener(this);
+            maze.setVisible(true);
         } else {
             game.removeListener(this);
+            maze.setVisible(false);
         }
     }
 
@@ -81,6 +111,7 @@ public class GameWindow extends JPanel implements GameEventListener {
     public void onGameEvent(final GameEvent gameEvent) {
         //Frequently repaints when needed.
         if (gameEvent instanceof TickEvent) {
+            maze.render();
             repaint();
         }
     }
