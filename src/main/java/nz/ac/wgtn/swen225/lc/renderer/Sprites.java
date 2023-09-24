@@ -63,7 +63,7 @@ interface Sprites {
     static JComponent makeTile(Tile tile) throws IllegalArgumentException {
         Objects.requireNonNull(tile);
         //TODO: Stub, final version should assign the label the image associated with the Tile.
-        return new JLabel(tile.getClass().getName()) {
+        return new JLabel(tile.getClass().getSimpleName()) {
             {
                 setBorder(BorderFactory.createLineBorder(Color.BLUE));
                 setToolTipText(getText());
@@ -78,7 +78,7 @@ interface Sprites {
      */
     static JComponent emptyTile() {
         //TODO: add image
-        return new JLabel("EMPTY TILE") {
+        return new JLabel("EMPTY") {
             {
                 setBorder(BorderFactory.createLineBorder(Color.YELLOW));
                 setToolTipText(getText());
