@@ -128,8 +128,9 @@ class Maze extends JLayeredPane {
                 assert tiles.length == columns;
                 assert tiles[0].length == rows;
 
-                for (int x = 0; x < columns; ++x) {
-                    for (int y = 0; y < rows; ++y) {
+                //GridLayout fills rows then columns
+                for (int y = 0; y < rows; ++y) {
+                    for (int x = 0; x < columns; ++x) {
                         JComponent tile = tiles[x][y];
                         tile.setSize(tileLength, tileLength);
                         add(tile);
