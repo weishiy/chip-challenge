@@ -2,6 +2,7 @@ package nz.ac.wgtn.swen225.lc.renderer;
 
 import nz.ac.wgtn.swen225.lc.domain.Vector2D;
 import nz.ac.wgtn.swen225.lc.domain.level.Level;
+import nz.ac.wgtn.swen225.lc.domain.level.characters.Player;
 import nz.ac.wgtn.swen225.lc.domain.level.tiles.Tile;
 
 import javax.swing.*;
@@ -81,5 +82,62 @@ interface Sprites {
                 setToolTipText(getText());
             }
         };
+    }
+
+    /**
+     * A component that represents the player.
+     */
+    class PlayerComponent extends JLabel {
+
+        //TODO: Icon made manually, should be taken from image
+        /**
+         * Default icon of the player.
+         */
+        private static final Icon DEFAULT_PLAYER_ICON = new Icon() {
+            public static final int VERTICAL_BORDER = 2;
+            public static final int HORIZONTAL_BORDER = 4;
+            private static final int WIDTH = 32;
+            private static final int HEIGHT = 32;
+
+            @Override
+            public void paintIcon(final Component c, final Graphics g, final int x, final int y) {
+                Graphics2D g2d = (Graphics2D) g.create();
+
+                g2d.setColor(Color.YELLOW);
+
+                g2d.fillOval(HORIZONTAL_BORDER, VERTICAL_BORDER, WIDTH - 2 * HORIZONTAL_BORDER,
+                        HEIGHT - 2 * VERTICAL_BORDER);
+
+                g2d.dispose();
+            }
+
+            @Override
+            public int getIconWidth() {
+                return WIDTH;
+            }
+
+            @Override
+            public int getIconHeight() {
+                return HEIGHT;
+            }
+        };
+        /**
+         * The player being represented.
+         */
+        private final Player player;
+
+        PlayerComponent(final Player player) {
+            this.player = player;
+
+            setOpaque(false);
+            setIcon(DEFAULT_PLAYER_ICON);
+        }
+
+        /**
+         * Interrogates the player's state to see if it should change.
+         */
+        public void update() {
+            //TODO: stub
+        }
     }
 }
