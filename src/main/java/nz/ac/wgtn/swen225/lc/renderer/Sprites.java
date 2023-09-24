@@ -78,10 +78,9 @@ interface Sprites {
      */
     static JComponent emptyTile() {
         //TODO: add image
-        return new JLabel("EMPTY") {
+        return new JLabel() {
             {
                 setBorder(BorderFactory.createLineBorder(Color.YELLOW));
-                setToolTipText(getText());
             }
         };
     }
