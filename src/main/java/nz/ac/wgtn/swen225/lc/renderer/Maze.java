@@ -220,6 +220,7 @@ class Maze extends JLayeredPane {
             for (var entry : enemyComponents.entrySet()) {
                 Sprites.EnemyComponent component = entry.getValue();
                 component.setBounds(makeBounds(entry.getKey().getPosition(), tileLength));
+                component.onResize();
                 add(component);
             }
 

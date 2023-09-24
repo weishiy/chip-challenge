@@ -2,6 +2,7 @@ package nz.ac.wgtn.swen225.lc.renderer;
 
 import nz.ac.wgtn.swen225.lc.domain.Vector2D;
 import nz.ac.wgtn.swen225.lc.domain.level.Level;
+import nz.ac.wgtn.swen225.lc.domain.level.characters.Enemy;
 import nz.ac.wgtn.swen225.lc.domain.level.characters.Player;
 import nz.ac.wgtn.swen225.lc.domain.level.items.Key;
 import nz.ac.wgtn.swen225.lc.domain.level.tiles.*;
@@ -13,6 +14,15 @@ public class TestingLevels {
 
     private static Vector2D v(int x, int y) {
         return new Vector2D(x, y);
+    }
+
+    private static Enemy e(int x, int y) {
+        return new Enemy(v(x, y)) {
+            @Override
+            public Vector2D nextMove() {
+                return null;
+            }
+        };
     }
 
     @SuppressWarnings("unused")
@@ -31,6 +41,9 @@ public class TestingLevels {
             addTile(new LockedDoor(new Vector2D(3, 3), Key.Color.BLUE));
 
             setPlayer(new Player(v(2, 2)));
+
+            addEnemy(e(1, 2));
+            addEnemy(e(3, 2));
         }
     }
 

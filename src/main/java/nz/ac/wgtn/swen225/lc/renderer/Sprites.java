@@ -153,7 +153,7 @@ interface Sprites {
         private static final Image DEFAULT_ENEMY_IMAGE = new BufferedImage(IMAGE_SIZE, IMAGE_SIZE,
                 BufferedImage.TYPE_INT_ARGB) {
             public static final int BORDER = 40;
-            public static final int THICKNESS = 10;
+            public static final int THICKNESS = 30;
 
             {
                 Graphics2D g2d = createGraphics();
@@ -164,7 +164,7 @@ interface Sprites {
                 g2d.drawLine(IMAGE_SIZE, 0, 0, IMAGE_SIZE);
 
                 g2d.setColor(Color.RED);
-                g2d.drawOval(BORDER, BORDER, IMAGE_SIZE - BORDER * 2, IMAGE_SIZE - BORDER * 2);
+                g2d.fillOval(BORDER, BORDER, IMAGE_SIZE - BORDER * 2, IMAGE_SIZE - BORDER * 2);
                 g2d.dispose();
             }
         };

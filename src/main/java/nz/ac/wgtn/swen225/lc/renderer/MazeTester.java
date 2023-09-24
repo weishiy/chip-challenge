@@ -1,6 +1,7 @@
 package nz.ac.wgtn.swen225.lc.renderer;
 
 import javax.swing.*;
+import java.awt.*;
 
 public class MazeTester {
     public static void main(String[] args) {
@@ -10,8 +11,8 @@ public class MazeTester {
             var maze = new Maze();
             maze.setLevel(new TestingLevels.LevelA());
             mazeFrame.add(maze);
-            mazeFrame.pack();
 
+            mazeFrame.setMinimumSize(new Dimension(100, 100));
             mazeFrame.setVisible(true);
 
             var controlFrame = new JFrame();
