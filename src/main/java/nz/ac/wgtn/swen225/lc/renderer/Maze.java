@@ -4,6 +4,8 @@ import nz.ac.wgtn.swen225.lc.domain.level.Level;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent;
 
 /**
  * Renders the tiles and characters on a level.
@@ -34,6 +36,13 @@ class Maze extends JLayeredPane {
     Maze() {
         setLayer(board, 1);
         add(board);
+
+        addComponentListener(new ComponentAdapter() {
+            @Override
+            public void componentResized(ComponentEvent e) {
+                board.setSize(getSize());
+            }
+        });
     }
 
     /**
@@ -104,9 +113,6 @@ class Maze extends JLayeredPane {
          */
         public void render() {
             removeAll();
-
-            //The size of this board is the same as the parent layered pane.
-            setSize(Maze.this.getSize());
 
             addTiles();
 
