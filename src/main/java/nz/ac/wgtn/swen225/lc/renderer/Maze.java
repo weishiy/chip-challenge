@@ -204,6 +204,14 @@ class Maze extends JLayeredPane {
          * Update entities to account to changes in level.
          */
         public void render() {
+            if (level == null) {
+                //If no level, act as if empty level.
+                checkPlayer(null);
+                checkEnemies(Set.of());
+                revalidate();
+                return;
+            }
+
             final Player newPlayer = level.getPlayer();
             final Set<Enemy> newEnemies = Set.copyOf(level.getEnemies());
 

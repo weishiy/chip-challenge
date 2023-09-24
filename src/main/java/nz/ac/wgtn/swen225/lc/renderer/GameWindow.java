@@ -37,9 +37,11 @@ public class GameWindow extends JPanel implements GameEventListener {
      * @param game The game world to be rendered.
      */
     public GameWindow(final Game game) {
+//        setDebugGraphicsOptions(DebugGraphics.LOG_OPTION);
+        setLayout(null);
+        this.game = game;
         setEnabled(false);
 
-        this.game = game;
 
         add(maze);
 
@@ -71,7 +73,9 @@ public class GameWindow extends JPanel implements GameEventListener {
 
         int tileLength = Math.min(xRatio, yRatio);
 
-        maze.setTileLength(tileLength);
+        if (tileLength > 0) {
+            maze.setTileLength(tileLength);
+        }
     }
 
     /**
@@ -98,9 +102,11 @@ public class GameWindow extends JPanel implements GameEventListener {
         if (enabled) {
             game.addListener(this);
             maze.setVisible(true);
+            maze.setLevel(game.getLevel());
         } else {
             game.removeListener(this);
             maze.setVisible(false);
+            maze.setLevel(null);
         }
     }
 
@@ -115,6 +121,4 @@ public class GameWindow extends JPanel implements GameEventListener {
             repaint();
         }
     }
-
-
 }
