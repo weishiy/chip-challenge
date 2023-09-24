@@ -8,7 +8,7 @@ public class MazeTester {
             var mazeFrame = new JFrame();
             mazeFrame.setLayout(null);
             var maze = new Maze();
-            maze.setLevel(new TestingLevels.LevelB());
+            maze.setLevel(new TestingLevels.LevelA());
             mazeFrame.add(maze);
             mazeFrame.pack();
 

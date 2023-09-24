@@ -15,6 +15,7 @@ public class TestingLevels {
         return new Vector2D(x, y);
     }
 
+    @SuppressWarnings("unused")
     public static class LevelA extends Level {
         private static final int LENGTH = 5;
 
@@ -28,8 +29,12 @@ public class TestingLevels {
             addTile(new Exit(new Vector2D(1, 3)));
             addTile(new InfoField(new Vector2D(2, 3)));
             addTile(new LockedDoor(new Vector2D(3, 3), Key.Color.BLUE));
+
+            setPlayer(new Player(v(2, 2)));
         }
     }
+
+    @SuppressWarnings("unused")
 
     public static class LevelB extends Level {
 

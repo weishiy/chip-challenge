@@ -143,8 +143,7 @@ interface Sprites {
         public void onResize() {
             int width = getWidth();
             int height = getHeight();
-            System.out.println("width: " + width);
-            System.out.println("height: " + height);
+
             //If image doesn't fit, don't draw it.
             if (width <= 0 || height <= 0) {
                 setIcon(null);
