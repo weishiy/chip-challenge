@@ -1,6 +1,9 @@
 package nz.ac.wgtn.swen225.lc.renderer;
 
 import nz.ac.wgtn.swen225.lc.domain.Game;
+import nz.ac.wgtn.swen225.lc.domain.events.GameEvent;
+import nz.ac.wgtn.swen225.lc.domain.events.GameEventListener;
+import nz.ac.wgtn.swen225.lc.domain.events.TickEvent;
 
 import javax.swing.*;
 import java.awt.*;
@@ -8,8 +11,16 @@ import java.awt.*;
 
 /**
  * Exports the view of the maze to other modules.
+ *
+ * <p>To use the Renderer module, construct this object, introduce it into your Swing or AWT
+ * hierarchy, and then enable it with <code>setEnabled</code>.
  */
-public class GameWindow extends JPanel {
+public class GameWindow extends JPanel implements GameEventListener {
+    /**
+     * Main domain object to query.
+     */
+    private final Game game;
+
     /**
      * Constructor.
      *
@@ -19,6 +30,8 @@ public class GameWindow extends JPanel {
      */
     public GameWindow(final Game game) {
         setEnabled(false);
+
+        this.game = game;
         //TODO:stub
     }
 
@@ -54,5 +67,23 @@ public class GameWindow extends JPanel {
     @Override
     public void setEnabled(final boolean enabled) {
         super.setEnabled(enabled);
+        if (enabled) {
+            game.addListener(this);
+        } else {
+            game.removeListener(this);
+        }
     }
+
+    /*
+     * Updates the renderer when necessary.
+     */
+    @Override //GameEventListener
+    public void onGameEvent(final GameEvent gameEvent) {
+        //Frequently repaints when needed.
+        if (gameEvent instanceof TickEvent) {
+            repaint();
+        }
+    }
+
+
 }
