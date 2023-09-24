@@ -9,7 +9,10 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
-import java.util.*;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Set;
 
 /**
  * Renders the tiles and characters on a level.
@@ -96,8 +99,9 @@ class Maze extends JLayeredPane {
             //Grows to fit tiles
             int width = tileLength * level.getWidth();
             int height = tileLength * level.getHeight();
+            //FIXME: Removed since automatically resized to fit into GameWindow 2023-09-25
+            //setSize(width, height);
 
-            setSize(width, height);
         }
         board.render();
         entities.render();

@@ -38,12 +38,12 @@ public class GameWindow extends JPanel implements GameEventListener {
      */
     public GameWindow(final Game game) {
 //        setDebugGraphicsOptions(DebugGraphics.LOG_OPTION);
-        setLayout(null);
+        setLayout(new BorderLayout());
         this.game = game;
         setEnabled(false);
 
 
-        add(maze);
+        add(maze, BorderLayout.CENTER);
 
         addComponentListener(new ComponentAdapter() {
             @Override
@@ -62,7 +62,7 @@ public class GameWindow extends JPanel implements GameEventListener {
      */
     public GameWindow(final Game game, final int windowSize) {
         this(game);
-        setSize(windowSize, windowSize);
+        setPreferredSize(new Dimension(windowSize, windowSize));
     }
 
     private void fitMaze() {
