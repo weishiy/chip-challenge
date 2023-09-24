@@ -7,6 +7,7 @@ import nz.ac.wgtn.swen225.lc.domain.level.tiles.ChipTile;
 
 import java.io.*;
 import java.util.ArrayList;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -18,7 +19,7 @@ public class Game extends Entity implements Serializable {
     private int tickNo = 0;
     private boolean gameOver = false;
 
-    private transient List<GameEventListener> listeners = new ArrayList<>();
+    private transient List<GameEventListener> listeners = new CopyOnWriteArrayList<>();
     private transient List<GameEventListener> listenersToAdd = new ArrayList<>();
     private transient List<GameEventListener> listenersToRemove = new ArrayList<>();
 
