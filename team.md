@@ -1,8 +1,8 @@
 | Module      | Team Member Name   | Team Member gitlab account |
-|-------------|--------------------|---|
-| Domain      | Shiyan             |weishiy|
-| App         | Jeremy Kanal-Scott |---|
-| Renderer    | Shuja Syed         |syedshuj|
-| Recorder    | Sajja Syed         |syedsajj|
-| Persistence | Text               |---|
-| Fuzz        | Oliver Berry       |---|
+|-------------|--------------------|----------------------------|
+| Domain      | Shiyan Wei         | @weishiy                   |
+| App         | Shuja Syed         | @syedshuj                  |
+| Renderer    | Jeremy Kanal-Scott | @kanaljere                 |
+| Recorder    | Sajja Syed         | @syedsajj                  |
+| Persistence | Brett Penwarden    | @penwarbret                |
+| Fuzz        | Oliver Berry       | @berryoliv1                |
