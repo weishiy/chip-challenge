@@ -86,14 +86,19 @@ interface Sprites {
         };
     }
 
+
     /**
      * A component that represents the player.
      */
-    class PlayerComponent extends JLabel {
-
+    class PlayerComponent extends EntityComponent {
+        /**
+         * Size of the default image.
+         */
         private static final int DEFAULT_SIZE = 480;
         //TODO: Image made manually, should be taken from file
-
+        /**
+         * Default image.
+         */
         private static final Image DEFAULT_PLAYER_IMAGE = new BufferedImage(DEFAULT_SIZE,
                 DEFAULT_SIZE, BufferedImage.TYPE_INT_ARGB) {
             public static final int VERTICAL_BORDER = 30; // /1/16
@@ -115,57 +120,75 @@ interface Sprites {
          * The player being represented.
          */
         private final Player player;
-
-        private Image currentImage;
+        /**
+         * The image representing the player.
+         */
+        private Image currentImage = DEFAULT_PLAYER_IMAGE;
 
         PlayerComponent(final Player player) {
             this.player = player;
 
-            setOpaque(false);
-            currentImage = DEFAULT_PLAYER_IMAGE;
-
-            onResize();
         }
-        /*
-         * I've tried to resize automatically, but it doesn't work.
-         * For some reason, adding a component listener doesn't seem to detect any but the first
-         * resizing. Everytime after that it doesn't work.
-         *
-         * As a workaround, call onResize whenever this component has been resized.
-         */
 
+
+        @Override
+        protected Image getCurrentImage() {
+            return currentImage;
+        }
+
+        @Override
+        public void update() {
+
+        }
+    }
+
+    class EnemyComponent extends EntityComponent {
         /**
-         * Tell this component that it has been resized.
-         *
-         * <p>Workaround for failure of component listener. It's up to the user to call this
-         * method after this component has been resized.
+         * Length of default image.
          */
-        public void onResize() {
-            int width = getWidth();
-            int height = getHeight();
+        private static final int IMAGE_SIZE = 480;
+        /**
+         * Default enemy image.
+         */
+        private static final Image DEFAULT_ENEMY_IMAGE = new BufferedImage(IMAGE_SIZE, IMAGE_SIZE,
+                BufferedImage.TYPE_INT_ARGB) {
+            public static final int BORDER = 40;
+            public static final int THICKNESS = 10;
 
-            //If image doesn't fit, don't draw it.
-            if (width <= 0 || height <= 0) {
-                setIcon(null);
-                return;
+            {
+                Graphics2D g2d = createGraphics();
+
+                g2d.setColor(Color.BLACK);
+                g2d.setStroke(new BasicStroke(THICKNESS));
+                g2d.drawLine(0, 0, IMAGE_SIZE, IMAGE_SIZE);
+                g2d.drawLine(IMAGE_SIZE, 0, 0, IMAGE_SIZE);
+
+                g2d.setColor(Color.RED);
+                g2d.drawOval(BORDER, BORDER, IMAGE_SIZE - BORDER * 2, IMAGE_SIZE - BORDER * 2);
+                g2d.dispose();
             }
+        };
 
-            Icon newIcon = new ImageIcon(
-                    currentImage.getScaledInstance(width, height, Image.SCALE_DEFAULT));
-            setIcon(newIcon);
+        private final Enemy enemy;
+        private Image currentImage = DEFAULT_ENEMY_IMAGE;
+
+        EnemyComponent(final Enemy enemy) {
+            this.enemy = enemy;
+            //TODO:stub
+        }
+
+
+        @Override
+        protected Image getCurrentImage() {
+            return currentImage;
         }
 
         /**
          * Interrogates the player's state to see if it should change.
          */
+        @Override
         public void update() {
             //TODO: stub
-        }
-    }
-
-    class EnemyComponent extends JLabel {
-        EnemyComponent(final Enemy enemy) {
-            //TODO:stub
         }
     }
 }
