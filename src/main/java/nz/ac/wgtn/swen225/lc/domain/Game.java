@@ -4,14 +4,13 @@ import nz.ac.wgtn.swen225.lc.domain.events.*;
 import nz.ac.wgtn.swen225.lc.domain.level.Level;
 import nz.ac.wgtn.swen225.lc.domain.level.characters.Enemy;
 import nz.ac.wgtn.swen225.lc.domain.level.tiles.ChipTile;
+import nz.ac.wgtn.swen225.lc.utils.Vector2D;
 
 import java.io.*;
-import java.util.ArrayList;
-import java.util.concurrent.CopyOnWriteArrayList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.util.stream.Collectors;
 
-public class Game extends Entity implements Serializable {
+public class Game extends Entity {
 
     public static final int FRAME_RATE = 10;
 
@@ -19,7 +18,7 @@ public class Game extends Entity implements Serializable {
     private int tickNo = 0;
     private boolean gameOver = false;
 
-    private transient List<GameEventListener> listeners = new CopyOnWriteArrayList<>();
+    private transient List<GameEventListener> listeners = new ArrayList<>();
     private transient List<GameEventListener> listenersToAdd = new ArrayList<>();
     private transient List<GameEventListener> listenersToRemove = new ArrayList<>();
 
@@ -32,16 +31,33 @@ public class Game extends Entity implements Serializable {
             throw new IllegalStateException("Game is over");
         }
 
+        // null check and handling
+        if (playerMovement == null) {
+            playerMovement = Vector2D.ZERO;
+        }
+        if (enemyMovementMap == null) {
+            enemyMovementMap = Map.of();
+        }
+        var emm = enemyMovementMap.entrySet().stream().collect(Collectors.toMap(
+                Map.Entry::getKey,
+                e -> e.getValue() != null ? e.getValue() : Vector2D.ZERO));
+
+        // update player position and enemy position if possible
         level.movePlayer(playerMovement);
-        enemyMovementMap.forEach(level::move);
+        emm.forEach(level::move);
         if (level.getEnemies().stream().anyMatch(e -> e.getPosition().equals(level.getPlayer().getPosition()))) {
             fire(new PlayerDiedEvent(level.getPlayer()));
         }
+
+        // update counters
+        tickNo++;
         if (tickNo % FRAME_RATE == 0) {
             fire(new CountDownEvent(getCountDown()));
         }
-        tickNo++;
         fire(new TickEvent(tickNo));
+        if (getCountDown() <= 0) {
+            fire(new TimeoutEvent());
+        }
 
         // To avoid java.util.ConcurrentModificationException
         listeners.removeAll(listenersToRemove);

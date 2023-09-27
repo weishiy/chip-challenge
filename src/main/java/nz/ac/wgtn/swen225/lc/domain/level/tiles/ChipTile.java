@@ -1,28 +1,43 @@
 package nz.ac.wgtn.swen225.lc.domain.level.tiles;
 
-import nz.ac.wgtn.swen225.lc.domain.events.ChipsPickedUpEvent;
+import nz.ac.wgtn.swen225.lc.domain.events.ChipPickedUpEvent;
+import nz.ac.wgtn.swen225.lc.domain.level.Level;
 import nz.ac.wgtn.swen225.lc.domain.level.characters.Player;
 import nz.ac.wgtn.swen225.lc.domain.level.items.Chip;
-import nz.ac.wgtn.swen225.lc.domain.Vector2D;
+import nz.ac.wgtn.swen225.lc.utils.Vector2D;
 
 public final class ChipTile extends Tile {
     private final Chip chip;
 
     public ChipTile(Vector2D position, Chip chip) {
-        super(position);
+        this(null, position, chip);
+    }
+
+    public ChipTile(Level level, Vector2D position, Chip chip) {
+        super(level, position);
         this.chip = chip;
     }
 
     @Override
     public boolean isEnterable(Player player) {
+        if (getLevel() == null || !getLevel().getTiles().contains(this)) {
+            throw new IllegalStateException("Stale tile being used!");
+        }
         return true;
     }
 
     @Override
     public void onEnter(Player player) {
+        if (getLevel() == null || !getLevel().getTiles().contains(this)) {
+            throw new IllegalStateException("Stale tile being used!");
+        }
+
         player.addChip(chip);
+
+        // remove this tile from the level
         getLevel().removeTile(this);
-        getGame().fire(new ChipsPickedUpEvent(this, player));
+        getGame().fire(new ChipPickedUpEvent(this, player));
+        setLevel(null);
     }
 
     @Override
