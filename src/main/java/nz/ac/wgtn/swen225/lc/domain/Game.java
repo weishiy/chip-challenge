@@ -17,7 +17,9 @@ public class Game extends Entity implements Serializable {
     private int tickNo = 0;
     private boolean gameOver = false;
 
-    private final transient List<GameEventListener> listeners = new ArrayList<>();
+    private transient List<GameEventListener> listeners = new ArrayList<>();
+    private transient List<GameEventListener> listenersToAdd = new ArrayList<>();
+    private transient List<GameEventListener> listenersToRemove = new ArrayList<>();
 
     public Game() {
         super();
@@ -48,6 +50,12 @@ public class Game extends Entity implements Serializable {
         }
         tickNo++;
         fire(new TickEvent(tickNo));
+
+        // To avoid java.util.ConcurrentModificationException
+        listeners.removeAll(listenersToRemove);
+        listenersToRemove.clear();
+        listeners.addAll(listenersToAdd);
+        listenersToAdd.clear();
     }
 
     public Level getLevel() {
@@ -96,4 +104,28 @@ public class Game extends Entity implements Serializable {
         return List.copyOf(listeners);
     }
 
+    public static Game deepCopyof(Game game) {
+        // make a deep copy with serialization
+        try (var bos = new ByteArrayOutputStream()) {
+            try (var oos = new ObjectOutputStream(bos)) {
+                oos.writeObject(game);
+                oos.flush();
+
+                var byteData = bos.toByteArray();
+                var bais = new ByteArrayInputStream(byteData);
+                return (Game) new ObjectInputStream(bais).readObject();
+            }
+        } catch (IOException | ClassNotFoundException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Serial
+    private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException {
+        in.defaultReadObject();
+        // As these lists are transient, we need to create them manually.
+        this.listeners = new ArrayList<>();
+        this.listenersToAdd = new ArrayList<>();
+        this.listenersToRemove = new ArrayList<>();
+    }
 }

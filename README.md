@@ -17,13 +17,38 @@ Gameplay
 
 <img alt="gameplay.png" src="src/site/images/gameplay.png" width="640">
 
+A Timer fires ticks every 1.0/Game.FRAME_RATE seconds:
+
+1. In each tick Application polls user/enemy inputs and sends them to Recorder for recording
+2. Application sends the inputs to GameEngine
+3. GameEngine updates Domain using those inputs
+4. Domain fires GameEvent(s) when its internal state changes. Renderer render(repaint) itself as needed when it receives
+   those events.
+5. GameEngine updates itself as needed when it receives those events.
+
 Replay
 
 <img alt="replay.png" src="src/site/images/replay.png" width="640" >
 
+A Timer fires ticks every 1.0/Game.FRAME_RATE (adjustable) seconds:
+
+1. In each tick Replayer gets user/enemy inputs from historical records and send them to GameEngine
+2. GameEngine updates Domain using those inputs
+3. Domain fires GameEvent(s) when its internal state changes. Renderer render(repaint) itself as needed when it receives
+   those events.
+4. GameEngine updates itself as needed when it receives those events.
+
 Fuzz Testing
 
 <img alt="fuzz_test.png" src="src/site/images/fuzz_test.png" width="640" >
+
+A Timer fires ticks:
+
+1. In each tick Fuzz generates a random player input and sends it to GameEngine
+2. GameEngine updates Domain using those inputs
+3. Domain fires GameEvent(s) when its internal state changes. Renderer render(repaint) itself as needed when it receives
+   those events.
+4. GameEngine updates itself as needed when it receives those events.
 
 ### Domain
 
@@ -85,7 +110,12 @@ GameEvent                   -> Parent class for all events
 
 ### Application
 
-Application is responsible for implement a GameEngine (and a ApplicationDebugger for Fuzz to work):
+Application is responsible for putting the system together. It renders application UI, handles menu events (keystrokes),
+initializes gameplays/replays and instantiates Persistence, Game, Renderer and Recorder to help with the processes, and
+schedule updates(ticks) for the gameplay.
+
+Application can implement a GameEngine interface. Then it, Recorder.Replayer and Fuzz can use it to update the game for
+gameplay/replay/fuzz testing respectively.
 
 ```
 GameEngine                    -> Represents a game engine. The most important methods in this interface are update(*) 
@@ -112,7 +142,118 @@ GameEngine                    -> Represents a game engine. The most important me
     Container getGlassPane(); -> Returns the glass pane. The game engine should layer a transparent (glass) pane on top 
                                  of the game window. This pane can be helpful in many cases, e.g. when game is paused, 
                                  grey out the game window and display "Paused".     
+```
 
+Here is how Application code can look like:
+
+Gameplay
+
+```
+public class Gameplay implements GameEventListener {
+    private Persistence persistence;
+    private Game game;
+    private GameEngine gameEngine;
+    private Recorder recorder;
+    private Timer timer;
+    
+    public Gameplay(int levelNo) {
+        persistence = new PersistenceImpl();
+        game = persistence.loadGame(levelNo);
+        gameEngine = new GameEngineImpl(game);
+        recorder = new RecorderImpl(persistence, game);
+       
+        timer = new Timer(1000 / Game.FRAME_RATE, e -> update());
+        
+        gameEngine.onStart();
+        recorder.onStart();
+        game.addListener(this);
+        bindKeyStrokes();
+        
+        timer.start();
+    }
+    
+    private void update() {
+        var enemyMovementMap = game.getLevel()
+                                   .getEnemies()
+                                   .stream()
+                                   .collect(Collectors.toMap(e -> e, Enemy::nextMove));
+        recorder.update(playerMovement, enemyMovementMap);
+        gameEngine.update(playerMovement, enemyMovementMap);
+        playerMovement = Vector2D.ZERO;
+    }
+    
+    
+    private void bindKeyStrokes() {
+        gameEngine.bindInputWithAction(
+                KeyStroke.getKeyStroke(KeyEvent.VK_LEFT, 0),
+                e -> playerMovement = Vector2D.LEFT);
+        gameEngine.bindInputWithAction(
+                KeyStroke.getKeyStroke(KeyEvent.VK_UP, 0),
+                e -> playerMovement = Vector2D.UP);
+        gameEngine.bindInputWithAction(
+                KeyStroke.getKeyStroke(KeyEvent.VK_RIGHT, 0),
+                e -> playerMovement = Vector2D.RIGHT);
+        gameEngine.bindInputWithAction(
+                KeyStroke.getKeyStroke(KeyEvent.VK_DOWN, 0),
+                e -> playerMovement = Vector2D.DOWN);
+    }
+
+    private void unbindKeyStrokes() {
+        gameEngine.unbindInputWithAction(KeyStroke.getKeyStroke(KeyEvent.VK_LEFT, 0));
+        gameEngine.unbindInputWithAction(KeyStroke.getKeyStroke(KeyEvent.VK_UP, 0));
+        gameEngine.unbindInputWithAction(KeyStroke.getKeyStroke(KeyEvent.VK_RIGHT, 0));
+        gameEngine.unbindInputWithAction(KeyStroke.getKeyStroke(KeyEvent.VK_DOWN, 0));
+    }
+    
+    @Override
+    public void onGameEvent(GameEvent gameEvent) {
+        if (gameEvent instanceof GameOverEvent g) {
+            unbindKeyStrokes();
+        
+            timer.stop();
+            game.removeListener(this);
+            recorder.onDestroy();
+            gameEngine.onDestroy();
+        }
+    }
+}
+```
+
+Replay
+
+```
+public class Replay implements GameEventListener {
+    private Game game;
+    private GameEngine gameEngine;
+    private Recorder recorder;
+    private Timer timer;
+    
+    public Replay(File file) {
+        var playback = (new PersistenceImpl()).loadPlayback(file);
+        game = playback.getSince();
+        gameEngine = new GameEngineImpl(game);
+        replayer = new ReplayerImpl(gameEngine, playback);  // ReplayerImpl is class of Recorder module. 
+        
+        gameEngine.onStart();
+        // replayer has an internal timer which updates gameEngine afterwards.
+        replayer.onStart();
+        game.addListener(this);
+    }
+    
+    @Override
+    public void onGameEvent(GameEvent gameEvent) {
+        if (gameEvent instanceof GameOverEvent g) {
+            game.removeListener(this);
+            replayer.onDestroy();
+            gameEngine.onDestroy();
+        }
+    }
+}
+```
+
+It also needs to implement ApplicationDebugger for Fuzz to create a new game in debug mode and get the engine.
+
+```
 ApplicationDebugger           -> Application itself should implement this interface. During testing, Fuzz will create
                                  the application using application's constructor and then starts a new game in debug 
                                  mode.
@@ -120,31 +261,6 @@ ApplicationDebugger           -> Application itself should implement this interf
                               -> Starts a new game at provided level in debug mode. In debug mode, application does not
                                  schedule game updates, i.e. does not "tick". 
 ```
-
-It is also responsible for putting the system together:
-
-E.g. During a gameplay:
-
-* Create an instance of Persistence class (from persistence module)
-* Use above object's newGame(\*)/loadGame(\*) to create a Game (from domain module) object
-* Create GameWindow class (from renderer module) object and Recorder class (from recorder module) as needed, and set up 
-  their members properly: Renderer needs Game as a member, Recorder needs Game and Persistence object as members
-* Holds a java.awt.Timer for scheduling game updates (ticks): In each tick, collect player and enemy inputs and feed 
-  Game with those inputs via Game.update(*)
-* ...
-
-Have a look of the interfaces provided by other modules. They should be sufficient for application to work in full.
-
-IMPORTANT At the beginning of a gameplay/replay, Application needs to give Recorder object and GameWindow object created above a
-chance to prepare themselves for the show by calling:
-
-* Recorder.onStart()
-* GameWindow.setEnabled(true)
-
-And at the end, allow them to clean up themselves by calling:
-
-* Recorder.onDestory()
-* GameWindow.setEnabled(false)
 
 ### Renderer
 
