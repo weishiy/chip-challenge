@@ -4,6 +4,7 @@ import nz.ac.wgtn.swen225.lc.domain.Game;
 import nz.ac.wgtn.swen225.lc.domain.events.GameEvent;
 import nz.ac.wgtn.swen225.lc.domain.events.GameEventListener;
 import nz.ac.wgtn.swen225.lc.domain.events.TickEvent;
+import nz.ac.wgtn.swen225.lc.renderer.maze.ResizeableMaze;
 
 import javax.swing.*;
 import java.awt.*;

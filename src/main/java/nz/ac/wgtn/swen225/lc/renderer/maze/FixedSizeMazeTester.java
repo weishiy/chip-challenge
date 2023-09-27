@@ -1,4 +1,6 @@
-package nz.ac.wgtn.swen225.lc.renderer;
+package nz.ac.wgtn.swen225.lc.renderer.maze;
+
+import nz.ac.wgtn.swen225.lc.renderer.TestingLevels;
 
 import javax.swing.*;
 import java.awt.*;
@@ -8,7 +10,6 @@ import java.awt.*;
  */
 public final class FixedSizeMazeTester {
 
-    public static final int INITIAL_TILE_LENGTH = 50;
 
     private FixedSizeMazeTester() { //empty
     }
@@ -46,7 +47,7 @@ public final class FixedSizeMazeTester {
             {
                 var label = new JLabel("Set Tile Length: ");
                 add(label);
-                var field = new JFormattedTextField(INITIAL_TILE_LENGTH);
+                var field = new JFormattedTextField(0);
                 field.addPropertyChangeListener("value",
                         e -> maze.setTileLength((Integer) field.getValue()));
                 add(field);

@@ -16,7 +16,7 @@ import java.util.function.BiFunction;
 /**
  * Helper interface for making tiles for the maze.
  */
-interface Sprites {
+public interface Sprites {
     /**
      * Creates a board representing the tiles in the level.
      *
@@ -122,16 +122,21 @@ interface Sprites {
         /**
          * The image representing the player.
          */
-        private Image currentImage = DEFAULT_PLAYER_IMAGE;
+        private Image currentImage = DEFAULT_PLAYER_IMAGE; //FIXME: non-serializable
 
-        PlayerComponent(final Player player) {
-            this.player = player;
+        /**
+         * Constructor.
+         *
+         * @param player The player to reference.
+         */
+        public PlayerComponent(final Player player) {
+            this.player = player; //FIXME: externally mutable
 
         }
 
 
         @Override
-        protected Image getCurrentImage() {
+        protected final Image getCurrentImage() {
             return currentImage;
         }
 
@@ -168,11 +173,14 @@ interface Sprites {
             }
         };
 
+        /**
+         * Reference to the enemy.
+         */
         private final Enemy enemy;
-        private Image currentImage = DEFAULT_ENEMY_IMAGE;
+        private Image currentImage = DEFAULT_ENEMY_IMAGE; //FIXME: non-serializable
 
-        EnemyComponent(final Enemy enemy) {
-            this.enemy = enemy;
+        public EnemyComponent(final Enemy enemy) {
+            this.enemy = enemy; //FIXME: externally mutable
             //TODO:stub
         }
 

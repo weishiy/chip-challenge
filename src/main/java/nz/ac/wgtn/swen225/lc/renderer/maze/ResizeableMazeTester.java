@@ -1,4 +1,6 @@
-package nz.ac.wgtn.swen225.lc.renderer;
+package nz.ac.wgtn.swen225.lc.renderer.maze;
+
+import nz.ac.wgtn.swen225.lc.renderer.TestingLevels;
 
 import javax.swing.*;
 import java.awt.*;
@@ -31,23 +33,6 @@ public final class ResizeableMazeTester {
             final var minDimension = new Dimension(100, 100);
             mazeFrame.setMinimumSize(minDimension);
             mazeFrame.setVisible(true);
-
-//Removed code since resizeable maze can't be resized by tile length anymore.
-//            var controlFrame = new JFrame();
-//            var setTileLength = new JPanel() {
-//                {
-//                    var label = new JLabel("Set Tile Length: ");
-//                    add(label);
-//                    var field = new JFormattedTextField(50);
-//                    field.addPropertyChangeListener("value",
-//                            e -> maze.setTileLength((Integer) field.getValue()));
-//                    add(field);
-//                }
-//            };
-//            controlFrame.add(setTileLength);
-//            controlFrame.pack();
-//
-//            controlFrame.setVisible(true);
         });
     }
 

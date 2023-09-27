@@ -1,4 +1,4 @@
-package nz.ac.wgtn.swen225.lc.renderer;
+package nz.ac.wgtn.swen225.lc.renderer.maze;
 
 import java.awt.*;
 
@@ -9,10 +9,19 @@ import java.awt.*;
  */
 public class FixedSizeMaze extends ResizeableMaze {
 
-    public static final int DEFAULT_TILE_LENGTH = 50;
+    /**
+     * Default size of the tile.
+     */
+    private static final int DEFAULT_TILE_LENGTH = 50;
 
+    /**
+     * Length of a tile's side, in pixels.
+     */
     private int tileLength = DEFAULT_TILE_LENGTH;
 
+    /**
+     * Internally used to decide when size can be set.
+     */
     private boolean canSetSize = false;
 
     private void assertCanSetSize() {

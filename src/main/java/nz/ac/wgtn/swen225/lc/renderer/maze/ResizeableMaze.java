@@ -1,9 +1,10 @@
-package nz.ac.wgtn.swen225.lc.renderer;
+package nz.ac.wgtn.swen225.lc.renderer.maze;
 
 import nz.ac.wgtn.swen225.lc.domain.Vector2D;
 import nz.ac.wgtn.swen225.lc.domain.level.Level;
 import nz.ac.wgtn.swen225.lc.domain.level.characters.Enemy;
 import nz.ac.wgtn.swen225.lc.domain.level.characters.Player;
+import nz.ac.wgtn.swen225.lc.renderer.Sprites;
 
 import javax.swing.*;
 import java.awt.*;
@@ -17,7 +18,7 @@ import java.util.Set;
 /**
  * Renders the tiles and characters on a level.
  */
-class ResizeableMaze extends JLayeredPane {
+public class ResizeableMaze extends JLayeredPane {
 
     /**
      * Layer which contains tiles, not entities.
@@ -36,7 +37,7 @@ class ResizeableMaze extends JLayeredPane {
     /**
      * Constructor.
      */
-    ResizeableMaze() {
+    public ResizeableMaze() {
         setLayer(board, 1);
         add(board);
 
