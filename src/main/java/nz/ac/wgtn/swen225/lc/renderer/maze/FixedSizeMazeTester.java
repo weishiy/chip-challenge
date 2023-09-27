@@ -30,6 +30,8 @@ public final class FixedSizeMazeTester {
             maze.setLevel(new TestingLevels.LevelA());
             mazeFrame.add(maze);
 
+            final int delay = 1000 / 120;
+            new Timer(delay, e -> maze.render()).start();
 
             final var minDimension = new Dimension(100, 100);
             mazeFrame.setMinimumSize(minDimension);

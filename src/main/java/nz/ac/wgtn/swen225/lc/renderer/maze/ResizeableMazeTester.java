@@ -33,6 +33,10 @@ public final class ResizeableMazeTester {
             final var minDimension = new Dimension(100, 100);
             mazeFrame.setMinimumSize(minDimension);
             mazeFrame.setVisible(true);
+
+            final int delay = 1000 / 120;
+
+            new Timer(delay, e -> maze.render()).start();
         });
     }
 

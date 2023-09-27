@@ -7,6 +7,6 @@
 | Recorder    | nz.ac.wgtn.swen225.lc.recorder.DefaultRecorder             | 48       |
 | Domain      | nz.ac.wgtn.swen225.lc.domain.Game                          | 30, 43   |
 | Renderer    | nz.ac.wgtn.swen225.lc.renderer.GameWindow                  | 120      |
-|             | nz.ac.wgtn.swen225.lc.renderer.Sprites                     | 27       |
+|             | nz.ac.wgtn.swen225.lc.renderer.maze.TileMaker              | 27       |
 
 

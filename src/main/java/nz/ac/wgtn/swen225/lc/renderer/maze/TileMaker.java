@@ -1,4 +1,4 @@
-package nz.ac.wgtn.swen225.lc.renderer;
+package nz.ac.wgtn.swen225.lc.renderer.maze;
 
 import nz.ac.wgtn.swen225.lc.domain.Vector2D;
 import nz.ac.wgtn.swen225.lc.domain.level.Level;
@@ -8,15 +8,47 @@ import nz.ac.wgtn.swen225.lc.domain.level.tiles.Tile;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent;
 import java.awt.image.BufferedImage;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
+import java.util.WeakHashMap;
 import java.util.function.BiFunction;
 
 /**
  * Helper interface for making tiles for the maze.
  */
-public interface Sprites {
+final class TileMaker {
+
+    //Memoization caches function calls, to avoid repeating calculations while keeping functional
+    // orientation. Without memoization, some of these entities appear to flicker.
+    /**
+     * Stores references to scaled images.
+     *
+     * @see #makeSprite(Image)
+     */
+    private static final Map<ImageScaleMemoize, Icon> memoizeIcon = new WeakHashMap<>();
+
+    /**
+     * Stores references to players.
+     *
+     * @see #makePlayer(PlayerInfo)
+     */
+    private static final Map<PlayerInfo, JComponent> memoizePlayer = new WeakHashMap<>();
+
+    /**
+     * Stores references to enemies.
+     *
+     * @see #makeEnemy(EnemyInfo)
+     */
+    private static final Map<EnemyInfo, JComponent> memoizeEnemy = new WeakHashMap<>();
+
+    private TileMaker() {
+        //empty
+    }
+
     /**
      * Creates a board representing the tiles in the level.
      *
@@ -33,7 +65,7 @@ public interface Sprites {
                     return position.x() == x && position.y() == y;
                 })
                 //If tile present, calls `makeTile`, else, calls `emptyTile`.
-                .findFirst().map(Sprites::makeTile).orElseGet(Sprites::emptyTile);
+                .findFirst().map(TileMaker::makeTile).orElseGet(TileMaker::emptyTile);
 
         int width = level.getWidth();
         int height = level.getHeight();
@@ -60,7 +92,7 @@ public interface Sprites {
      *                                  <code>Tile</code>.
      * @throws NullPointerException     If <code>tile</code> is null.
      */
-    static JComponent makeTile(Tile tile) throws IllegalArgumentException {
+    private static JComponent makeTile(final Tile tile) throws IllegalArgumentException {
         Objects.requireNonNull(tile);
         //TODO: Stub, final version should assign the label the image associated with the Tile.
         return new JLabel(tile.getClass().getSimpleName()) {
@@ -76,7 +108,7 @@ public interface Sprites {
      *
      * @return A component representing an empty tile.
      */
-    static JComponent emptyTile() {
+    private static JComponent emptyTile() {
         //TODO: add image
         return new JLabel() {
             {
@@ -85,21 +117,63 @@ public interface Sprites {
         };
     }
 
+    static JComponent makePlayer(final PlayerInfo playerInfo) {
+        return memoizePlayer.computeIfAbsent(playerInfo,
+                p -> makeSprite(DefaultImages.DEFAULT_PLAYER_IMAGE));
+    }
 
-    /**
-     * A component that represents the player.
-     */
-    class PlayerComponent extends EntityComponent {
+    static JComponent makeEnemy(final EnemyInfo enemyInfo) {
+        return memoizeEnemy.computeIfAbsent(enemyInfo,
+                e -> makeSprite(DefaultImages.DEFAULT_ENEMY_IMAGE));
+    }
+
+    private static JComponent makeSprite(final Image image) {
+        return new JLabel() {
+            {
+                addComponentListener(new ComponentAdapter() {
+                    @Override
+                    public void componentResized(final ComponentEvent e) {
+                        updateIcon();
+                    }
+                });
+                updateIcon();
+            }
+
+            private void updateIcon() {
+                if (getWidth() <= 0 || getHeight() <= 0) {
+                    return; //Can't scale image if 0 dimensions.
+                }
+                Icon scaledIcon = memoizeIcon.computeIfAbsent(
+                        new ImageScaleMemoize(image, getWidth(), getHeight()), r -> new ImageIcon(
+                                r.notScaled().getScaledInstance(getWidth(), getHeight(),
+                                        Image.SCALE_FAST)));
+
+                setIcon(scaledIcon);
+            }
+        };
+    }
+
+    record ImageScaleMemoize(Image notScaled, int width, int height) {
+    }
+
+    record EnemyInfo(Enemy enemy) {
+
+    }
+
+    record PlayerInfo(Player player) {
+
+    }
+
+    private record DefaultImages() {
         /**
-         * Size of the default image.
+         * Size of our default images.
          */
-        private static final int DEFAULT_SIZE = 480;
-        //TODO: Image made manually, should be taken from file
+        private static final int IMAGE_SIZE = 480;
         /**
-         * Default image.
+         * The default image representing a player.
          */
-        private static final Image DEFAULT_PLAYER_IMAGE = new BufferedImage(DEFAULT_SIZE,
-                DEFAULT_SIZE, BufferedImage.TYPE_INT_ARGB) {
+        private static final Image DEFAULT_PLAYER_IMAGE = new BufferedImage(IMAGE_SIZE, IMAGE_SIZE,
+                BufferedImage.TYPE_INT_ARGB) {
             public static final int VERTICAL_BORDER = 30; // /1/16
             public static final int HORIZONTAL_BORDER = 60; // 2/16
 
@@ -107,52 +181,14 @@ public interface Sprites {
                 Graphics2D g2d = createGraphics();
                 g2d.setColor(Color.YELLOW);
 
-                g2d.fillOval(HORIZONTAL_BORDER, VERTICAL_BORDER,
-                        DEFAULT_SIZE - 2 * HORIZONTAL_BORDER, DEFAULT_SIZE - 2 * VERTICAL_BORDER);
+                g2d.fillOval(HORIZONTAL_BORDER, VERTICAL_BORDER, IMAGE_SIZE - 2 * HORIZONTAL_BORDER,
+                        IMAGE_SIZE - 2 * VERTICAL_BORDER);
 
                 g2d.dispose();
             }
         };
-
-
         /**
-         * The player being represented.
-         */
-        private final Player player;
-        /**
-         * The image representing the player.
-         */
-        private Image currentImage = DEFAULT_PLAYER_IMAGE; //FIXME: non-serializable
-
-        /**
-         * Constructor.
-         *
-         * @param player The player to reference.
-         */
-        public PlayerComponent(final Player player) {
-            this.player = player; //FIXME: externally mutable
-
-        }
-
-
-        @Override
-        protected final Image getCurrentImage() {
-            return currentImage;
-        }
-
-        @Override
-        public void update() {
-
-        }
-    }
-
-    class EnemyComponent extends EntityComponent {
-        /**
-         * Length of default image.
-         */
-        private static final int IMAGE_SIZE = 480;
-        /**
-         * Default enemy image.
+         * The default image representing an enemy.
          */
         private static final Image DEFAULT_ENEMY_IMAGE = new BufferedImage(IMAGE_SIZE, IMAGE_SIZE,
                 BufferedImage.TYPE_INT_ARGB) {
@@ -172,30 +208,5 @@ public interface Sprites {
                 g2d.dispose();
             }
         };
-
-        /**
-         * Reference to the enemy.
-         */
-        private final Enemy enemy;
-        private Image currentImage = DEFAULT_ENEMY_IMAGE; //FIXME: non-serializable
-
-        public EnemyComponent(final Enemy enemy) {
-            this.enemy = enemy; //FIXME: externally mutable
-            //TODO:stub
-        }
-
-
-        @Override
-        protected Image getCurrentImage() {
-            return currentImage;
-        }
-
-        /**
-         * Interrogates the player's state to see if it should change.
-         */
-        @Override
-        public void update() {
-            //TODO: stub
-        }
     }
 }
