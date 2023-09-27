@@ -1,6 +1,7 @@
 package nz.ac.wgtn.swen225.lc.domain.level.tiles;
 
-import nz.ac.wgtn.swen225.lc.domain.Vector2D;
+import nz.ac.wgtn.swen225.lc.domain.level.Level;
+import nz.ac.wgtn.swen225.lc.utils.Vector2D;
 import nz.ac.wgtn.swen225.lc.domain.events.InfoFieldPressedEvent;
 import nz.ac.wgtn.swen225.lc.domain.events.InfoFieldReleasedEvent;
 import nz.ac.wgtn.swen225.lc.domain.level.characters.Player;
@@ -10,7 +11,11 @@ public final class InfoField extends Tile {
     private boolean active = false;
 
     public InfoField(Vector2D position) {
-        super(position);
+        this(null, position);
+    }
+
+    public InfoField(Level level, Vector2D position) {
+        super(level, position);
     }
 
     @Override

@@ -2,15 +2,20 @@ package nz.ac.wgtn.swen225.lc.domain.level.tiles;
 
 import nz.ac.wgtn.swen225.lc.domain.events.DockUnlockedEvent;
 import nz.ac.wgtn.swen225.lc.domain.events.KeyConsumedEvent;
+import nz.ac.wgtn.swen225.lc.domain.level.Level;
 import nz.ac.wgtn.swen225.lc.domain.level.characters.Player;
 import nz.ac.wgtn.swen225.lc.domain.level.items.Key;
-import nz.ac.wgtn.swen225.lc.domain.Vector2D;
+import nz.ac.wgtn.swen225.lc.utils.Vector2D;
 
 public final class LockedDoor extends Tile {
     private final Key.Color color;
 
     public LockedDoor(Vector2D position, Key.Color color) {
-        super(position);
+        this(null, position, color);
+    }
+
+    public LockedDoor(Level level, Vector2D position, Key.Color color) {
+        super(level, position);
         this.color = color;
     }
 
@@ -34,9 +39,8 @@ public final class LockedDoor extends Tile {
         getGame().fire(new KeyConsumedEvent(matchingKey));
         // remove this tile from the level
         getLevel().removeTile(this);
-        setLevel(null);
-
         getGame().fire(new DockUnlockedEvent(this, player));
+        setLevel(null);
     }
 
     @Override

@@ -1,6 +1,6 @@
 package nz.ac.wgtn.swen225.lc.recorder;
 
-import nz.ac.wgtn.swen225.lc.domain.Vector2D;
+import nz.ac.wgtn.swen225.lc.utils.Vector2D;
 import nz.ac.wgtn.swen225.lc.domain.level.characters.Enemy;
 
 import java.io.Serializable;

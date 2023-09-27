@@ -4,6 +4,7 @@ import nz.ac.wgtn.swen225.lc.domain.events.*;
 import nz.ac.wgtn.swen225.lc.domain.level.Level;
 import nz.ac.wgtn.swen225.lc.domain.level.characters.Enemy;
 import nz.ac.wgtn.swen225.lc.domain.level.tiles.ChipTile;
+import nz.ac.wgtn.swen225.lc.utils.Vector2D;
 
 import java.io.*;
 import java.util.*;
@@ -31,8 +32,12 @@ public class Game extends Entity implements Serializable {
         }
 
         // null check and handling
-        if (playerMovement == null) { playerMovement = Vector2D.ZERO; }
-        if (enemyMovementMap == null) { enemyMovementMap = Map.of(); }
+        if (playerMovement == null) {
+            playerMovement = Vector2D.ZERO;
+        }
+        if (enemyMovementMap == null) {
+            enemyMovementMap = Map.of();
+        }
         var emm = enemyMovementMap.entrySet().stream().collect(Collectors.toMap(
                 Map.Entry::getKey,
                 e -> e.getValue() != null ? e.getValue() : Vector2D.ZERO));
@@ -45,11 +50,14 @@ public class Game extends Entity implements Serializable {
         }
 
         // update counters
+        tickNo++;
         if (tickNo % FRAME_RATE == 0) {
             fire(new CountDownEvent(getCountDown()));
         }
-        tickNo++;
         fire(new TickEvent(tickNo));
+        if (getCountDown() <= 0) {
+            fire(new TimeoutEvent());
+        }
 
         // To avoid java.util.ConcurrentModificationException
         listeners.removeAll(listenersToRemove);

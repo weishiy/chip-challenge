@@ -93,7 +93,7 @@ GameEvent                   -> Parent class for all events
     PlayerMovedEvent        -> Fires when position of the player changed
     EnemyMovedEvent         -> Fires when position of an enemy changed
     KeyPickedUpEvent        -> Fires when a key is picked up by a player
-    ChipsPickedUpEvent      -> Fires when a chip is picked up by a player
+    ChipPickedUpEvent       -> Fires when a chip is picked up by a player
     DockUnlockedEvent       -> Fires when a door is unlocked
     ExitLockUnlockedEvent   -> Fires when the exit lock is unlocked
     InfoFieldPressedEvent   -> Fires when player entered a info field 
