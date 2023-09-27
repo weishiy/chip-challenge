@@ -4,12 +4,9 @@ import nz.ac.wgtn.swen225.lc.domain.Game;
 import nz.ac.wgtn.swen225.lc.domain.events.GameEvent;
 import nz.ac.wgtn.swen225.lc.domain.events.GameEventListener;
 import nz.ac.wgtn.swen225.lc.domain.events.TickEvent;
-import nz.ac.wgtn.swen225.lc.domain.level.Level;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ComponentAdapter;
-import java.awt.event.ComponentEvent;
 
 
 /**
@@ -18,7 +15,7 @@ import java.awt.event.ComponentEvent;
  * <p>To use the Renderer module, construct this object, introduce it into your Swing or AWT
  * hierarchy, and then enable it with <code>setEnabled</code>.
  */
-public class GameWindow extends JPanel implements GameEventListener {
+public final class GameWindow extends JPanel implements GameEventListener {
     /**
      * Main domain object to query.
      */
@@ -27,7 +24,7 @@ public class GameWindow extends JPanel implements GameEventListener {
     /**
      * Shows the entire level.
      */
-    private final Maze maze = new Maze();
+    private final ResizeableMaze maze = new ResizeableMaze();
 
     /**
      * Constructor.
@@ -37,21 +34,12 @@ public class GameWindow extends JPanel implements GameEventListener {
      * @param game The game world to be rendered.
      */
     public GameWindow(final Game game) {
-//        setDebugGraphicsOptions(DebugGraphics.LOG_OPTION);
         setLayout(new BorderLayout());
-        this.game = game;
+        this.game = game; //FIXME: Vulnerable to EI_EXPOSE_REP2, but solution is non-obvious.
         setEnabled(false);
 
 
         add(maze, BorderLayout.CENTER);
-
-        addComponentListener(new ComponentAdapter() {
-            @Override
-            public void componentResized(ComponentEvent e) {
-                fitMaze();
-            }
-        });
-        //TODO:stub
     }
 
     /**
@@ -63,19 +51,6 @@ public class GameWindow extends JPanel implements GameEventListener {
     public GameWindow(final Game game, final int windowSize) {
         this(game);
         setPreferredSize(new Dimension(windowSize, windowSize));
-    }
-
-    private void fitMaze() {
-        Level level = game.getLevel();
-
-        int xRatio = getWidth() / level.getWidth();
-        int yRatio = getHeight() / level.getHeight();
-
-        int tileLength = Math.min(xRatio, yRatio);
-
-        if (tileLength > 0) {
-            maze.setTileLength(tileLength);
-        }
     }
 
     /**

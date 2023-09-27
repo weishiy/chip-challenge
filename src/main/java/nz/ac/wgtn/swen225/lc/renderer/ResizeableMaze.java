@@ -17,12 +17,8 @@ import java.util.Set;
 /**
  * Renders the tiles and characters on a level.
  */
-class Maze extends JLayeredPane {
+class ResizeableMaze extends JLayeredPane {
 
-    /**
-     * By default, the length we set our tiles.
-     */
-    private static final int DEFAULT_TILE_LENGTH = 50;
     /**
      * Layer which contains tiles, not entities.
      */
@@ -36,16 +32,11 @@ class Maze extends JLayeredPane {
      * The level this maze is rendering.
      */
     private Level level;
-    /**
-     * The length of a square tile. Changing this acts like a "zoom" feature, making the maze bigger
-     * or smaller.
-     */
-    private int tileLength = DEFAULT_TILE_LENGTH;
 
     /**
      * Constructor.
      */
-    Maze() {
+    ResizeableMaze() {
         setLayer(board, 1);
         add(board);
 
@@ -55,27 +46,9 @@ class Maze extends JLayeredPane {
         addComponentListener(new ComponentAdapter() {
             @Override
             public void componentResized(final ComponentEvent e) {
-                board.setSize(getSize());
-                entities.setSize(getSize());
+                render();
             }
         });
-    }
-
-    /**
-     * Sets the tile length.
-     *
-     * <p>The tile length determines the size of the overall maze, and setting it changes how
-     * large the maze appears.
-     *
-     * @param tileLength The new length.
-     * @throws IllegalArgumentException If <code>tileLength</code> isn't positive.
-     */
-    public void setTileLength(final int tileLength) throws IllegalArgumentException {
-        if (tileLength <= 0) {
-            throw new IllegalArgumentException("`tileLength` must be positive.");
-        }
-        this.tileLength = tileLength;
-        render();
     }
 
     /**
@@ -95,16 +68,25 @@ class Maze extends JLayeredPane {
      * tiles.
      */
     public void render() {
-        if (level != null) {
-            //Grows to fit tiles
-            int width = tileLength * level.getWidth();
-            int height = tileLength * level.getHeight();
-            //FIXME: Removed since automatically resized to fit into GameWindow 2023-09-25
-            //setSize(width, height);
-
-        }
         board.render();
         entities.render();
+    }
+
+    private int getTileLength() {
+        assert level != null;
+        int ratioX = getWidth() / level.getWidth();
+        int ratioY = getHeight() / level.getHeight();
+        return Math.min(ratioX, ratioY);
+        //To fit inside size, choose lower of fitting ratios.
+    }
+
+    /*
+     * Returns restricted size of maze to keep each tile square.
+     */
+    private Dimension getCroppedSize() {
+        assert level != null;
+        return new Dimension(level.getWidth() * getTileLength(),
+                level.getHeight() * getTileLength());
     }
 
     /**
@@ -130,15 +112,19 @@ class Maze extends JLayeredPane {
          * tiles.
          */
         public void render() {
-            removeAll();
-
-            addTiles();
+            if (level != null) {
+                setSize(getCroppedSize());
+            }
+            updateTiles();
         }
 
         /*
          * Adds tiles to this panel.
          */
-        private void addTiles() {
+        private void updateTiles() {
+            removeAll();
+
+
             if (level != null) {
                 int rows = level.getHeight();
                 int columns = level.getWidth();
@@ -150,26 +136,25 @@ class Maze extends JLayeredPane {
                 assert tiles.length == columns;
                 assert tiles[0].length == rows;
 
+                int tileLength = getTileLength();
+
                 //GridLayout fills rows then columns
                 for (int y = 0; y < rows; ++y) {
                     for (int x = 0; x < columns; ++x) {
                         JComponent tile = tiles[x][y];
+                        tile.setMaximumSize(new Dimension(tileLength, tileLength));
                         tile.setSize(tileLength, tileLength);
                         add(tile);
                     }
                 }
 
-                revalidate();
+                revalidate(); //Inserted tiles, changed layout
             }
         }
     }
 
     /**
      * Renders entities, such as players and enemies.
-     *
-     * <p>Unlike tiles, entities must be persistent (to ensure smooth animations), so instead of
-     * the remove-all-then-add-again strategy, we check to see if an entity is gone before
-     * removing.
      */
     private class MazeEntities extends JPanel {
         /**
@@ -216,6 +201,8 @@ class Maze extends JLayeredPane {
                 return;
             }
 
+            setSize(getCroppedSize());
+
             final Player newPlayer = level.getPlayer();
             final Set<Enemy> newEnemies = Set.copyOf(level.getEnemies());
 
@@ -224,19 +211,19 @@ class Maze extends JLayeredPane {
             checkEnemies(newEnemies);
 
             if (player != null) {
-                playerComponent.setBounds(makeBounds(player.getPosition(), tileLength));
+                playerComponent.setBounds(makeBounds(player.getPosition(), getTileLength()));
                 playerComponent.onResize();
                 add(playerComponent);
             }
 
             for (var entry : enemyComponents.entrySet()) {
                 Sprites.EnemyComponent component = entry.getValue();
-                component.setBounds(makeBounds(entry.getKey().getPosition(), tileLength));
+                component.setBounds(makeBounds(entry.getKey().getPosition(), getTileLength()));
                 component.onResize();
                 add(component);
             }
 
-            revalidate();
+            revalidate(); //Inserted/removed elements
         }
 
         /**
