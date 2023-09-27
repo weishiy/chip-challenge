@@ -103,7 +103,7 @@ public class SerializationTest {
         level.addTile(new Wall(new Vector2D(6, 1)));
         // row 2
         IntStream.range(0, 9).filter(i -> i != 3).forEach(i -> level.addTile(new Wall(new Vector2D(i, 2))));
-        level.addTile(new InfoField(new Vector2D(3, 2)));
+        level.addTile(new InfoField(new Vector2D(3, 2), "A tip"));
         // row 3
         level.addTile(new Wall(new Vector2D(0, 3)));
         level.addTile(new Wall(new Vector2D(2, 3)));

@@ -10,7 +10,7 @@ import java.io.*;
 import java.util.*;
 import java.util.stream.Collectors;
 
-public class Game extends Entity implements Serializable {
+public class Game extends Entity {
 
     public static final int FRAME_RATE = 10;
 

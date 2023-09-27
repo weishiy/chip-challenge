@@ -7,15 +7,16 @@ import nz.ac.wgtn.swen225.lc.domain.events.InfoFieldReleasedEvent;
 import nz.ac.wgtn.swen225.lc.domain.level.characters.Player;
 
 public final class InfoField extends Tile {
-    private String message;
+    private final String message;
     private boolean active = false;
 
-    public InfoField(Vector2D position) {
-        this(null, position);
+    public InfoField(Vector2D position, String message) {
+        this(null, position, message);
     }
 
-    public InfoField(Level level, Vector2D position) {
+    public InfoField(Level level, Vector2D position, String message) {
         super(level, position);
+        this.message = message;
     }
 
     @Override

@@ -37,7 +37,7 @@ public class TestingLevels {
             addTile(w(3, 1));
 
             addTile(new Exit(new Vector2D(1, 3)));
-            addTile(new InfoField(new Vector2D(2, 3)));
+            addTile(new InfoField(new Vector2D(2, 3), "A tip"));
             addTile(new LockedDoor(new Vector2D(3, 3), Key.Color.BLUE));
 
             setPlayer(new Player(v(2, 2)));
@@ -58,7 +58,7 @@ public class TestingLevels {
 
             for (int y = 0; y < HEIGHT; ++y) {
                 addTile(w(15, y));
-                addTile(new InfoField(v(0, y)));
+                addTile(new InfoField(v(0, y), "A tip"));
             }
 
             addTile(new Exit(v(3, 5)));

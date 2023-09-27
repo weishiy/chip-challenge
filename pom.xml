@@ -89,6 +89,9 @@
                         <groupId>com.github.spotbugs</groupId>
                         <artifactId>spotbugs-maven-plugin</artifactId>
                         <version>4.7.3.5</version>
+                        <configuration>
+                            <excludeFilterFile>src/main/resources/spotbugs-exclude.xml</excludeFilterFile>
+                        </configuration>
                         <executions>
                             <execution>
                                 <id>check</id>
@@ -126,12 +129,23 @@
                                         <rule>
                                             <element>CLASS</element>
                                             <includes>
-                                                <include>nz.ac.wgtn.swen225.lc.domain.*</include>
+                                                <include>nz.ac.wgtn.swen225.lc.domain.level.characters.Player</include>
                                             </includes>
-<!--                                            <excludes>-->
-<!--                                                <exclude>nz.ac.wgtn.swen225.lc.app.*</exclude>-->
-<!--                                                <exclude>nz.ac.wgtn.swen225.lc.renderer.*</exclude>-->
-<!--                                            </excludes>-->
+                                            <limits>
+                                                <limit>
+                                                    <counter>LINE</counter>
+                                                    <value>COVEREDRATIO</value>
+                                                    <minimum>0.75</minimum>
+                                                </limit>
+                                            </limits>
+                                        </rule>
+                                        <rule>
+                                            <element>CLASS</element>
+                                            <excludes>
+                                                <exclude>nz.ac.wgtn.swen225.lc.app.*</exclude>
+                                                <exclude>nz.ac.wgtn.swen225.lc.renderer.*</exclude>
+                                                <exclude>nz.ac.wgtn.swen225.lc.domain.level.characters.Player</exclude>
+                                            </excludes>
                                             <limits>
                                                 <limit>
                                                     <counter>LINE</counter>
