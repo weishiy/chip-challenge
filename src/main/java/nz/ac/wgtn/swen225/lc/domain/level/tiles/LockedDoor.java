@@ -1,6 +1,7 @@
 package nz.ac.wgtn.swen225.lc.domain.level.tiles;
 
 import nz.ac.wgtn.swen225.lc.domain.events.DockUnlockedEvent;
+import nz.ac.wgtn.swen225.lc.domain.events.KeyConsumedEvent;
 import nz.ac.wgtn.swen225.lc.domain.level.characters.Player;
 import nz.ac.wgtn.swen225.lc.domain.level.items.Key;
 import nz.ac.wgtn.swen225.lc.domain.Vector2D;
@@ -30,6 +31,7 @@ public final class LockedDoor extends Tile {
         var matchingKey = player.getKeys().stream().filter(k -> k.getColor() == color).findAny().orElse(null);
         assert matchingKey != null;
         player.removeKey(matchingKey);
+        getGame().fire(new KeyConsumedEvent(matchingKey));
         // remove this tile from the level
         getLevel().removeTile(this);
         setLevel(null);
