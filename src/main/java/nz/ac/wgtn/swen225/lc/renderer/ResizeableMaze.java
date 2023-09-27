@@ -62,6 +62,15 @@ class ResizeableMaze extends JLayeredPane {
     }
 
     /**
+     * Indicates whether a level is set.
+     *
+     * @return True if a level has been set to non-null.
+     */
+    public boolean isLevelSet() {
+        return level != null;
+    }
+
+    /**
      * Updates to account to changes in level.
      *
      * <p>If <code>level</code> isn't set, or was set to <code>null</code>, doesn't render any
@@ -72,7 +81,14 @@ class ResizeableMaze extends JLayeredPane {
         entities.render();
     }
 
-    private int getTileLength() {
+    /**
+     * Determines the length of a tile.
+     *
+     * <p>Internally used to space out and align objects.
+     *
+     * @return The tile length.
+     */
+    protected int getTileLength() {
         assert level != null;
         int ratioX = getWidth() / level.getWidth();
         int ratioY = getHeight() / level.getHeight();
@@ -80,11 +96,15 @@ class ResizeableMaze extends JLayeredPane {
         //To fit inside size, choose lower of fitting ratios.
     }
 
-    /*
+    /**
      * Returns restricted size of maze to keep each tile square.
+     *
+     * <p>Requires this maze to currently have a non-null level set.
+     *
+     * @return The calculated size.
      */
-    private Dimension getCroppedSize() {
-        assert level != null;
+    protected Dimension getCroppedSize() {
+        Objects.requireNonNull(level);
         return new Dimension(level.getWidth() * getTileLength(),
                 level.getHeight() * getTileLength());
     }
