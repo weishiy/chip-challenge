@@ -6,6 +6,9 @@ import nz.ac.wgtn.swen225.lc.domain.events.InfoFieldPressedEvent;
 import nz.ac.wgtn.swen225.lc.domain.events.InfoFieldReleasedEvent;
 import nz.ac.wgtn.swen225.lc.domain.level.characters.Player;
 
+/**
+ * Presents an info field tile
+ */
 public final class InfoField extends Tile {
     private final String message;
     private boolean active = false;

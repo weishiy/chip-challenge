@@ -1,5 +1,6 @@
 package nz.ac.wgtn.swen225.lc.domain.level.characters;
 
+import nz.ac.wgtn.swen225.lc.domain.events.EnemyMovedEvent;
 import nz.ac.wgtn.swen225.lc.domain.events.PlayerMovedEvent;
 import nz.ac.wgtn.swen225.lc.domain.level.Level;
 import nz.ac.wgtn.swen225.lc.domain.level.items.Chip;
@@ -10,6 +11,9 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
+/**
+ * Presents a player
+ */
 public final class Player extends Character {
 
     private final Set<Key> keys = new HashSet<>();
@@ -29,6 +33,11 @@ public final class Player extends Character {
         this.chips.addAll(chips);
     }
 
+    /**
+     * Moves the enemy to a new position and fires {@link PlayerMovedEvent}
+     * <p>
+     * @param position
+     */
     @Override
     public void setPosition(Vector2D position) {
         var oldPosition = getPosition();

@@ -5,6 +5,9 @@ import nz.ac.wgtn.swen225.lc.domain.level.Level;
 import nz.ac.wgtn.swen225.lc.domain.level.characters.Player;
 import nz.ac.wgtn.swen225.lc.utils.Vector2D;
 
+/**
+ * Presents an exit lock tile
+ */
 public final class ExitLock extends Tile {
 
     public ExitLock(Vector2D position) {

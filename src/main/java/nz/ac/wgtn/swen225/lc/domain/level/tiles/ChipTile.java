@@ -6,6 +6,9 @@ import nz.ac.wgtn.swen225.lc.domain.level.characters.Player;
 import nz.ac.wgtn.swen225.lc.domain.level.items.Chip;
 import nz.ac.wgtn.swen225.lc.utils.Vector2D;
 
+/**
+ * Presents a chip tile
+ */
 public final class ChipTile extends Tile {
     private final Chip chip;
 
