@@ -93,6 +93,7 @@ GameEvent                   -> Parent class for all events
     PlayerMovedEvent        -> Fires when position of the player changed
     EnemyMovedEvent         -> Fires when position of an enemy changed
     KeyPickedUpEvent        -> Fires when a key is picked up by a player
+    KeyConsumedEvent        -> Fires when a key is consumed (to unlock a door)
     ChipPickedUpEvent       -> Fires when a chip is picked up by a player
     DockUnlockedEvent       -> Fires when a door is unlocked
     ExitLockUnlockedEvent   -> Fires when the exit lock is unlocked
@@ -106,6 +107,7 @@ GameEvent                   -> Parent class for all events
     -- timer events --
     TickEvent               -> Fires at the end of every tick
     CountDownEvent          -> Fires every second (PS: countdown decrease 1)
+    TimeoutEvent            -> Fires when level timed out
 ```
 
 ### Application

@@ -7,6 +7,9 @@ import nz.ac.wgtn.swen225.lc.domain.level.characters.Player;
 import nz.ac.wgtn.swen225.lc.domain.level.items.Key;
 import nz.ac.wgtn.swen225.lc.utils.Vector2D;
 
+/**
+ * Presents a locked door tile
+ */
 public final class LockedDoor extends Tile {
     private final Key.Color color;
 

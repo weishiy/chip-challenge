@@ -21,7 +21,7 @@ public class SerializationTest {
     @Test
     void testDeepCopyOf() {
         var game = createInstance();
-        var copyOfGame = Game.deepCopyof(game);
+        var copyOfGame = Game.deepCopyOf(game);
         assertNotSame(game, copyOfGame);
         assertEquals(game.getId(), copyOfGame.getId());
         assertEquals(game.getTickNo(), copyOfGame.getTickNo());

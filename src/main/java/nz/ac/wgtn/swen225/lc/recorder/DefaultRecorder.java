@@ -23,7 +23,7 @@ public class DefaultRecorder implements Recorder {
         this.persistence = persistence;
         this.game = game;
         this.playback = new Playback();
-        var gameSnapShot = Game.deepCopyof(this.game);
+        var gameSnapShot = Game.deepCopyOf(this.game);
         this.playback.setSince(gameSnapShot);
         this.enemyMap = gameSnapShot.getLevel().getEnemiesAsMap();
     }

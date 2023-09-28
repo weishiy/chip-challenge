@@ -5,6 +5,9 @@ import nz.ac.wgtn.swen225.lc.domain.level.Level;
 import nz.ac.wgtn.swen225.lc.domain.level.characters.Player;
 import nz.ac.wgtn.swen225.lc.utils.Vector2D;
 
+/**
+ * Presents a exit tile
+ */
 public final class Exit extends Tile {
     public Exit(Vector2D position) {
         this(null, position);

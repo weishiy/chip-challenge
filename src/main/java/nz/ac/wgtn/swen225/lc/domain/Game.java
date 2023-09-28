@@ -4,12 +4,17 @@ import nz.ac.wgtn.swen225.lc.domain.events.*;
 import nz.ac.wgtn.swen225.lc.domain.level.Level;
 import nz.ac.wgtn.swen225.lc.domain.level.characters.Enemy;
 import nz.ac.wgtn.swen225.lc.domain.level.tiles.ChipTile;
+import nz.ac.wgtn.swen225.lc.persistency.Persistence;
 import nz.ac.wgtn.swen225.lc.utils.Vector2D;
 
 import java.io.*;
 import java.util.*;
 import java.util.stream.Collectors;
 
+/**
+ * Presents a game. Contains methods to update the game's internal state. It will notify other modules about those state
+ * changes via Observer pattern
+ */
 public class Game extends Entity {
 
     public static final int FRAME_RATE = 10;
@@ -26,6 +31,15 @@ public class Game extends Entity {
         super();
     }
 
+    /**
+     * Updates the game (domain) with provided player input (the only allowed input is an one-tile-movement, i.e. one of
+     * Vector2D.LEFT, Vector2D.UP, Vector2D.RIGHT, Vector2D.DOWN) and auto enemies inputs
+     * <p>
+     * Nulls will be converted to Vector2D.ZEROs.
+     *
+     * @param playerMovement player input
+     * @param enemyMovementMap enemies inputs
+     */
     public void update(Vector2D playerMovement, Map<Enemy, Vector2D> enemyMovementMap) {
         if (gameOver) {
             throw new IllegalStateException("Game is over");
@@ -93,6 +107,11 @@ public class Game extends Entity {
         listeners.remove(listener);
     }
 
+    /**
+     * Notify all listeners about happening of the game event.
+     *
+     * @param gameEvent game event to fire
+     */
     public void fire(GameEvent gameEvent) {
         if (gameEvent instanceof GameOverEvent) {
             gameOver = true;
@@ -112,7 +131,15 @@ public class Game extends Entity {
         return List.copyOf(listeners);
     }
 
-    public static Game deepCopyof(Game game) {
+    /**
+     * Deprecated. Use {@link Persistence#saveGame(File save, Game game)}, {@link Persistence#loadGame(File save)}
+     * instead.
+     *
+     * @param game
+     * @return a deep copy of game
+     */
+    @Deprecated
+    public static Game deepCopyOf(Game game) {
         // make a deep copy with serialization
         try (var bos = new ByteArrayOutputStream()) {
             try (var oos = new ObjectOutputStream(bos)) {
@@ -128,6 +155,7 @@ public class Game extends Entity {
         }
     }
 
+    @Deprecated
     @Serial
     private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException {
         in.defaultReadObject();

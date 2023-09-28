@@ -6,6 +6,9 @@ import nz.ac.wgtn.swen225.lc.domain.level.Level;
 import nz.ac.wgtn.swen225.lc.utils.Vector2D;
 import nz.ac.wgtn.swen225.lc.domain.level.characters.Player;
 
+/**
+ * Parent class for all tiles
+ */
 public abstract class Tile extends Entity {
 
     private final Vector2D position;
@@ -21,10 +24,24 @@ public abstract class Tile extends Entity {
         this.position = position;
     }
 
+    /**
+     * Used to check if player is allowed to enter the tile
+     * <p>
+     * @param player player
+     * @return true if player is allowed to enter. false if not.
+     */
     public abstract boolean isEnterable(Player player);
 
+    /**
+     * Fired when player enters the tile
+     * @param player player
+     */
     public abstract void onEnter(Player player);
 
+    /**
+     * Fired when player exits the tile
+     * @param player player
+     */
     public abstract void onExit(Player player);
 
     public Level getLevel() {

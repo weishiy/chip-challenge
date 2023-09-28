@@ -5,6 +5,9 @@ import nz.ac.wgtn.swen225.lc.domain.Game;
 import nz.ac.wgtn.swen225.lc.domain.level.Level;
 import nz.ac.wgtn.swen225.lc.utils.Vector2D;
 
+/**
+ * Parent class for Enemy and Player
+ */
 public abstract class Character extends Entity {
 
     private Level level;
