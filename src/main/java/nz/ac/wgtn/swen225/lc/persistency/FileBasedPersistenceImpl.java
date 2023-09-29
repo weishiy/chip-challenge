@@ -4,7 +4,7 @@ import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import nz.ac.wgtn.swen225.lc.domain.Game;
-import nz.ac.wgtn.swen225.lc.domain.Vector2D;
+import nz.ac.wgtn.swen225.lc.utils.Vector2D;
 import nz.ac.wgtn.swen225.lc.domain.level.Level;
 import nz.ac.wgtn.swen225.lc.domain.level.characters.Enemy;
 import nz.ac.wgtn.swen225.lc.domain.level.characters.Player;
@@ -42,7 +42,7 @@ public class FileBasedPersistenceImpl implements Persistence {
         level.addTile(new Wall(new Vector2D(6, 1)));
         // row 2
         IntStream.range(0, 9).filter(i -> i != 3).forEach(i -> level.addTile(new Wall(new Vector2D(i, 2))));
-        level.addTile(new InfoField(new Vector2D(3, 2)));
+        level.addTile(new InfoField(new Vector2D(3, 2), "A tip"));
         // row 3
         level.addTile(new Wall(new Vector2D(0, 3)));
         level.addTile(new KeyTile(new Vector2D(1, 3), new Key(Key.Color.YELLOW)));

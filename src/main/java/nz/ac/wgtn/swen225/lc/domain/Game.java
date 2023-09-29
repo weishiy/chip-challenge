@@ -4,14 +4,18 @@ import nz.ac.wgtn.swen225.lc.domain.events.*;
 import nz.ac.wgtn.swen225.lc.domain.level.Level;
 import nz.ac.wgtn.swen225.lc.domain.level.characters.Enemy;
 import nz.ac.wgtn.swen225.lc.domain.level.tiles.ChipTile;
+import nz.ac.wgtn.swen225.lc.persistency.Persistence;
+import nz.ac.wgtn.swen225.lc.utils.Vector2D;
 
 import java.io.*;
-import java.util.ArrayList;
-import java.util.concurrent.CopyOnWriteArrayList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.util.stream.Collectors;
 
-public class Game extends Entity implements Serializable {
+/**
+ * Presents a game. Contains methods to update the game's internal state. It will notify other modules about those state
+ * changes via Observer pattern
+ */
+public class Game extends Entity {
 
     public static final int FRAME_RATE = 10;
 
@@ -19,7 +23,7 @@ public class Game extends Entity implements Serializable {
     private int tickNo = 0;
     private boolean gameOver = false;
 
-    private transient List<GameEventListener> listeners = new CopyOnWriteArrayList<>();
+    private transient List<GameEventListener> listeners = new ArrayList<>();
     private transient List<GameEventListener> listenersToAdd = new ArrayList<>();
     private transient List<GameEventListener> listenersToRemove = new ArrayList<>();
 
@@ -27,21 +31,47 @@ public class Game extends Entity implements Serializable {
         super();
     }
 
+    /**
+     * Updates the game (domain) with provided player input (the only allowed input is an one-tile-movement, i.e. one of
+     * Vector2D.LEFT, Vector2D.UP, Vector2D.RIGHT, Vector2D.DOWN) and auto enemies inputs
+     * <p>
+     * Nulls will be converted to Vector2D.ZEROs.
+     *
+     * @param playerMovement player input
+     * @param enemyMovementMap enemies inputs
+     */
     public void update(Vector2D playerMovement, Map<Enemy, Vector2D> enemyMovementMap) {
         if (gameOver) {
             throw new IllegalStateException("Game is over");
         }
 
+        // null check and handling
+        if (playerMovement == null) {
+            playerMovement = Vector2D.ZERO;
+        }
+        if (enemyMovementMap == null) {
+            enemyMovementMap = Map.of();
+        }
+        var emm = enemyMovementMap.entrySet().stream().collect(Collectors.toMap(
+                Map.Entry::getKey,
+                e -> e.getValue() != null ? e.getValue() : Vector2D.ZERO));
+
+        // update player position and enemy position if possible
         level.movePlayer(playerMovement);
-        enemyMovementMap.forEach(level::move);
+        emm.forEach(level::move);
         if (level.getEnemies().stream().anyMatch(e -> e.getPosition().equals(level.getPlayer().getPosition()))) {
             fire(new PlayerDiedEvent(level.getPlayer()));
         }
+
+        // update counters
+        tickNo++;
         if (tickNo % FRAME_RATE == 0) {
             fire(new CountDownEvent(getCountDown()));
         }
-        tickNo++;
         fire(new TickEvent(tickNo));
+        if (getCountDown() <= 0) {
+            fire(new TimeoutEvent());
+        }
 
         // To avoid java.util.ConcurrentModificationException
         listeners.removeAll(listenersToRemove);
@@ -77,6 +107,11 @@ public class Game extends Entity implements Serializable {
         listeners.remove(listener);
     }
 
+    /**
+     * Notify all listeners about happening of the game event.
+     *
+     * @param gameEvent game event to fire
+     */
     public void fire(GameEvent gameEvent) {
         if (gameEvent instanceof GameOverEvent) {
             gameOver = true;
@@ -96,7 +131,15 @@ public class Game extends Entity implements Serializable {
         return List.copyOf(listeners);
     }
 
-    public static Game deepCopyof(Game game) {
+    /**
+     * Deprecated. Use {@link Persistence#saveGame(File save, Game game)}, {@link Persistence#loadGame(File save)}
+     * instead.
+     *
+     * @param game
+     * @return a deep copy of game
+     */
+    @Deprecated
+    public static Game deepCopyOf(Game game) {
         // make a deep copy with serialization
         try (var bos = new ByteArrayOutputStream()) {
             try (var oos = new ObjectOutputStream(bos)) {
@@ -112,6 +155,7 @@ public class Game extends Entity implements Serializable {
         }
     }
 
+    @Deprecated
     @Serial
     private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException {
         in.defaultReadObject();
