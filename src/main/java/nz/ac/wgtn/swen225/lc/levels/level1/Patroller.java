@@ -1,7 +1,7 @@
 package nz.ac.wgtn.swen225.lc.levels.level1;
 
 import nz.ac.wgtn.swen225.lc.domain.level.characters.Enemy;
-import nz.ac.wgtn.swen225.lc.domain.Vector2D;
+import nz.ac.wgtn.swen225.lc.utils.Vector2D;
 
 import java.util.LinkedList;
 import java.util.List;

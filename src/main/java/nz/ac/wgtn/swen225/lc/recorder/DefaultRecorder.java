@@ -1,7 +1,7 @@
 package nz.ac.wgtn.swen225.lc.recorder;
 
 import nz.ac.wgtn.swen225.lc.domain.Game;
-import nz.ac.wgtn.swen225.lc.domain.Vector2D;
+import nz.ac.wgtn.swen225.lc.utils.Vector2D;
 import nz.ac.wgtn.swen225.lc.domain.level.characters.Enemy;
 import nz.ac.wgtn.swen225.lc.persistency.Persistence;
 
@@ -23,7 +23,7 @@ public class DefaultRecorder implements Recorder {
         this.persistence = persistence;
         this.game = game;
         this.playback = new Playback();
-        var gameSnapShot = Game.deepCopyof(this.game);
+        var gameSnapShot = Game.deepCopyOf(this.game);
         this.playback.setSince(gameSnapShot);
         this.enemyMap = gameSnapShot.getLevel().getEnemiesAsMap();
     }
