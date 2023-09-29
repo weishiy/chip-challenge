@@ -183,5 +183,8 @@ public class GameEngineImpl implements GameEngine {
         this.chipsLeftLabel.setText(Integer.toString(this.game.getChipsLeft()));
     }
 
-
+    //This is just a small piece of code which I've added to allow fuzzer to access the player position
+    public Game getGame() {
+        return this.game;
+    }
 }
