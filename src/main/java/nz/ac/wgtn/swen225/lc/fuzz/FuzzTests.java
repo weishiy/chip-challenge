@@ -2,7 +2,7 @@ package nz.ac.wgtn.swen225.lc.fuzz;
 
 import nz.ac.wgtn.swen225.lc.app.Application;
 import nz.ac.wgtn.swen225.lc.app.GameEngine;
-import nz.ac.wgtn.swen225.lc.domain.Vector2D;
+import nz.ac.wgtn.swen225.lc.utils.Vector2D;
 import org.junit.jupiter.api.*;
 
 import javax.swing.*;
