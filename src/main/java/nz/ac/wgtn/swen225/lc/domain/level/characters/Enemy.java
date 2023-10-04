@@ -10,11 +10,11 @@ import nz.ac.wgtn.swen225.lc.utils.Vector2D;
 public abstract class Enemy extends Character {
 
     public Enemy(Vector2D position) {
-        this(null, position);
+        super(position);
     }
 
-    public Enemy(Level level, Vector2D position) {
-        super(level, position);
+    public Enemy(int id, Vector2D position) {
+        super(id, position);
     }
 
     /**

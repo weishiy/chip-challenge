@@ -1,6 +1,5 @@
 package nz.ac.wgtn.swen225.lc.domain.level.characters;
 
-import nz.ac.wgtn.swen225.lc.domain.events.EnemyMovedEvent;
 import nz.ac.wgtn.swen225.lc.domain.events.PlayerMovedEvent;
 import nz.ac.wgtn.swen225.lc.domain.level.Level;
 import nz.ac.wgtn.swen225.lc.domain.level.items.Chip;
@@ -20,15 +19,11 @@ public final class Player extends Character {
     private final Set<Chip> chips = new HashSet<>();
 
     public Player(Vector2D position) {
-        this(null, position, Collections.emptySet(), Collections.emptySet());
+        super(position);
     }
 
-    public Player(Vector2D position, Set<Key> keys, Set<Chip> chips) {
-        this(null, position, keys, chips);
-    }
-
-    public Player(Level level, Vector2D position, Set<Key> keys, Set<Chip> chips) {
-        super(level, position);
+    public Player(int id, Vector2D position, Set<Key> keys, Set<Chip> chips) {
+        super(id, position);
         this.keys.addAll(keys);
         this.chips.addAll(chips);
     }

@@ -17,7 +17,7 @@ import java.util.stream.Collectors;
 /**
  * Presents a level (or maze/board). Contains what's on the board: tiles (excluding free tiles), enemies, player, etc
  */
-public class Level extends Entity implements Serializable {
+public class Level extends Entity {
 
     private final int levelNo;
     private final int width;
@@ -44,6 +44,18 @@ public class Level extends Entity implements Serializable {
         this.width = width;
         this.height = height;
         this.timeoutInSeconds = timeoutInSeconds;
+    }
+
+    public Level(int id, int levelNo, int width, int height, int timeoutInSeconds, Set<Tile> tiles,
+                 Set<Enemy> enemies, Player player) {
+        super(id);
+        this.levelNo = levelNo;
+        this.width = width;
+        this.height = height;
+        this.timeoutInSeconds = timeoutInSeconds;
+        tiles.forEach(this::addTile);
+        enemies.forEach(this::addEnemy);
+        setPlayer(player);
     }
 
     public int getLevelNo() {

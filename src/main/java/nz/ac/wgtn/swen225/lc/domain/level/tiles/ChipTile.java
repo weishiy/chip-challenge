@@ -13,11 +13,12 @@ public final class ChipTile extends Tile {
     private final Chip chip;
 
     public ChipTile(Vector2D position, Chip chip) {
-        this(null, position, chip);
+        super(position);
+        this.chip = chip;
     }
 
-    public ChipTile(Level level, Vector2D position, Chip chip) {
-        super(level, position);
+    public ChipTile(int id, Vector2D position, Chip chip) {
+        super(id, position);
         this.chip = chip;
     }
 

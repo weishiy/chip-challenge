@@ -4,9 +4,11 @@ import nz.ac.wgtn.swen225.lc.domain.Game;
 import nz.ac.wgtn.swen225.lc.domain.events.ExitLockUnlockedEvent;
 import nz.ac.wgtn.swen225.lc.domain.level.Level;
 import nz.ac.wgtn.swen225.lc.domain.level.characters.Player;
+import nz.ac.wgtn.swen225.lc.domain.level.items.Chip;
 import nz.ac.wgtn.swen225.lc.domain.level.tiles.ChipTile;
 import nz.ac.wgtn.swen225.lc.domain.level.tiles.ExitLock;
 import nz.ac.wgtn.swen225.lc.utils.Vector2D;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -19,19 +21,24 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
-@ExtendWith(MockitoExtension.class)
 public class ExitLockTest {
-    @InjectMocks
-    private ExitLock toTest;
-    @Mock
-    private Level mockLevel;
-    @Mock
-    private Vector2D mockPosition;
 
-    @Mock
+    private ExitLock toTest;
+    private Level mockLevel;
+    private Vector2D mockPosition;
     private Game mockGame;
-    @Mock
     private Player mockPlayer;
+
+    @BeforeEach
+    public void before() {
+        mockLevel = mock(Level.class);
+        mockPosition = mock(Vector2D.class);
+        mockGame = mock(Game.class);
+        mockPlayer = mock(Player.class);
+
+        toTest = new ExitLock(mockPosition);
+        toTest.setLevel(mockLevel);
+    }
 
     @Test
     public void whenNoChipsLeft_shouldAllowPlayerToEnter() {

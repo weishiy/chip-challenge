@@ -15,12 +15,13 @@ public class EnemyTest {
     public void testSetPosition() {
         var mockLevel = mock(Level.class);
         var mockGame = mock(Game.class);
-        var toTest = new Enemy(mockLevel, Vector2D.ZERO) {
+        var toTest = new Enemy(Vector2D.ZERO) {
             @Override
             public Vector2D nextMove() {
                 return null;
             }
         };
+        toTest.setLevel(mockLevel);
         when(mockLevel.getGame()).thenReturn(mockGame);
         toTest.setPosition(Vector2D.ZERO);
         verify(mockGame).fire(any(EnemyMovedEvent.class));

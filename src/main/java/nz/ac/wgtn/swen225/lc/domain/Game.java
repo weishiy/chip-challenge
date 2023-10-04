@@ -31,6 +31,12 @@ public class Game extends Entity {
         super();
     }
 
+    public Game(int id, int tickNo, Level level) {
+        super(id);
+        this.tickNo = tickNo;
+        setLevel(level);
+    }
+
     /**
      * Updates the game (domain) with provided player input (the only allowed input is an one-tile-movement, i.e. one of
      * Vector2D.LEFT, Vector2D.UP, Vector2D.RIGHT, Vector2D.DOWN) and auto enemies inputs
@@ -91,6 +97,10 @@ public class Game extends Entity {
 
     public int getTickNo() {
         return tickNo;
+    }
+
+    public void setTickNo(int tickNo) {
+        this.tickNo = tickNo;
     }
 
     public boolean isGameOver() {

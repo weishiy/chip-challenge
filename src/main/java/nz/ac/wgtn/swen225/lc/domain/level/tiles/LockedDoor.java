@@ -14,11 +14,12 @@ public final class LockedDoor extends Tile {
     private final Key.Color color;
 
     public LockedDoor(Vector2D position, Key.Color color) {
-        this(null, position, color);
+        super(position);
+        this.color = color;
     }
 
-    public LockedDoor(Level level, Vector2D position, Key.Color color) {
-        super(level, position);
+    public LockedDoor(int id, Vector2D position, Key.Color color) {
+        super(id, position);
         this.color = color;
     }
 

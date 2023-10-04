@@ -16,6 +16,10 @@ public abstract class Entity implements Serializable {
         this.id = ID_GENERATOR.getAndIncrement();
     }
 
+    public Entity(int id) {
+        this.id = id;
+    }
+
     public int getId() {
         return id;
     }
