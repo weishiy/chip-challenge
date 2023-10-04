@@ -24,9 +24,9 @@ import java.util.stream.IntStream;
 
 public class FileBasedPersistenceImpl implements Persistence {
 
-    @Override
+     @Override
     public List<Integer> getAllLevelNos() {
-        return List.of(1);
+        return List.of(1, 2);
     }
 
     @Override
