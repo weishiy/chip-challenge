@@ -19,24 +19,25 @@ import java.util.Set;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
-@ExtendWith(MockitoExtension.class)
 public class ChipTileTest {
-    @InjectMocks
-    private ChipTile toTest;
-    @Mock
-    private Level mockLevel;
-    @Mock
-    private Vector2D mockPosition;
-    @Mock
-    private Chip mockChip;
 
-    @Mock
+    private ChipTile toTest;
+    private Level mockLevel;
+    private Vector2D mockPosition;
+    private Chip mockChip;
     private Game mockGame;
-    @Mock
     private Player mockPlayer;
 
     @BeforeEach
     public void before() {
+        mockLevel = mock(Level.class);
+        mockPosition = mock(Vector2D.class);
+        mockChip = mock(Chip.class);
+        mockGame = mock(Game.class);
+        mockPlayer = mock(Player.class);
+
+        toTest = new ChipTile(mockPosition, mockChip);
+        toTest.setLevel(mockLevel);
         when(mockLevel.getTiles()).thenReturn(Set.of(toTest));
     }
 

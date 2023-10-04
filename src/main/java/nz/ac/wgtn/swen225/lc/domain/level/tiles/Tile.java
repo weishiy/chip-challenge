@@ -1,10 +1,10 @@
 package nz.ac.wgtn.swen225.lc.domain.level.tiles;
 
-import nz.ac.wgtn.swen225.lc.domain.Game;
 import nz.ac.wgtn.swen225.lc.domain.Entity;
+import nz.ac.wgtn.swen225.lc.domain.Game;
 import nz.ac.wgtn.swen225.lc.domain.level.Level;
-import nz.ac.wgtn.swen225.lc.utils.Vector2D;
 import nz.ac.wgtn.swen225.lc.domain.level.characters.Player;
+import nz.ac.wgtn.swen225.lc.utils.Vector2D;
 
 /**
  * Parent class for all tiles
@@ -15,12 +15,12 @@ public abstract class Tile extends Entity {
     private Level level;
 
     public Tile(Vector2D position) {
-        this(null, position);
+        super();
+        this.position = position;
     }
 
-    public Tile(Level level, Vector2D position) {
-        super();
-        this.level = level;
+    public Tile(int id, Vector2D position) {
+        super(id);
         this.position = position;
     }
 

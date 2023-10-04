@@ -14,11 +14,12 @@ public final class KeyTile extends Tile {
     private final Key key;
 
     public KeyTile(Vector2D position, Key key) {
-        this(null, position, key);
+        super(position);
+        this.key = key;
     }
 
-    public KeyTile(Level level, Vector2D position, Key key) {
-        super(level, position);
+    public KeyTile(int id, Vector2D position, Key key) {
+        super(id, position);
         this.key = key;
     }
 

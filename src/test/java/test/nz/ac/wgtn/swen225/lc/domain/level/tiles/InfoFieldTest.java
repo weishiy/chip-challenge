@@ -21,22 +21,28 @@ import java.util.Set;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.mock;
 
-@ExtendWith(MockitoExtension.class)
 public class InfoFieldTest {
-    @InjectMocks
-    private InfoField toTest;
-    @Mock
-    private Level mockLevel;
-    @Mock
-    private Vector2D mockPosition;
 
-    @Mock
+    private InfoField toTest;
+    private Level mockLevel;
+    private Vector2D mockPosition;
     private Game mockGame;
-    @Mock
     private Player mockPlayer;
+
+    @BeforeEach
+    public void before() {
+        mockLevel = mock(Level.class);
+        mockPosition = mock(Vector2D.class);
+        mockGame = mock(Game.class);
+        mockPlayer = mock(Player.class);
+
+        toTest = new InfoField(mockPosition, "A tip");
+        toTest.setLevel(mockLevel);
+        toTest.setLevel(mockLevel);
+    }
 
     @Test
     public void testIsEnterable() {

@@ -8,31 +8,29 @@ import nz.ac.wgtn.swen225.lc.domain.level.tiles.Exit;
 import nz.ac.wgtn.swen225.lc.utils.Vector2D;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
-
-import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
-@ExtendWith(MockitoExtension.class)
 public class ExitTest {
-    @InjectMocks
-    private Exit toTest;
-    @Mock
-    private Level mockLevel;
-    @Mock
-    private Vector2D mockPosition;
 
-    @Mock
+    private Exit toTest;
+    private Level mockLevel;
+    private Vector2D mockPosition;
     private Game mockGame;
-    @Mock
     private Player mockPlayer;
+
+    @BeforeEach
+    public void before() {
+        mockLevel = mock(Level.class);
+        mockPosition = mock(Vector2D.class);
+        mockGame = mock(Game.class);
+        mockPlayer = mock(Player.class);
+
+        toTest = new Exit(mockPosition);
+        toTest.setLevel(mockLevel);
+    }
 
     @Test
     public void testIsEnterable() {

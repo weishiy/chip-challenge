@@ -14,12 +14,12 @@ public abstract class Character extends Entity {
     private Vector2D position;
 
     public Character(Vector2D position) {
-        this(null, position);
+        super();
+        this.position = position;
     }
 
-    public Character(Level level, Vector2D position) {
-        super();
-        this.level = level;
+    public Character(int id, Vector2D position) {
+        super(id);
         this.position = position;
     }
 

@@ -9,13 +9,18 @@ import nz.ac.wgtn.swen225.lc.domain.Entity;
 public final class Key extends Entity {
 
     public enum Color {
-        RED, YELLOW, BLUE
+        RED, YELLOW, BLUE, GREEN
     }
 
     private final Color color;
 
     public Key(Color color) {
         super();
+        this.color = color;
+    }
+
+    public Key(int id, Color color) {
+        super(id);
         this.color = color;
     }
 

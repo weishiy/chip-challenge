@@ -5,6 +5,7 @@ import nz.ac.wgtn.swen225.lc.domain.events.KeyPickedUpEvent;
 import nz.ac.wgtn.swen225.lc.domain.level.Level;
 import nz.ac.wgtn.swen225.lc.domain.level.characters.Player;
 import nz.ac.wgtn.swen225.lc.domain.level.items.Key;
+import nz.ac.wgtn.swen225.lc.domain.level.tiles.InfoField;
 import nz.ac.wgtn.swen225.lc.domain.level.tiles.KeyTile;
 import nz.ac.wgtn.swen225.lc.utils.Vector2D;
 import org.junit.jupiter.api.BeforeEach;
@@ -20,24 +21,25 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.*;
 
-@ExtendWith(MockitoExtension.class)
 public class KeyTileTest {
-    @InjectMocks
-    private KeyTile toTest;
-    @Mock
-    private Level mockLevel;
-    @Mock
-    private Vector2D mockPosition;
-    @Mock
-    private Key mockKey;
 
-    @Mock
+    private KeyTile toTest;
+    private Level mockLevel;
+    private Vector2D mockPosition;
+    private Key mockKey;
     private Game mockGame;
-    @Mock
     private Player mockPlayer;
 
     @BeforeEach
     public void before() {
+        mockLevel = mock(Level.class);
+        mockPosition = mock(Vector2D.class);
+        mockKey = mock(Key.class);
+        mockGame = mock(Game.class);
+        mockPlayer = mock(Player.class);
+
+        toTest = new KeyTile(mockPosition, mockKey);
+        toTest.setLevel(mockLevel);
         when(mockLevel.getTiles()).thenReturn(Set.of(toTest));
     }
 

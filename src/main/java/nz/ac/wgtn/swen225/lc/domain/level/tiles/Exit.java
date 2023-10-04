@@ -10,11 +10,11 @@ import nz.ac.wgtn.swen225.lc.utils.Vector2D;
  */
 public final class Exit extends Tile {
     public Exit(Vector2D position) {
-        this(null, position);
+        super(position);
     }
 
-    public Exit(Level level, Vector2D position) {
-        super(level, position);
+    public Exit(int id, Vector2D position) {
+        super(id, position);
     }
 
     @Override

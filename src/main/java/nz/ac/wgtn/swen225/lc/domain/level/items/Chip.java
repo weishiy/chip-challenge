@@ -10,4 +10,8 @@ public final class Chip extends Entity {
     public Chip() {
         super();
     }
+
+    public Chip(int id) {
+        super(id);
+    }
 }

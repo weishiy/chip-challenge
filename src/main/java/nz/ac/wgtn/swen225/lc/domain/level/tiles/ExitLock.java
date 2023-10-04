@@ -11,11 +11,11 @@ import nz.ac.wgtn.swen225.lc.utils.Vector2D;
 public final class ExitLock extends Tile {
 
     public ExitLock(Vector2D position) {
-        this(null, position);
+        super(position);
     }
 
-    public ExitLock(Level level, Vector2D position) {
-        super(level, position);
+    public ExitLock(int id, Vector2D position) {
+        super(id, position);
     }
 
     @Override

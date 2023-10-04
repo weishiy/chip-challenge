@@ -17,7 +17,8 @@ public class PlayerTest {
     public void testSetPosition() {
         var mockLevel = mock(Level.class);
         var mockGame = mock(Game.class);
-        var toTest = new Player(mockLevel, Vector2D.ZERO, Set.of(), Set.of());
+        var toTest = new Player(Vector2D.ZERO);
+        toTest.setLevel(mockLevel);
         when(mockLevel.getGame()).thenReturn(mockGame);
         toTest.setPosition(Vector2D.ZERO);
         verify(mockGame).fire(any(PlayerMovedEvent.class));
