@@ -24,62 +24,155 @@ import java.util.stream.IntStream;
 
 public class FileBasedPersistenceImpl implements Persistence {
 
-    @Override
+     @Override
     public List<Integer> getAllLevelNos() {
-        return List.of(1);
+        return List.of(1, 2);
     }
 
     @Override
     public Game loadGame(int levelNo) {
-        var level = new Level(1, 9, 9, 60);
+        Level level;
+        if (levelNo == 1) {
+            level = new Level(1, 15, 14, 100);
+            // map
+            // row 0
+            IntStream.range(2, 7).forEach(i -> level.addTile(new Wall(new Vector2D(i, 0))));
+            IntStream.range(8, 13).forEach(i -> level.addTile(new Wall(new Vector2D(i, 0))));
+            // row 1
+            level.addTile(new Wall(new Vector2D(2, 1)));
+            IntStream.range(6, 9).forEach(i -> level.addTile(new Wall(new Vector2D(i, 1))));
+            level.addTile(new Wall(new Vector2D(12, 1)));
+            // row 2
+            level.addTile(new Wall(new Vector2D(2, 2)));
+            level.addTile(new ChipTile(new Vector2D(4, 2), new Chip()));
+            level.addTile(new Wall(new Vector2D(6, 2)));
+            level.addTile(new Exit(new Vector2D(7, 2)));
+            level.addTile(new Wall(new Vector2D(8, 2)));
+            level.addTile(new ChipTile(new Vector2D(10, 2), new Chip()));
+            level.addTile(new Wall(new Vector2D(12, 2)));
+            // row 3
+            IntStream.range(0, 5).forEach(i -> level.addTile(new Wall(new Vector2D(i, 3))));
+            level.addTile(new LockedDoor(new Vector2D(5, 3), Key.Color.GREEN));
+            level.addTile(new Wall(new Vector2D(6, 3)));
+            level.addTile(new ExitLock(new Vector2D(7, 3)));
+            level.addTile(new Wall(new Vector2D(8, 3)));
+            level.addTile(new LockedDoor(new Vector2D(9, 3), Key.Color.GREEN));
+            IntStream.range(10, 15).forEach(i -> level.addTile(new Wall(new Vector2D(i, 3))));
+            // row 4
+            level.addTile(new Wall(new Vector2D(0, 4)));
+            level.addTile(new KeyTile(new Vector2D(2, 4), new Key(Key.Color.YELLOW)));
+            level.addTile(new LockedDoor(new Vector2D(4, 4), Key.Color.BLUE));
+            level.addTile(new LockedDoor(new Vector2D(10, 4), Key.Color.RED));
+            level.addTile(new KeyTile(new Vector2D(12, 4), new Key(Key.Color.YELLOW)));
+            level.addTile(new Wall(new Vector2D(14, 4)));
+            // row 5
+            level.addTile(new Wall(new Vector2D(0, 5)));
+            level.addTile(new ChipTile(new Vector2D(2, 5), new Chip()));
+            level.addTile(new Wall(new Vector2D(4, 5)));
+            level.addTile(new KeyTile(new Vector2D(5, 5), new Key(Key.Color.BLUE)));
+            level.addTile(new InfoField(new Vector2D(7, 5), "Collect chips to get past the chip socket. Use keys to open doors."));
+            level.addTile(new KeyTile(new Vector2D(9, 5), new Key(Key.Color.RED)));
+            level.addTile(new Wall(new Vector2D(10, 5)));
+            level.addTile(new ChipTile(new Vector2D(12, 5), new Chip()));
+            level.addTile(new Wall(new Vector2D(14, 5)));
+            // row 6
+            IntStream.range(0, 5).forEach(i -> level.addTile(new Wall(new Vector2D(i, 6))));
+            level.addTile(new ChipTile(new Vector2D(5, 6), new Chip()));
+            level.setPlayer(new Player(new Vector2D(7, 6)));
+            level.addTile(new ChipTile(new Vector2D(9, 6), new Chip()));
+            IntStream.range(10, 15).forEach(i -> level.addTile(new Wall(new Vector2D(i, 6))));
+            // row 7
+            level.addTile(new Wall(new Vector2D(0, 7)));
+            level.addTile(new ChipTile(new Vector2D(2, 7), new Chip()));
+            level.addTile(new Wall(new Vector2D(4, 7)));
+            level.addTile(new KeyTile(new Vector2D(5, 7), new Key(Key.Color.BLUE)));
+            level.addTile(new KeyTile(new Vector2D(9, 7), new Key(Key.Color.RED)));
+            level.addTile(new Wall(new Vector2D(10, 7)));
+            level.addTile(new ChipTile(new Vector2D(12, 7), new Chip()));
+            level.addTile(new Wall(new Vector2D(14, 7)));
+            // row 8
+            level.addTile(new Wall(new Vector2D(0, 8)));
+            level.addTile(new LockedDoor(new Vector2D(4, 8), Key.Color.RED));
+            level.addTile(new ChipTile(new Vector2D(7, 8), new Chip()));
+            level.addTile(new LockedDoor(new Vector2D(10, 8), Key.Color.BLUE));
+            level.addTile(new Wall(new Vector2D(14, 8)));
+            // row 9
+            IntStream.range(0, 6).forEach(i -> level.addTile(new Wall(new Vector2D(i, 9))));
+            level.addTile(new LockedDoor(new Vector2D(6, 9), Key.Color.YELLOW));
+            level.addTile(new Wall(new Vector2D(7, 9)));
+            level.addTile(new LockedDoor(new Vector2D(8, 9), Key.Color.YELLOW));
+            IntStream.range(9, 15).forEach(i -> level.addTile(new Wall(new Vector2D(i, 9))));
+            // row 10
+            level.addTile(new Wall(new Vector2D(4, 10)));
+            level.addTile(new Wall(new Vector2D(7, 10)));
+            level.addTile(new Wall(new Vector2D(10, 10)));
+            // row 11
+            level.addTile(new Wall(new Vector2D(4, 11)));
+            level.addTile(new ChipTile(new Vector2D(6, 11), new Chip()));
+            level.addTile(new Wall(new Vector2D(7, 11)));
+            level.addTile(new ChipTile(new Vector2D(8, 11), new Chip()));
+            level.addTile(new Wall(new Vector2D(10, 11)));
+            // row 12
+            level.addTile(new Wall(new Vector2D(4, 12)));
+            level.addTile(new KeyTile(new Vector2D(6, 12), new Key(Key.Color.GREEN)));
+            level.addTile(new Wall(new Vector2D(7, 12)));
+            level.addTile(new KeyTile(new Vector2D(8, 12), new Key(Key.Color.GREEN)));
+            level.addTile(new Wall(new Vector2D(10, 12)));
+            // row 13
+            IntStream.range(4, 11).forEach(i -> level.addTile(new Wall(new Vector2D(i, 13))));
+        } else if(levelNo == 2) {
+            level = new Level(1, 9, 9, 60);
 
-        // map
-        // row 0
-        IntStream.range(2, 7).forEach(i -> level.addTile(new Wall(new Vector2D(i, 0))));
-        // row 1
-        level.addTile(new Wall(new Vector2D(2, 1)));
-        level.addTile(new KeyTile(new Vector2D(5, 1), new Key(Key.Color.RED)));
-        level.addTile(new Wall(new Vector2D(6, 1)));
-        // row 2
-        IntStream.range(0, 9).filter(i -> i != 3).forEach(i -> level.addTile(new Wall(new Vector2D(i, 2))));
-        level.addTile(new InfoField(new Vector2D(3, 2), "A tip"));
-        // row 3
-        level.addTile(new Wall(new Vector2D(0, 3)));
-        level.addTile(new KeyTile(new Vector2D(1, 3), new Key(Key.Color.YELLOW)));
-        level.addTile(new Wall(new Vector2D(2, 3)));
-        level.addTile(new LockedDoor(new Vector2D(6, 3), Key.Color.YELLOW));
-        level.addTile(new Wall(new Vector2D(8, 3)));
-        // row 4
-        level.addTile(new Wall(new Vector2D(0, 4)));
-        level.addTile(new Wall(new Vector2D(2, 4)));
-        level.addTile(new Wall(new Vector2D(6, 4)));
-        level.addTile(new Wall(new Vector2D(8, 4)));
-        // row 5
-        level.addTile(new Wall(new Vector2D(0, 5)));
-        level.addTile(new LockedDoor(new Vector2D(2, 5), Key.Color.RED));
-        level.addTile(new Wall(new Vector2D(6, 5)));
-        level.addTile(new ChipTile(new Vector2D(7, 5), new Chip()));
-        level.addTile(new Wall(new Vector2D(8, 5)));
-        // row 6
-        IntStream.range(0, 9).filter(i -> i != 5).forEach(i -> level.addTile(new Wall(new Vector2D(i, 6))));
-        level.addTile(new ExitLock(new Vector2D(5, 6)));
-        // row 7
-        level.addTile(new Wall(new Vector2D(2, 7)));
-        level.addTile(new Exit(new Vector2D(3, 7)));
-        level.addTile(new Wall(new Vector2D(6, 7)));
-        // row 8
-        IntStream.range(2, 7).forEach(i -> level.addTile(new Wall(new Vector2D(i, 8))));
+            // map
+            // row 0
+            IntStream.range(2, 7).forEach(i -> level.addTile(new Wall(new Vector2D(i, 0))));
+            // row 1
+            level.addTile(new Wall(new Vector2D(2, 1)));
+            level.addTile(new KeyTile(new Vector2D(5, 1), new Key(Key.Color.RED)));
+            level.addTile(new Wall(new Vector2D(6, 1)));
+            // row 2
+            IntStream.range(0, 9).filter(i -> i != 3).forEach(i -> level.addTile(new Wall(new Vector2D(i, 2))));
+            level.addTile(new InfoField(new Vector2D(3, 2), "A tip"));
+            // row 3
+            level.addTile(new Wall(new Vector2D(0, 3)));
+            level.addTile(new KeyTile(new Vector2D(1, 3), new Key(Key.Color.YELLOW)));
+            level.addTile(new Wall(new Vector2D(2, 3)));
+            level.addTile(new LockedDoor(new Vector2D(6, 3), Key.Color.YELLOW));
+            level.addTile(new Wall(new Vector2D(8, 3)));
+            // row 4
+            level.addTile(new Wall(new Vector2D(0, 4)));
+            level.addTile(new Wall(new Vector2D(2, 4)));
+            level.addTile(new Wall(new Vector2D(6, 4)));
+            level.addTile(new Wall(new Vector2D(8, 4)));
+            // row 5
+            level.addTile(new Wall(new Vector2D(0, 5)));
+            level.addTile(new LockedDoor(new Vector2D(2, 5), Key.Color.RED));
+            level.addTile(new Wall(new Vector2D(6, 5)));
+            level.addTile(new ChipTile(new Vector2D(7, 5), new Chip()));
+            level.addTile(new Wall(new Vector2D(8, 5)));
+            // row 6
+            IntStream.range(0, 9).filter(i -> i != 5).forEach(i -> level.addTile(new Wall(new Vector2D(i, 6))));
+            level.addTile(new ExitLock(new Vector2D(5, 6)));
+            // row 7
+            level.addTile(new Wall(new Vector2D(2, 7)));
+            level.addTile(new Exit(new Vector2D(3, 7)));
+            level.addTile(new Wall(new Vector2D(6, 7)));
+            // row 8
+            IntStream.range(2, 7).forEach(i -> level.addTile(new Wall(new Vector2D(i, 8))));
 
-        // enemies
-        level.addEnemy(new Patroller(new Vector2D(4, 3),
-                List.of(Vector2D.RIGHT, Vector2D.DOWN, Vector2D.DOWN, Vector2D.LEFT, Vector2D.LEFT, Vector2D.UP, Vector2D.UP, Vector2D.RIGHT),
-                10));
-        level.addEnemy(new Patroller(new Vector2D(4, 5),
-                List.of(Vector2D.LEFT, Vector2D.UP, Vector2D.UP, Vector2D.RIGHT, Vector2D.RIGHT, Vector2D.DOWN, Vector2D.DOWN, Vector2D.LEFT),
-                10));
+            // enemies
+            level.addEnemy(new Patroller(new Vector2D(4, 3),
+                    List.of(Vector2D.RIGHT, Vector2D.DOWN, Vector2D.DOWN, Vector2D.LEFT, Vector2D.LEFT, Vector2D.UP, Vector2D.UP, Vector2D.RIGHT),
+                    10));
+            level.addEnemy(new Patroller(new Vector2D(4, 5),
+                    List.of(Vector2D.LEFT, Vector2D.UP, Vector2D.UP, Vector2D.RIGHT, Vector2D.RIGHT, Vector2D.DOWN, Vector2D.DOWN, Vector2D.LEFT),
+                    10));
 
-        // player
-        level.setPlayer(new Player(new Vector2D(4, 4)));
+            // player
+            level.setPlayer(new Player(new Vector2D(4, 4)));
+        } else {
+            throw new IllegalArgumentException("unsupported level" + levelNo);
+        }
 
         var game = new Game();
         game.setLevel(level);
