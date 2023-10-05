@@ -34,22 +34,23 @@ public final class TileMaker {
             LockedDoor.class, ImageLoader::getDoor, Wall.class, ImageLoader::getWall);
 
     /**
-     * Stores references to scaled images.
+     * Caches scaled images.
      *
-     * <p>Memoization caches function calls, to avoid repeating calculations while keeping
-     * functional orientation. Without memoization, some of these entities appear to flicker.
+     * <p>Caches scaling, to avoid excessive computation, to avoid repeating calculations while
+     * keeping functional orientation.
      *
      * @see #makeSprite(Image, Object)
      */
-    private static final Map<ImageScaleMemoize, Icon> memoizeIcon = new WeakHashMap<>();
+    private static final Map<ScaleImageArgument, Icon> memoizeScaledIcon = new WeakHashMap<>();
 
     /**
-     * Stores references to created tiles.
+     * Caches tile components.
      *
-     * <p>Memoization caches function calls, to avoid repeating calculations while keeping
-     * functional orientation. Without memoization, some of these entities appear to flicker.
+     * <p>Creating new <code>JComponent</code>  is expensive, and doing so regularly (especially
+     * ones with images) results in flickering. This caching avoids this, while still being
+     * outwardly functional.
      */
-    private static final Map<SpriteMemoize, JComponent> memoizeSprite = new WeakHashMap<>();
+    private static final Map<NewComponentArgument, JComponent> cacheTileComponent = new WeakHashMap<>();
 
     private TileMaker() {
         //empty
@@ -141,8 +142,8 @@ public final class TileMaker {
         Objects.requireNonNull(image);
         Objects.requireNonNull(identity);
 
-        return memoizeSprite.computeIfAbsent(new SpriteMemoize(image, identity),
-                spriteMemoize -> new JLabel() {
+        return cacheTileComponent.computeIfAbsent(new NewComponentArgument(image, identity),
+                componentArgument -> new JLabel() {
                     {
                         addComponentListener(new ComponentAdapter() {
                             @Override
@@ -157,9 +158,9 @@ public final class TileMaker {
                         if (getWidth() <= 0 || getHeight() <= 0) {
                             return; //Can't scale image if 0 dimensions.
                         }
-                        Icon scaledIcon = memoizeIcon.computeIfAbsent(
-                                new ImageScaleMemoize(spriteMemoize.image, getWidth(), getHeight()),
-                                r -> new ImageIcon(r.notScaled()
+                        Icon scaledIcon = memoizeScaledIcon.computeIfAbsent(
+                                new ScaleImageArgument(componentArgument.image, getWidth(),
+                                        getHeight()), r -> new ImageIcon(r.notScaled()
                                         .getScaledInstance(getWidth(), getHeight(),
                                                 Image.SCALE_FAST)));
 
@@ -168,10 +169,24 @@ public final class TileMaker {
                 });
     }
 
-    record SpriteMemoize(Image image, Object identity) {
+    /**
+     * Argument used to generate new tile component instances.
+     *
+     * @param image    The <code>Image</code> to display for the tile.
+     * @param identity An object unique for this tile component. If <code>identity.equals(o)
+     *                 </code>, then <code>o</code> corresponds to the same tile as this.
+     */
+    record NewComponentArgument(Image image, Object identity) {
     }
 
-    record ImageScaleMemoize(Image notScaled, int width, int height) {
+    /**
+     * Arguments used to generate a scaled image.
+     *
+     * @param notScaled <code>Image</code> used as a base.
+     * @param width     Width of scaling in pixels.
+     * @param height    Height of scaling in pixels.
+     */
+    record ScaleImageArgument(Image notScaled, int width, int height) {
     }
 
     record EnemyInfo(Enemy enemy) {
