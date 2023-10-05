@@ -5,6 +5,8 @@ import nz.ac.wgtn.swen225.lc.domain.level.Level;
 import nz.ac.wgtn.swen225.lc.domain.level.characters.Enemy;
 import nz.ac.wgtn.swen225.lc.domain.level.characters.Player;
 import nz.ac.wgtn.swen225.lc.domain.level.tiles.Tile;
+import nz.ac.wgtn.swen225.lc.domain.level.tiles.Wall;
+import nz.ac.wgtn.swen225.lc.renderer.assets.ImageLoader;
 
 import javax.swing.*;
 import java.awt.*;
@@ -20,30 +22,21 @@ import java.util.function.BiFunction;
 /**
  * Helper interface for making tiles for the maze.
  */
-final class TileMaker {
+public final class TileMaker {
 
     //Memoization caches function calls, to avoid repeating calculations while keeping functional
     // orientation. Without memoization, some of these entities appear to flicker.
     /**
      * Stores references to scaled images.
      *
-     * @see #makeSprite(Image)
+     * @see #makeSprite(Image, Object)
      */
     private static final Map<ImageScaleMemoize, Icon> memoizeIcon = new WeakHashMap<>();
 
     /**
-     * Stores references to players.
-     *
-     * @see #makePlayer(PlayerInfo)
+     * Stores references to created tiles.
      */
-    private static final Map<PlayerInfo, JComponent> memoizePlayer = new WeakHashMap<>();
-
-    /**
-     * Stores references to enemies.
-     *
-     * @see #makeEnemy(EnemyInfo)
-     */
-    private static final Map<EnemyInfo, JComponent> memoizeEnemy = new WeakHashMap<>();
+    private static final Map<SpriteMemoize, JComponent> memoizeSprite = new WeakHashMap<>();
 
     private TileMaker() {
         //empty
@@ -65,7 +58,8 @@ final class TileMaker {
                     return position.x() == x && position.y() == y;
                 })
                 //If tile present, calls `makeTile`, else, calls `emptyTile`.
-                .findFirst().map(TileMaker::makeTile).orElseGet(TileMaker::emptyTile);
+                .findFirst().map(tile -> makeTile(tile, new Vector2D(x, y))).orElseGet(
+                        TileMaker::emptyTile);
 
         int width = level.getWidth();
         int height = level.getHeight();
@@ -86,15 +80,21 @@ final class TileMaker {
      * <p>The specific subclass of <code>tile</code> provides information on what the tile will
      * appear as.
      *
-     * @param tile The tile to make a component of.
+     * @param tile     The tile to make a component of.
+     * @param position The location of the tile, used as its identity.
      * @return A representation of the tile.
      * @throws IllegalArgumentException If <code>tile</code> doesn't match any known subclass of
      *                                  <code>Tile</code>.
      * @throws NullPointerException     If <code>tile</code> is null.
      */
-    private static JComponent makeTile(final Tile tile) throws IllegalArgumentException {
+    private static JComponent makeTile(final Tile tile, final Vector2D position)
+            throws IllegalArgumentException {
         Objects.requireNonNull(tile);
         //TODO: Stub, final version should assign the label the image associated with the Tile.
+        if (tile.getClass().equals(Wall.class)) {
+            //TODO: stub, only matches one class
+            return makeSprite(ImageLoader.getWall(), position);
+        }
         return new JLabel(tile.getClass().getSimpleName()) {
             {
                 setBorder(BorderFactory.createLineBorder(Color.BLUE));
@@ -118,39 +118,46 @@ final class TileMaker {
     }
 
     static JComponent makePlayer(final PlayerInfo playerInfo) {
-        return memoizePlayer.computeIfAbsent(playerInfo,
-                p -> makeSprite(DefaultImages.DEFAULT_PLAYER_IMAGE));
+        return makeSprite(DefaultImages.DEFAULT_PLAYER_IMAGE, playerInfo);
     }
 
     static JComponent makeEnemy(final EnemyInfo enemyInfo) {
-        return memoizeEnemy.computeIfAbsent(enemyInfo,
-                e -> makeSprite(DefaultImages.DEFAULT_ENEMY_IMAGE));
+        return makeSprite(DefaultImages.DEFAULT_ENEMY_IMAGE, enemyInfo);
     }
 
-    private static JComponent makeSprite(final Image image) {
-        return new JLabel() {
-            {
-                addComponentListener(new ComponentAdapter() {
-                    @Override
-                    public void componentResized(final ComponentEvent e) {
+
+    private static JComponent makeSprite(final Image image, final Object identity) {
+        Objects.requireNonNull(image);
+        Objects.requireNonNull(identity);
+
+        return memoizeSprite.computeIfAbsent(new SpriteMemoize(image, identity),
+                spriteMemoize -> new JLabel() {
+                    {
+                        addComponentListener(new ComponentAdapter() {
+                            @Override
+                            public void componentResized(final ComponentEvent e) {
+                                updateIcon();
+                            }
+                        });
                         updateIcon();
                     }
+
+                    private void updateIcon() {
+                        if (getWidth() <= 0 || getHeight() <= 0) {
+                            return; //Can't scale image if 0 dimensions.
+                        }
+                        Icon scaledIcon = memoizeIcon.computeIfAbsent(
+                                new ImageScaleMemoize(spriteMemoize.image, getWidth(), getHeight()),
+                                r -> new ImageIcon(r.notScaled()
+                                        .getScaledInstance(getWidth(), getHeight(),
+                                                Image.SCALE_FAST)));
+
+                        setIcon(scaledIcon);
+                    }
                 });
-                updateIcon();
-            }
+    }
 
-            private void updateIcon() {
-                if (getWidth() <= 0 || getHeight() <= 0) {
-                    return; //Can't scale image if 0 dimensions.
-                }
-                Icon scaledIcon = memoizeIcon.computeIfAbsent(
-                        new ImageScaleMemoize(image, getWidth(), getHeight()), r -> new ImageIcon(
-                                r.notScaled().getScaledInstance(getWidth(), getHeight(),
-                                        Image.SCALE_FAST)));
-
-                setIcon(scaledIcon);
-            }
-        };
+    record SpriteMemoize(Image image, Object identity) {
     }
 
     record ImageScaleMemoize(Image notScaled, int width, int height) {
