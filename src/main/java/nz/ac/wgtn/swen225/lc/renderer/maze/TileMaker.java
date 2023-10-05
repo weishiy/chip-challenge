@@ -4,8 +4,7 @@ import nz.ac.wgtn.swen225.lc.domain.Vector2D;
 import nz.ac.wgtn.swen225.lc.domain.level.Level;
 import nz.ac.wgtn.swen225.lc.domain.level.characters.Enemy;
 import nz.ac.wgtn.swen225.lc.domain.level.characters.Player;
-import nz.ac.wgtn.swen225.lc.domain.level.tiles.Tile;
-import nz.ac.wgtn.swen225.lc.domain.level.tiles.Wall;
+import nz.ac.wgtn.swen225.lc.domain.level.tiles.*;
 import nz.ac.wgtn.swen225.lc.renderer.assets.ImageLoader;
 
 import javax.swing.*;
@@ -18,16 +17,27 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.WeakHashMap;
 import java.util.function.BiFunction;
+import java.util.function.Supplier;
 
 /**
  * Helper interface for making tiles for the maze.
  */
 public final class TileMaker {
 
-    //Memoization caches function calls, to avoid repeating calculations while keeping functional
-    // orientation. Without memoization, some of these entities appear to flicker.
+    /**
+     * Maps tiles to suppliers of images representing those tiles.
+     */
+    private static final Map<Class<? extends Tile>, Supplier<Image>> TILE_MAPPING = Map.of(
+            ChipTile.class, ImageLoader::getChip /*TODO:load image on top of empty space */,
+            Exit.class, ImageLoader::getExit, ExitLock.class, ImageLoader::getDoor /*TODO: Uses default door for exit lock. Should be
+      different. */, InfoField.class, ImageLoader::getInfoIcon, KeyTile.class, ImageLoader::getKey,
+            LockedDoor.class, ImageLoader::getDoor, Wall.class, ImageLoader::getWall);
+
     /**
      * Stores references to scaled images.
+     *
+     * <p>Memoization caches function calls, to avoid repeating calculations while keeping
+     * functional orientation. Without memoization, some of these entities appear to flicker.
      *
      * @see #makeSprite(Image, Object)
      */
@@ -35,6 +45,9 @@ public final class TileMaker {
 
     /**
      * Stores references to created tiles.
+     *
+     * <p>Memoization caches function calls, to avoid repeating calculations while keeping
+     * functional orientation. Without memoization, some of these entities appear to flicker.
      */
     private static final Map<SpriteMemoize, JComponent> memoizeSprite = new WeakHashMap<>();
 
@@ -59,7 +72,7 @@ public final class TileMaker {
                 })
                 //If tile present, calls `makeTile`, else, calls `emptyTile`.
                 .findFirst().map(tile -> makeTile(tile, new Vector2D(x, y))).orElseGet(
-                        TileMaker::emptyTile);
+                        () -> TileMaker.emptyTile(new Vector2D(x, y)));
 
         int width = level.getWidth();
         int height = level.getHeight();
@@ -90,11 +103,14 @@ public final class TileMaker {
     private static JComponent makeTile(final Tile tile, final Vector2D position)
             throws IllegalArgumentException {
         Objects.requireNonNull(tile);
-        //TODO: Stub, final version should assign the label the image associated with the Tile.
-        if (tile.getClass().equals(Wall.class)) {
-            //TODO: stub, only matches one class
-            return makeSprite(ImageLoader.getWall(), position);
+        Supplier<Image> imageSupplier = TILE_MAPPING.get(tile.getClass());
+        if (imageSupplier == null) {
+            throw new IllegalArgumentException("The provided tile isn't recognised.");
         }
+        return makeSprite(imageSupplier.get(), position);
+    }
+
+    private static JComponent simpleTile(final Object tile) {
         return new JLabel(tile.getClass().getSimpleName()) {
             {
                 setBorder(BorderFactory.createLineBorder(Color.BLUE));
@@ -108,13 +124,8 @@ public final class TileMaker {
      *
      * @return A component representing an empty tile.
      */
-    private static JComponent emptyTile() {
-        //TODO: add image
-        return new JLabel() {
-            {
-                setBorder(BorderFactory.createLineBorder(Color.YELLOW));
-            }
-        };
+    private static JComponent emptyTile(final Vector2D position) {
+        return makeSprite(ImageLoader.getSpace(), position);
     }
 
     static JComponent makePlayer(final PlayerInfo playerInfo) {
