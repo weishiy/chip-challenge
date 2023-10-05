@@ -108,13 +108,13 @@ public class Game extends Entity {
     }
 
     public void addListener(GameEventListener listener) {
-        if (!listeners.contains(listener)) {
-            listeners.add(listener);
+        if (!listeners.contains(listener) && !listenersToAdd.contains(listener)) {
+            listenersToAdd.add(listener);
         }
     }
 
     public void removeListener(GameEventListener listener) {
-        listeners.remove(listener);
+        listenersToRemove.add(listener);
     }
 
     /**
