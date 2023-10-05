@@ -52,6 +52,42 @@ public final class ImageLoader {
         return getImage(Resources.WALL_00);
     }
 
+    /**
+     * Returns image of enemy.
+     *
+     * @return Image of enemy.
+     */
+    public static Image getEnemy() {
+        return getImage(Resources.DOG_DOWN_1);
+    }
+
+    /**
+     * Returns image for empty space.
+     *
+     * @return Image of empty space.
+     */
+    public static Image getSpace() {
+        return getImage(Resources.SPACE);
+    }
+
+    /**
+     * Returns image of chip.
+     *
+     * @return Image of chip.
+     */
+    public static Image getChip() {
+        return getImage(Resources.RED_GEM);
+    }
+
+    /**
+     * Returns image of exit tile.
+     *
+     * @return Image representing level exit.
+     */
+    public static Image getExit() {
+        return getImage(Resources.STAIRCASE_1);
+    }
+
     private static final class Resources {
         /**
          * Default door image.
@@ -62,6 +98,26 @@ public final class ImageLoader {
          * Default wall image.
          */
         private static final URI WALL_00 = getResource("/images/walls/wall_00.png");
+
+        /**
+         * Default enemy.
+         */
+        private static final URI DOG_DOWN_1 = getResource("/images/enemies/dog/dog_down_1.png");
+
+        /**
+         * Default space.
+         */
+        private static final URI SPACE = getResource("/images/spaces/space.png");
+
+        /**
+         * Default chip.
+         */
+        private static final URI RED_GEM = getResource("/images/keys_gems/red_gem.png");
+
+        /**
+         * Default exit.
+         */
+        private static final URI STAIRCASE_1 = getResource("/images/exits/staircase_1.png");
 
         private static URI getResource(final String name) {
             URL url = Objects.requireNonNull(ImageLoader.class.getResource(name),
