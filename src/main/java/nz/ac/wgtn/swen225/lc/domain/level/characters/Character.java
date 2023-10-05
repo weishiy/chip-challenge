@@ -3,8 +3,11 @@ package nz.ac.wgtn.swen225.lc.domain.level.characters;
 import nz.ac.wgtn.swen225.lc.domain.Entity;
 import nz.ac.wgtn.swen225.lc.domain.Game;
 import nz.ac.wgtn.swen225.lc.domain.level.Level;
-import nz.ac.wgtn.swen225.lc.domain.Vector2D;
+import nz.ac.wgtn.swen225.lc.utils.Vector2D;
 
+/**
+ * Parent class for Enemy and Player
+ */
 public abstract class Character extends Entity {
 
     private Level level;
@@ -12,6 +15,11 @@ public abstract class Character extends Entity {
 
     public Character(Vector2D position) {
         super();
+        this.position = position;
+    }
+
+    public Character(int id, Vector2D position) {
+        super(id);
         this.position = position;
     }
 

@@ -1,8 +1,8 @@
 package nz.ac.wgtn.swen225.lc.app;
 
 import nz.ac.wgtn.swen225.lc.domain.Game;
-import nz.ac.wgtn.swen225.lc.domain.Vector2D;
-import nz.ac.wgtn.swen225.lc.domain.events.ChipsPickedUpEvent;
+import nz.ac.wgtn.swen225.lc.utils.Vector2D;
+import nz.ac.wgtn.swen225.lc.domain.events.ChipPickedUpEvent;
 import nz.ac.wgtn.swen225.lc.domain.events.CountDownEvent;
 import nz.ac.wgtn.swen225.lc.domain.events.GameEvent;
 import nz.ac.wgtn.swen225.lc.domain.level.characters.Enemy;
@@ -168,7 +168,7 @@ public class GameEngineImpl implements GameEngine {
         // Handle game events, such as countdown and chip picked up events
         if(gameEvent instanceof CountDownEvent) {
             this.updateTimeLabel();
-        } else if (gameEvent instanceof ChipsPickedUpEvent) {
+        } else if (gameEvent instanceof ChipPickedUpEvent) {
             this.updateChipsLeftLabel();
         }
     }
@@ -183,5 +183,8 @@ public class GameEngineImpl implements GameEngine {
         this.chipsLeftLabel.setText(Integer.toString(this.game.getChipsLeft()));
     }
 
-
+    //This is just a small piece of code which I've added to allow fuzzer to access the player position
+    public Game getGame() {
+        return this.game;
+    }
 }

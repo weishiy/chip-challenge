@@ -4,7 +4,7 @@ import nz.ac.wgtn.swen225.lc.app.Application;
 import nz.ac.wgtn.swen225.lc.app.GameEngine;
 import nz.ac.wgtn.swen225.lc.app.GameEngineImpl;
 import nz.ac.wgtn.swen225.lc.domain.Game;
-import nz.ac.wgtn.swen225.lc.domain.Vector2D;
+import nz.ac.wgtn.swen225.lc.utils.Vector2D;
 import nz.ac.wgtn.swen225.lc.domain.events.GameEvent;
 import nz.ac.wgtn.swen225.lc.domain.events.GameEventListener;
 import nz.ac.wgtn.swen225.lc.domain.events.GameOverEvent;

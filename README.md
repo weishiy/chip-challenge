@@ -11,9 +11,9 @@ inputs), and it notifies renderer (view)/application (controller) about its inte
 events. There are different timers, sitting in different modules and used to
 drive different workflows: gameplay, replay and fuzz testing.
 
-Put it together, here is how the system works under different workflows:
+Putting it together, here is how the system works under different workflows:
 
-Gameplay
+**Gameplay**
 
 <img alt="gameplay.png" src="src/site/images/gameplay.png" width="640">
 
@@ -26,7 +26,7 @@ A Timer fires ticks every 1.0/Game.FRAME_RATE seconds:
    those events.
 5. GameEngine updates itself as needed when it receives those events.
 
-Replay
+**Replay**
 
 <img alt="replay.png" src="src/site/images/replay.png" width="640" >
 
@@ -38,7 +38,7 @@ A Timer fires ticks every 1.0/Game.FRAME_RATE (adjustable) seconds:
    those events.
 4. GameEngine updates itself as needed when it receives those events.
 
-Fuzz Testing
+**Fuzz Testing**
 
 <img alt="fuzz_test.png" src="src/site/images/fuzz_test.png" width="640" >
 
@@ -49,6 +49,20 @@ A Timer fires ticks:
 3. Domain fires GameEvent(s) when its internal state changes. Renderer render(repaint) itself as needed when it receives
    those events.
 4. GameEngine updates itself as needed when it receives those events.
+
+**GUI**
+
+Here're the layers of GUI:
+
+<img alt="gui.png" src="src/site/images/gui.png" width="640" >
+
+* **Application GUI**. Created by Application module. The main window, which is normally a JFrame, of the application.
+* **HUB (glass pane)**. Created by Application module. A JPanel (or other alternatives) that's laid on top of the game 
+  window. This pane can be used to place move control buttons, player inventory, game stats (level no, chips left, 
+  timer, etc) and messages (Paused, Replay Ended, etc)   
+* **Game window**. Created by Renderer module. The game window used to render the game.    
+ 
+
 
 ### Domain
 
@@ -93,7 +107,8 @@ GameEvent                   -> Parent class for all events
     PlayerMovedEvent        -> Fires when position of the player changed
     EnemyMovedEvent         -> Fires when position of an enemy changed
     KeyPickedUpEvent        -> Fires when a key is picked up by a player
-    ChipsPickedUpEvent      -> Fires when a chip is picked up by a player
+    KeyConsumedEvent        -> Fires when a key is consumed (to unlock a door)
+    ChipPickedUpEvent       -> Fires when a chip is picked up by a player
     DockUnlockedEvent       -> Fires when a door is unlocked
     ExitLockUnlockedEvent   -> Fires when the exit lock is unlocked
     InfoFieldPressedEvent   -> Fires when player entered a info field 
@@ -106,6 +121,7 @@ GameEvent                   -> Parent class for all events
     -- timer events --
     TickEvent               -> Fires at the end of every tick
     CountDownEvent          -> Fires every second (PS: countdown decrease 1)
+    TimeoutEvent            -> Fires when level timed out
 ```
 
 ### Application

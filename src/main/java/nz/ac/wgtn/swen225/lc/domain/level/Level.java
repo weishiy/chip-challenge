@@ -5,7 +5,7 @@ import nz.ac.wgtn.swen225.lc.domain.Game;
 import nz.ac.wgtn.swen225.lc.domain.level.characters.Enemy;
 import nz.ac.wgtn.swen225.lc.domain.level.characters.Player;
 import nz.ac.wgtn.swen225.lc.domain.level.tiles.Tile;
-import nz.ac.wgtn.swen225.lc.domain.Vector2D;
+import nz.ac.wgtn.swen225.lc.utils.Vector2D;
 
 import java.io.Serializable;
 import java.util.HashSet;
@@ -14,7 +14,10 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-public class Level extends Entity implements Serializable {
+/**
+ * Presents a level (or maze/board). Contains what's on the board: tiles (excluding free tiles), enemies, player, etc
+ */
+public class Level extends Entity {
 
     private final int levelNo;
     private final int width;
@@ -27,12 +30,32 @@ public class Level extends Entity implements Serializable {
 
     private Game game;
 
+    /**
+     * Creates a level
+     *
+     * @param levelNo level number
+     * @param width how many tiles the level has in a row
+     * @param height how many tiles the level has in a column
+     * @param timeoutInSeconds timeout
+     */
     public Level(int levelNo, int width, int height, int timeoutInSeconds) {
         super();
         this.levelNo = levelNo;
         this.width = width;
         this.height = height;
         this.timeoutInSeconds = timeoutInSeconds;
+    }
+
+    public Level(int id, int levelNo, int width, int height, int timeoutInSeconds, Set<Tile> tiles,
+                 Set<Enemy> enemies, Player player) {
+        super(id);
+        this.levelNo = levelNo;
+        this.width = width;
+        this.height = height;
+        this.timeoutInSeconds = timeoutInSeconds;
+        tiles.forEach(this::addTile);
+        enemies.forEach(this::addEnemy);
+        setPlayer(player);
     }
 
     public int getLevelNo() {
@@ -98,10 +121,24 @@ public class Level extends Entity implements Serializable {
         this.game = game;
     }
 
+    /**
+     * Moves player with the vector passed in. Invokes {@link Tile#onExit(Player player)} on old tile and
+     * {@link Tile#onEnter(Player player)} on new tile.
+     * <p>
+     * This will not player if movement is null or {@link Vector2D#ZERO}
+     * <p>
+     * @param movement player movement.
+     */
     public void movePlayer(Vector2D movement) {
-        if (movement != null) {
+        if (movement != null && movement != Vector2D.ZERO) {
             var oldPosition = player.getPosition();
             var newPosition = oldPosition.add(movement);
+
+            if (newPosition.x() < 0 || newPosition.x() >= width ||
+                    newPosition.y() < 0 || newPosition.y() >= width) {
+                throw new IllegalArgumentException("Player went outside the board");
+            }
+
             var oldTile = getTile(oldPosition);
             var newTile = getTile(newPosition);
             if (newTile == null || newTile.isEnterable(player)) {
@@ -116,9 +153,22 @@ public class Level extends Entity implements Serializable {
         }
     }
 
+    /**
+     * Moves enemy with the vector passed in.
+     * <p>
+     * This will not enemy if movement is null or {@link Vector2D#ZERO}
+     * <p>
+     * @param enemy enemy
+     * @param movement enemy movement
+     */
     public void move(Enemy enemy, Vector2D movement) {
-        if (movement != null) {
-            enemy.setPosition(enemy.getPosition().add(movement));
+        if (movement != null && movement != Vector2D.ZERO) {
+            var newPosition = enemy.getPosition().add(movement);
+            if (newPosition.x() < 0 || newPosition.x() >= width ||
+                    newPosition.y() < 0 || newPosition.y() >= width) {
+                throw new IllegalArgumentException("Enemy went outside the board");
+            }
+            enemy.setPosition(newPosition);
         }
     }
 
