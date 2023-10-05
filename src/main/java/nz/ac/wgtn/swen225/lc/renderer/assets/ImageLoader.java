@@ -80,6 +80,24 @@ public final class ImageLoader {
     }
 
     /**
+     * Returns image of info icon.
+     *
+     * @return Image of info icon.
+     */
+    public static Image getInfoIcon() {
+        return getImage(Resources.INFO_ICON);
+    }
+
+    /**
+     * Returns image of key.
+     *
+     * @return Image of key.
+     */
+    public static Image getKey() {
+        return getImage(Resources.KEY);
+    }
+
+    /**
      * Returns image of exit tile.
      *
      * @return Image representing level exit.
@@ -113,6 +131,16 @@ public final class ImageLoader {
          * Default chip.
          */
         private static final URI RED_GEM = getResource("/images/keys_gems/red_gem.png");
+
+        /**
+         * Info icon.
+         */
+        private static final URI INFO_ICON = getResource("/images/keys_gems/info_icon.png");
+
+        /**
+         * Key for opening exit door.
+         */
+        private static final URI KEY = getResource("/images/keys_gems/key.png");
 
         /**
          * Default exit.
