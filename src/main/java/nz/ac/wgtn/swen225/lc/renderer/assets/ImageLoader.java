@@ -44,6 +44,24 @@ public final class ImageLoader {
     }
 
     /**
+     * Returns image for a door, to traverse up and down.
+     *
+     * @return Image of a door.
+     */
+    public static Image getUpDownDoor() {
+        return getImage(Resources.DOOR_CLOSED_DOWN);
+    }
+
+    /**
+     * Returns image for a door, to traverse left and right.
+     *
+     * @return Image of a door.
+     */
+    public static Image getLeftRightDoor() {
+        return getImage(Resources.DOOR_CLOSED_LEFT);
+    }
+
+    /**
      * Returns image for a wall.
      *
      * @return Image of a wall.
@@ -115,12 +133,20 @@ public final class ImageLoader {
         return getImage(Resources.STAIRCASE_1);
     }
 
+
     private static final class Resources {
         /**
-         * Default door image.
+         * Up-down door image.
          */
         private static final URI DOOR_CLOSED_DOWN = getResource(
                 "/images/doors/door_closed_down.png");
+
+        /**
+         * Left-right door image.
+         */
+        private static final URI DOOR_CLOSED_LEFT = getResource(
+                "/images/doors/door_closed_left.png");
+
         /**
          * Default wall image.
          */

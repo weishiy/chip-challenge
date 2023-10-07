@@ -3,12 +3,20 @@ package nz.ac.wgtn.swen225.lc.renderer.maze;
 import nz.ac.wgtn.swen225.lc.domain.level.Level;
 import nz.ac.wgtn.swen225.lc.domain.level.characters.Enemy;
 import nz.ac.wgtn.swen225.lc.domain.level.characters.Player;
+import nz.ac.wgtn.swen225.lc.domain.level.tiles.ExitLock;
+import nz.ac.wgtn.swen225.lc.domain.level.tiles.LockedDoor;
+import nz.ac.wgtn.swen225.lc.domain.level.tiles.Tile;
+import nz.ac.wgtn.swen225.lc.domain.level.tiles.Wall;
+import nz.ac.wgtn.swen225.lc.renderer.assets.DoorComponent;
+import nz.ac.wgtn.swen225.lc.renderer.assets.TileMaker;
 import nz.ac.wgtn.swen225.lc.utils.Vector2D;
 
 import javax.swing.*;
 import java.awt.*;
 import java.util.Objects;
 import java.util.Set;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 /**
  * Renders the tiles and characters on a level.
@@ -38,9 +46,9 @@ public class ResizeableMaze extends JLayeredPane {
      * Constructor.
      */
     public ResizeableMaze() {
-        int layerIndex;
+        int layerIndex = 1;
 
-        setLayer(board, layerIndex = 1);
+        setLayer(board, layerIndex);
         add(board);
 
         setLayer(objects, ++layerIndex);
@@ -215,12 +223,55 @@ public class ResizeableMaze extends JLayeredPane {
         }
 
         private void addObjects() {
+            final Set<Vector2D> wallPositions = getWallPositions();
+
             level.getTiles().stream().filter(tile -> TileMaker.OBJECTS.contains(tile.getClass()))
                     .forEach(tile -> {
+                        //Doors rendered specially
+                        if (tile.getClass().equals(LockedDoor.class) || tile.getClass().equals(
+                                ExitLock.class)) {
+                            addDoor(wallPositions, tile);
+                            return;
+                        }
+
                         JComponent objectComponent = TileMaker.makeTile(tile);
                         objectComponent.setBounds(makeBounds(tile.getPosition()));
                         add(objectComponent);
                     });
+        }
+
+        private Set<Vector2D> getWallPositions() {
+            return level.getTiles().stream().filter(tile -> Wall.class.equals(tile.getClass())).map(
+                    Tile::getPosition).collect(Collectors.toSet());
+        }
+
+        private void addDoor(final Set<Vector2D> wallPositions, final Tile door) {
+            final Vector2D position = door.getPosition();
+            final Function<Vector2D, Boolean> isWallPresentFromOffset =
+                    offset -> wallPositions.contains(position.add(offset));
+
+            boolean wallAbove = isWallPresentFromOffset.apply(Vector2D.UP);
+            boolean wallBelow = isWallPresentFromOffset.apply(Vector2D.DOWN);
+
+            boolean wallLeft = isWallPresentFromOffset.apply(Vector2D.LEFT);
+            boolean wallRight = isWallPresentFromOffset.apply(Vector2D.RIGHT);
+
+            //Depending on presence of walls around door, we choose different orientation
+            if ((wallAbove && wallBelow) && !(wallLeft || wallRight)) {
+                DoorComponent doorComponent = TileMaker.makeLeftRightDoor(position);
+                doorComponent.setDoorBounds(makeBounds(position));
+                add(doorComponent);
+            } else if (!(wallAbove || wallBelow) && (wallLeft && wallRight)) {
+                DoorComponent doorComponent = TileMaker.makeUpDownDoor(position);
+                doorComponent.setDoorBounds(makeBounds(position));
+                add(doorComponent);
+            } else {
+                //Default case, we make up-down door.
+                //Leave redundant if statement above in case we want to make different default door.
+                DoorComponent doorComponent = TileMaker.makeUpDownDoor(position);
+                doorComponent.setBounds(makeBounds(position));
+                add(doorComponent);
+            }
         }
     }
 

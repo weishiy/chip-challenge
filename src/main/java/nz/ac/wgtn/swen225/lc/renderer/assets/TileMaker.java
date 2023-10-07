@@ -1,10 +1,9 @@
-package nz.ac.wgtn.swen225.lc.renderer.maze;
+package nz.ac.wgtn.swen225.lc.renderer.assets;
 
 import nz.ac.wgtn.swen225.lc.domain.level.Level;
 import nz.ac.wgtn.swen225.lc.domain.level.characters.Enemy;
 import nz.ac.wgtn.swen225.lc.domain.level.characters.Player;
 import nz.ac.wgtn.swen225.lc.domain.level.tiles.*;
-import nz.ac.wgtn.swen225.lc.renderer.assets.ImageLoader;
 import nz.ac.wgtn.swen225.lc.utils.Vector2D;
 
 import javax.swing.*;
@@ -33,8 +32,8 @@ public final class TileMaker {
      */
     private static final Map<Class<? extends Tile>, Supplier<Image>> TILE_MAPPING = Map.of(
             ChipTile.class, ImageLoader::getChip, Exit.class, ImageLoader::getExit, ExitLock.class,
-            ImageLoader::getDoor /*TODO: Uses default door for exit lock. Should be
-      different. */, InfoField.class, ImageLoader::getInfoIcon, KeyTile.class, ImageLoader::getKey,
+            ImageLoader::getDoor /*TODO: Uses default door for exit lock. Should be different. */,
+            InfoField.class, ImageLoader::getInfoIcon, KeyTile.class, ImageLoader::getKey,
             LockedDoor.class, ImageLoader::getDoor, Wall.class, ImageLoader::getWall);
     /**
      * Caches scaled images.
@@ -67,7 +66,7 @@ public final class TileMaker {
      * @return 2D array of JComponents. The first dimension is <code>level.getWidth()</code> and the
      * second dimension is <code>level.getHeight()</code>.
      */
-    static JComponent[][] makeBoard(final Level level) {
+    public static JComponent[][] makeBoard(final Level level) {
         Set<Tile> tiles = level.getTiles();
         BiFunction<Integer, Integer, JComponent> getTile = (x, y) -> tiles.stream()
                 //Gets first tile that matches coordinates
@@ -137,6 +136,26 @@ public final class TileMaker {
     }
 
     /**
+     * Makes a vertical, up-down door.
+     *
+     * @param position Board position for identity.
+     * @return Component representing this door.
+     */
+    public static DoorComponent makeUpDownDoor(final Vector2D position) {
+        return makeDoor(ImageLoader.getUpDownDoor(), position);
+    }
+
+    /**
+     * Makes a horizontal, left-right door.
+     *
+     * @param position Board position for identity.
+     * @return Component representing this door.
+     */
+    public static DoorComponent makeLeftRightDoor(final Vector2D position) {
+        return makeDoor(ImageLoader.getLeftRightDoor(), position);
+    }
+
+    /**
      * Creates component representing an empty tile.
      *
      * @param position Where the component resides, as used for identity.
@@ -146,14 +165,39 @@ public final class TileMaker {
         return makeSprite(ImageLoader.getSpace(), position);
     }
 
-    static JComponent makePlayer(final PlayerInfo playerInfo) {
+    /**
+     * Gets component representing the player.
+     *
+     * @param playerInfo Info describing this player.
+     * @return Component representing this player.
+     */
+    public static JComponent makePlayer(final PlayerInfo playerInfo) {
         return makeSprite(ImageLoader.getPlayer(), playerInfo);
     }
 
-    static JComponent makeEnemy(final EnemyInfo enemyInfo) {
+    /**
+     * Gets component representing an enemy.
+     *
+     * @param enemyInfo Info describing this enemy.
+     * @return Component representing this enemy.
+     */
+    public static JComponent makeEnemy(final EnemyInfo enemyInfo) {
         return makeSprite(ImageLoader.getEnemy(), enemyInfo);
     }
 
+    private static DoorComponent makeDoor(final Image image, final Object identity) {
+        Objects.requireNonNull(image);
+        Objects.requireNonNull(identity);
+
+        //Casting, *should* be safe, so long as `image` is always an image to a door.
+        return (DoorComponent) cacheTileComponent.computeIfAbsent(
+                new NewComponentArgument(image, identity),
+                componentArgument -> new DoorComponent() {
+                    {
+                        componentArgument.keepIconScaled(this);
+                    }
+                });
+    }
 
     private static JComponent makeSprite(final Image image, final Object identity) {
         Objects.requireNonNull(image);
@@ -162,28 +206,10 @@ public final class TileMaker {
         return cacheTileComponent.computeIfAbsent(new NewComponentArgument(image, identity),
                 componentArgument -> new JLabel() {
                     {
-                        addComponentListener(new ComponentAdapter() {
-                            @Override
-                            public void componentResized(final ComponentEvent e) {
-                                updateIcon();
-                            }
-                        });
-                        updateIcon();
-                    }
-
-                    private void updateIcon() {
-                        if (getWidth() <= 0 || getHeight() <= 0) {
-                            return; //Can't scale image if 0 dimensions.
-                        }
-                        Icon scaledIcon = memoizeScaledIcon.computeIfAbsent(
-                                new ScaleImageArgument(componentArgument.image, getWidth(),
-                                        getHeight()), r -> new ImageIcon(r.notScaled()
-                                        .getScaledInstance(getWidth(), getHeight(),
-                                                Image.SCALE_FAST)));
-
-                        setIcon(scaledIcon);
+                        componentArgument.keepIconScaled(this);
                     }
                 });
+
     }
 
     /**
@@ -194,6 +220,38 @@ public final class TileMaker {
      *                 </code>, then <code>o</code> corresponds to the same tile as this.
      */
     record NewComponentArgument(Image image, Object identity) {
+        /**
+         * Whenever this label is resized, updates the icons scale.
+         *
+         * @param label The label to keep updated.
+         */
+        public void keepIconScaled(final JLabel label) {
+            label.addComponentListener(new ComponentAdapter() {
+                @Override
+                public void componentResized(final ComponentEvent e) {
+                    updateIcon(label);
+                }
+            });
+            updateIcon(label);
+        }
+
+        /**
+         * Updates the icon for the label to a new scaling.
+         *
+         * @param label The label to be updated.
+         */
+        private void updateIcon(final JLabel label) {
+            if (label.getWidth() <= 0 || label.getHeight() <= 0) {
+                return; //Can't scale image if 0 dimensions.
+            }
+            Icon scaledIcon = memoizeScaledIcon.computeIfAbsent(
+                    new ScaleImageArgument(image, label.getWidth(), label.getHeight()),
+                    r -> new ImageIcon(r.notScaled()
+                            .getScaledInstance(label.getWidth(), label.getHeight(),
+                                    Image.SCALE_FAST)));
+
+            label.setIcon(scaledIcon);
+        }
     }
 
     /**
@@ -206,12 +264,26 @@ public final class TileMaker {
     record ScaleImageArgument(Image notScaled, int width, int height) {
     }
 
-    record EnemyInfo(Enemy enemy) {
+    /**
+     * Info describing an enemy sprite.
+     *
+     * @param identity Something to unique identify which enemy this is.
+     */
+    public record EnemyInfo(Object identity) {
+        public EnemyInfo(final Enemy enemy) {
+            //In order to keep different enemies separate, we keep reference as identity
+            this((Object) enemy);
+        }
 
     }
 
-    record PlayerInfo(Player player) {
-
+    /**
+     * Info describing the player sprite.
+     */
+    public record PlayerInfo() {
+        public PlayerInfo(final Player player) {
+            this();
+        }
     }
 
 }
