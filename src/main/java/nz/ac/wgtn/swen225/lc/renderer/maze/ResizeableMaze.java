@@ -38,9 +38,9 @@ public class ResizeableMaze extends JLayeredPane {
      * Constructor.
      */
     public ResizeableMaze() {
-        int layerIndex = 0;
+        int layerIndex;
 
-        setLayer(board, ++layerIndex);
+        setLayer(board, layerIndex = 1);
         add(board);
 
         setLayer(objects, ++layerIndex);
