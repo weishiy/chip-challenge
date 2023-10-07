@@ -63,7 +63,7 @@ public class DefaultReplayer implements Replayer {
         this.unbindKeyStrokes(); // Unbind keys used for the replay control
     }
 
-    private void update(){
+    public void update(){
         var currentTick = gameEngine.getTickNo();
         // Check if the replay has reached the end
         if(currentTick == endTick) {
