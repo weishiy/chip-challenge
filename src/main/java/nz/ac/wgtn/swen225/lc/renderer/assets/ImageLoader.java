@@ -62,6 +62,15 @@ public final class ImageLoader {
     }
 
     /**
+     * Returns image of player.
+     *
+     * @return Image of player.
+     */
+    public static Image getPlayer() {
+        return getImage(Resources.PLAYER_DOWN_1);
+    }
+
+    /**
      * Returns image for empty space.
      *
      * @return Image of empty space.
@@ -121,6 +130,11 @@ public final class ImageLoader {
          * Default enemy.
          */
         private static final URI DOG_DOWN_1 = getResource("/images/enemies/dog/dog_down_1.png");
+
+        /**
+         * Default player sprite.
+         */
+        private static final URI PLAYER_DOWN_1 = getResource("/images/player/player_down_1.png");
 
         /**
          * Default space.
