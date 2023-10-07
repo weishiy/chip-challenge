@@ -1,11 +1,11 @@
 package nz.ac.wgtn.swen225.lc.renderer.maze;
 
-import nz.ac.wgtn.swen225.lc.utils.Vector2D;
 import nz.ac.wgtn.swen225.lc.domain.level.Level;
 import nz.ac.wgtn.swen225.lc.domain.level.characters.Enemy;
 import nz.ac.wgtn.swen225.lc.domain.level.characters.Player;
 import nz.ac.wgtn.swen225.lc.domain.level.tiles.*;
 import nz.ac.wgtn.swen225.lc.renderer.assets.ImageLoader;
+import nz.ac.wgtn.swen225.lc.utils.Vector2D;
 
 import javax.swing.*;
 import java.awt.*;
@@ -25,14 +25,18 @@ import java.util.function.Supplier;
 public final class TileMaker {
 
     /**
+     * Objects are non-opaque tiles. They are rendered on a separate layer.
+     */
+    public static final Set<Class<? extends Tile>> OBJECTS = Set.of(ChipTile.class, ExitLock.class,
+            InfoField.class, KeyTile.class, LockedDoor.class);
+    /**
      * Maps tiles to suppliers of images representing those tiles.
      */
     private static final Map<Class<? extends Tile>, Supplier<Image>> TILE_MAPPING = Map.of(
-            ChipTile.class, ImageLoader::getChip /*TODO:load image on top of empty space */,
-            Exit.class, ImageLoader::getExit, ExitLock.class, ImageLoader::getDoor /*TODO: Uses default door for exit lock. Should be
+            ChipTile.class, ImageLoader::getChip, Exit.class, ImageLoader::getExit, ExitLock.class,
+            ImageLoader::getDoor /*TODO: Uses default door for exit lock. Should be
       different. */, InfoField.class, ImageLoader::getInfoIcon, KeyTile.class, ImageLoader::getKey,
             LockedDoor.class, ImageLoader::getDoor, Wall.class, ImageLoader::getWall);
-
     /**
      * Caches scaled images.
      *
@@ -50,14 +54,15 @@ public final class TileMaker {
      * ones with images) results in flickering. This caching avoids this, while still being
      * outwardly functional.
      */
-    private static final Map<NewComponentArgument, JComponent> cacheTileComponent = new WeakHashMap<>();
+    private static final Map<NewComponentArgument, JComponent> cacheTileComponent =
+            new WeakHashMap<>();
 
     private TileMaker() {
         //empty
     }
 
     /**
-     * Creates a board representing the tiles in the level.
+     * Creates a board representing the opaque tiles in the level.
      *
      * @param level The level to represent.
      * @return 2D array of JComponents. The first dimension is <code>level.getWidth()</code> and the
@@ -72,7 +77,7 @@ public final class TileMaker {
                     return position.x() == x && position.y() == y;
                 })
                 //If tile present, calls `makeTile`, else, calls `emptyTile`.
-                .findFirst().map(tile -> makeTile(tile, new Vector2D(x, y))).orElseGet(
+                .findFirst().map(TileMaker::makeBoardTile).orElseGet(
                         () -> TileMaker.emptyTile(new Vector2D(x, y)));
 
         int width = level.getWidth();
@@ -94,21 +99,42 @@ public final class TileMaker {
      * <p>The specific subclass of <code>tile</code> provides information on what the tile will
      * appear as.
      *
-     * @param tile     The tile to make a component of.
-     * @param position The location of the tile, used as its identity.
+     * @param tile The tile to make a component of.
      * @return A representation of the tile.
      * @throws IllegalArgumentException If <code>tile</code> doesn't match any known subclass of
      *                                  <code>Tile</code>.
      * @throws NullPointerException     If <code>tile</code> is null.
      */
-    private static JComponent makeTile(final Tile tile, final Vector2D position)
-            throws IllegalArgumentException {
+    public static JComponent makeTile(final Tile tile) throws IllegalArgumentException {
         Objects.requireNonNull(tile);
         Supplier<Image> imageSupplier = TILE_MAPPING.get(tile.getClass());
         if (imageSupplier == null) {
             throw new IllegalArgumentException("The provided tile isn't recognised.");
         }
-        return makeSprite(imageSupplier.get(), position);
+        return makeSprite(imageSupplier.get(), tile.getPosition());
+    }
+
+    /**
+     * Makes a tile for the board layer.
+     *
+     * <p>If the tile refers to an opaque object, then returns a space tile.
+     *
+     * @param tile The tile to build the component from.
+     * @return A component representing the given tile, or a space tile.
+     */
+    public static JComponent makeBoardTile(final Tile tile) {
+        Objects.requireNonNull(tile);
+        Supplier<Image> imageSupplier;
+        if (OBJECTS.contains(tile.getClass())) {
+            imageSupplier = ImageLoader::getSpace;
+        } else {
+            imageSupplier = TILE_MAPPING.get(tile.getClass());
+        }
+
+        if (imageSupplier == null) {
+            throw new IllegalArgumentException("The provided tile isn't recognised.");
+        }
+        return makeSprite(imageSupplier.get(), tile.getPosition());
     }
 
     private static JComponent simpleTile(final Object tile) {
@@ -123,6 +149,7 @@ public final class TileMaker {
     /**
      * Creates component representing an empty tile.
      *
+     * @param position Where the component resides, as used for identity.
      * @return A component representing an empty tile.
      */
     private static JComponent emptyTile(final Vector2D position) {
