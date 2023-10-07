@@ -4,7 +4,6 @@ import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import nz.ac.wgtn.swen225.lc.domain.Game;
-import nz.ac.wgtn.swen225.lc.utils.Vector2D;
 import nz.ac.wgtn.swen225.lc.domain.level.Level;
 import nz.ac.wgtn.swen225.lc.domain.level.characters.Enemy;
 import nz.ac.wgtn.swen225.lc.domain.level.characters.Player;
@@ -14,13 +13,13 @@ import nz.ac.wgtn.swen225.lc.domain.level.tiles.*;
 import nz.ac.wgtn.swen225.lc.levels.level1.Patroller;
 import nz.ac.wgtn.swen225.lc.recorder.Moment;
 import nz.ac.wgtn.swen225.lc.recorder.Playback;
+import nz.ac.wgtn.swen225.lc.utils.Vector2D;
 
 import java.io.*;
-import java.util.Base64;
-import java.util.List;
-import java.util.Map;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.util.*;
 import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 
 public class FileBasedPersistenceImpl implements Persistence {
 
@@ -31,152 +30,20 @@ public class FileBasedPersistenceImpl implements Persistence {
 
     @Override
     public Game loadGame(int levelNo) {
-        Level level;
-        if (levelNo == 1) {
-            level = new Level(1, 15, 14, 100);
-            // map
-            // row 0
-            IntStream.range(2, 7).forEach(i -> level.addTile(new Wall(new Vector2D(i, 0))));
-            IntStream.range(8, 13).forEach(i -> level.addTile(new Wall(new Vector2D(i, 0))));
-            // row 1
-            level.addTile(new Wall(new Vector2D(2, 1)));
-            IntStream.range(6, 9).forEach(i -> level.addTile(new Wall(new Vector2D(i, 1))));
-            level.addTile(new Wall(new Vector2D(12, 1)));
-            // row 2
-            level.addTile(new Wall(new Vector2D(2, 2)));
-            level.addTile(new ChipTile(new Vector2D(4, 2), new Chip()));
-            level.addTile(new Wall(new Vector2D(6, 2)));
-            level.addTile(new Exit(new Vector2D(7, 2)));
-            level.addTile(new Wall(new Vector2D(8, 2)));
-            level.addTile(new ChipTile(new Vector2D(10, 2), new Chip()));
-            level.addTile(new Wall(new Vector2D(12, 2)));
-            // row 3
-            IntStream.range(0, 5).forEach(i -> level.addTile(new Wall(new Vector2D(i, 3))));
-            level.addTile(new LockedDoor(new Vector2D(5, 3), Key.Color.GREEN));
-            level.addTile(new Wall(new Vector2D(6, 3)));
-            level.addTile(new ExitLock(new Vector2D(7, 3)));
-            level.addTile(new Wall(new Vector2D(8, 3)));
-            level.addTile(new LockedDoor(new Vector2D(9, 3), Key.Color.GREEN));
-            IntStream.range(10, 15).forEach(i -> level.addTile(new Wall(new Vector2D(i, 3))));
-            // row 4
-            level.addTile(new Wall(new Vector2D(0, 4)));
-            level.addTile(new KeyTile(new Vector2D(2, 4), new Key(Key.Color.YELLOW)));
-            level.addTile(new LockedDoor(new Vector2D(4, 4), Key.Color.BLUE));
-            level.addTile(new LockedDoor(new Vector2D(10, 4), Key.Color.RED));
-            level.addTile(new KeyTile(new Vector2D(12, 4), new Key(Key.Color.YELLOW)));
-            level.addTile(new Wall(new Vector2D(14, 4)));
-            // row 5
-            level.addTile(new Wall(new Vector2D(0, 5)));
-            level.addTile(new ChipTile(new Vector2D(2, 5), new Chip()));
-            level.addTile(new Wall(new Vector2D(4, 5)));
-            level.addTile(new KeyTile(new Vector2D(5, 5), new Key(Key.Color.BLUE)));
-            level.addTile(new InfoField(new Vector2D(7, 5), "Collect chips to get past the chip socket. Use keys to open doors."));
-            level.addTile(new KeyTile(new Vector2D(9, 5), new Key(Key.Color.RED)));
-            level.addTile(new Wall(new Vector2D(10, 5)));
-            level.addTile(new ChipTile(new Vector2D(12, 5), new Chip()));
-            level.addTile(new Wall(new Vector2D(14, 5)));
-            // row 6
-            IntStream.range(0, 5).forEach(i -> level.addTile(new Wall(new Vector2D(i, 6))));
-            level.addTile(new ChipTile(new Vector2D(5, 6), new Chip()));
-            level.setPlayer(new Player(new Vector2D(7, 6)));
-            level.addTile(new ChipTile(new Vector2D(9, 6), new Chip()));
-            IntStream.range(10, 15).forEach(i -> level.addTile(new Wall(new Vector2D(i, 6))));
-            // row 7
-            level.addTile(new Wall(new Vector2D(0, 7)));
-            level.addTile(new ChipTile(new Vector2D(2, 7), new Chip()));
-            level.addTile(new Wall(new Vector2D(4, 7)));
-            level.addTile(new KeyTile(new Vector2D(5, 7), new Key(Key.Color.BLUE)));
-            level.addTile(new KeyTile(new Vector2D(9, 7), new Key(Key.Color.RED)));
-            level.addTile(new Wall(new Vector2D(10, 7)));
-            level.addTile(new ChipTile(new Vector2D(12, 7), new Chip()));
-            level.addTile(new Wall(new Vector2D(14, 7)));
-            // row 8
-            level.addTile(new Wall(new Vector2D(0, 8)));
-            level.addTile(new LockedDoor(new Vector2D(4, 8), Key.Color.RED));
-            level.addTile(new ChipTile(new Vector2D(7, 8), new Chip()));
-            level.addTile(new LockedDoor(new Vector2D(10, 8), Key.Color.BLUE));
-            level.addTile(new Wall(new Vector2D(14, 8)));
-            // row 9
-            IntStream.range(0, 6).forEach(i -> level.addTile(new Wall(new Vector2D(i, 9))));
-            level.addTile(new LockedDoor(new Vector2D(6, 9), Key.Color.YELLOW));
-            level.addTile(new Wall(new Vector2D(7, 9)));
-            level.addTile(new LockedDoor(new Vector2D(8, 9), Key.Color.YELLOW));
-            IntStream.range(9, 15).forEach(i -> level.addTile(new Wall(new Vector2D(i, 9))));
-            // row 10
-            level.addTile(new Wall(new Vector2D(4, 10)));
-            level.addTile(new Wall(new Vector2D(7, 10)));
-            level.addTile(new Wall(new Vector2D(10, 10)));
-            // row 11
-            level.addTile(new Wall(new Vector2D(4, 11)));
-            level.addTile(new ChipTile(new Vector2D(6, 11), new Chip()));
-            level.addTile(new Wall(new Vector2D(7, 11)));
-            level.addTile(new ChipTile(new Vector2D(8, 11), new Chip()));
-            level.addTile(new Wall(new Vector2D(10, 11)));
-            // row 12
-            level.addTile(new Wall(new Vector2D(4, 12)));
-            level.addTile(new KeyTile(new Vector2D(6, 12), new Key(Key.Color.GREEN)));
-            level.addTile(new Wall(new Vector2D(7, 12)));
-            level.addTile(new KeyTile(new Vector2D(8, 12), new Key(Key.Color.GREEN)));
-            level.addTile(new Wall(new Vector2D(10, 12)));
-            // row 13
-            IntStream.range(4, 11).forEach(i -> level.addTile(new Wall(new Vector2D(i, 13))));
-        } else if(levelNo == 2) {
-            level = new Level(1, 9, 9, 60);
-
-            // map
-            // row 0
-            IntStream.range(2, 7).forEach(i -> level.addTile(new Wall(new Vector2D(i, 0))));
-            // row 1
-            level.addTile(new Wall(new Vector2D(2, 1)));
-            level.addTile(new KeyTile(new Vector2D(5, 1), new Key(Key.Color.RED)));
-            level.addTile(new Wall(new Vector2D(6, 1)));
-            // row 2
-            IntStream.range(0, 9).filter(i -> i != 3).forEach(i -> level.addTile(new Wall(new Vector2D(i, 2))));
-            level.addTile(new InfoField(new Vector2D(3, 2), "A tip"));
-            // row 3
-            level.addTile(new Wall(new Vector2D(0, 3)));
-            level.addTile(new KeyTile(new Vector2D(1, 3), new Key(Key.Color.YELLOW)));
-            level.addTile(new Wall(new Vector2D(2, 3)));
-            level.addTile(new LockedDoor(new Vector2D(6, 3), Key.Color.YELLOW));
-            level.addTile(new Wall(new Vector2D(8, 3)));
-            // row 4
-            level.addTile(new Wall(new Vector2D(0, 4)));
-            level.addTile(new Wall(new Vector2D(2, 4)));
-            level.addTile(new Wall(new Vector2D(6, 4)));
-            level.addTile(new Wall(new Vector2D(8, 4)));
-            // row 5
-            level.addTile(new Wall(new Vector2D(0, 5)));
-            level.addTile(new LockedDoor(new Vector2D(2, 5), Key.Color.RED));
-            level.addTile(new Wall(new Vector2D(6, 5)));
-            level.addTile(new ChipTile(new Vector2D(7, 5), new Chip()));
-            level.addTile(new Wall(new Vector2D(8, 5)));
-            // row 6
-            IntStream.range(0, 9).filter(i -> i != 5).forEach(i -> level.addTile(new Wall(new Vector2D(i, 6))));
-            level.addTile(new ExitLock(new Vector2D(5, 6)));
-            // row 7
-            level.addTile(new Wall(new Vector2D(2, 7)));
-            level.addTile(new Exit(new Vector2D(3, 7)));
-            level.addTile(new Wall(new Vector2D(6, 7)));
-            // row 8
-            IntStream.range(2, 7).forEach(i -> level.addTile(new Wall(new Vector2D(i, 8))));
-
-            // enemies
-            level.addEnemy(new Patroller(new Vector2D(4, 3),
-                    List.of(Vector2D.RIGHT, Vector2D.DOWN, Vector2D.DOWN, Vector2D.LEFT, Vector2D.LEFT, Vector2D.UP, Vector2D.UP, Vector2D.RIGHT),
-                    10));
-            level.addEnemy(new Patroller(new Vector2D(4, 5),
-                    List.of(Vector2D.LEFT, Vector2D.UP, Vector2D.UP, Vector2D.RIGHT, Vector2D.RIGHT, Vector2D.DOWN, Vector2D.DOWN, Vector2D.LEFT),
-                    10));
-
-            // player
-            level.setPlayer(new Player(new Vector2D(4, 4)));
-        } else {
-            throw new IllegalArgumentException("unsupported level" + levelNo);
-        }
-
-        var game = new Game();
-        game.setLevel(level);
+        Game game = new Game();
+        game.setLevel(toLevel(read(getLevelJsonFile(levelNo))));
         return game;
+    }
+
+    private File getLevelJsonFile(int levelNo) {
+        try {
+            String classpathUri = Objects.requireNonNull(FileBasedPersistenceImpl.class.getResource("/")).getFile();
+            String classPath = new URI(classpathUri).getPath();
+            String levelJsonFile = classPath + "/levels/level" + levelNo + ".json";
+            return new File(levelJsonFile);
+        } catch (URISyntaxException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Override
@@ -206,13 +73,118 @@ public class FileBasedPersistenceImpl implements Persistence {
     }
 
     private Game toGame(JsonObject fromJson) {
-        // Use object serialization for testing for now. This needs to be changed to JSON serialization.
-        try (var fin = new ByteArrayInputStream(Base64.getDecoder().decode(fromJson.get("game").getAsString()))) {
-            try (var ois = new ObjectInputStream(fin)) {
-                return (Game) ois.readObject();
+        int id = fromJson.get("id").getAsInt();
+        int tickNo = fromJson.get("tickNo").getAsInt();
+        Level level = toLevel(fromJson.getAsJsonObject("level"));
+        return new Game(id, tickNo, level);
+    }
+
+    private Level toLevel(JsonObject fromJson) {
+        int id = fromJson.get("id").getAsInt();
+        int levelNo = fromJson.get("levelNo").getAsInt();
+        int width = fromJson.get("width").getAsInt();
+        int height = fromJson.get("height").getAsInt();
+        int timeoutInSeconds = fromJson.get("timeoutInSeconds").getAsInt();
+        Set<Tile> tiles = toTiles(fromJson.getAsJsonArray("tiles"));
+        Set<Enemy> enemies = toEnemies(fromJson.getAsJsonArray("enemies"));
+        Player player = toPlayer(fromJson.getAsJsonObject("player"));
+        return new Level(id, levelNo, width, height, timeoutInSeconds, tiles, enemies, player);
+    }
+
+    private Player toPlayer(JsonObject fromJson) {
+        int id = fromJson.get("id").getAsInt();
+        Vector2D position = toVector2D(fromJson.getAsJsonObject("position"));
+        Set<Key> keys = toKeys(fromJson.getAsJsonArray("keys"));
+        Set<Chip> chips = toChips(fromJson.getAsJsonArray("chips"));
+        return new Player(id, position, keys, chips);
+    }
+
+    private Set<Key> toKeys(JsonArray fromJson) {
+        HashSet<Key> keys = new HashSet<Key>();
+        fromJson.forEach(e -> keys.add(toKey((JsonObject) e)));
+        return keys;
+    }
+
+    private Key toKey(JsonObject fromJson) {
+        int id = fromJson.get("id").getAsInt();
+        Key.Color color = Key.Color.valueOf(fromJson.get("color").getAsString());
+        return new Key(id, color);
+    }
+
+    private Set<Chip> toChips(JsonArray fromJson) {
+        HashSet chips = new HashSet<Chip>();
+        fromJson.forEach(e -> chips.add(toChip((JsonObject) e)));
+        return chips;
+    }
+
+    private Chip toChip(JsonObject fromJson) {
+        int id = fromJson.get("id").getAsInt();
+        return new Chip(id);
+    }
+
+    private Set<Enemy> toEnemies(JsonArray fromJson) {
+        HashSet enemies = new HashSet<Enemy>();
+        fromJson.forEach(e -> enemies.add(toEnemy((JsonObject) e)));
+        return enemies;
+    }
+
+    private Enemy toEnemy(JsonObject jsonObject) {
+        int id = jsonObject.get("id").getAsInt();
+        Vector2D position = toVector2D(jsonObject.getAsJsonObject("position"));
+        String type = jsonObject.get("type").getAsString();
+        switch (type) {
+            case "Patroller" -> {
+                List<Vector2D> routine = toRoutine(jsonObject.getAsJsonArray("routine"));
+                int intervalInTicks = jsonObject.get("intervalInTicks").getAsInt();
+                return new Patroller(id, position, routine, intervalInTicks);
             }
-        } catch (ClassNotFoundException | IOException e) {
-            throw new RuntimeException(e);
+            default -> throw new IllegalArgumentException("Unsupported enemy type: " + type);
+        }
+    }
+
+    private ArrayList<Vector2D> toRoutine(JsonArray e) {
+        ArrayList<Vector2D> routine = new ArrayList<Vector2D>();
+        e.forEach(e2 -> routine.add(toVector2D(e2.getAsJsonObject())));
+        return routine;
+    }
+
+    private Set<Tile> toTiles(JsonArray fromJson) {
+        HashSet<Tile> tiles = new HashSet<Tile>();
+        fromJson.forEach(e -> tiles.add(toTile((JsonObject) e)));
+        return tiles;
+    }
+
+    private Tile toTile(JsonObject jsonObject) {
+        int id = jsonObject.get("id").getAsInt();
+        Vector2D position = toVector2D(jsonObject.getAsJsonObject("position"));
+        String type = jsonObject.get("type").getAsString();
+        switch (type) {
+            case "InfoField" -> {
+                var message = jsonObject.get("message").getAsString();
+                var active = jsonObject.get("active").getAsBoolean();
+                return new InfoField(id, position, message, active);
+            }
+            case "KeyTile" -> {
+                var color = jsonObject.get("color").getAsString();
+                return new KeyTile(id, position, new Key(Key.Color.valueOf(color)));
+            }
+            case "LockedDoor" -> {
+                var color = jsonObject.get("color").getAsString();
+                return new LockedDoor(id, position, Key.Color.valueOf(color));
+            }
+            case "ChipTile" -> {
+                return new ChipTile(id, position, new Chip());
+            }
+            case "Exit" -> {
+                return new Exit(id, position);
+            }
+            case "ExitLock" -> {
+                return new ExitLock(id, position);
+            }
+            case "Wall" -> {
+                return new Wall(id, position);
+            }
+            default -> throw new IllegalArgumentException("Unsupported enemy type: " + type);
         }
     }
 
@@ -221,9 +193,9 @@ public class FileBasedPersistenceImpl implements Persistence {
     }
 
     private Moment toMoment(JsonObject fromJson, Game game) {
-        var tickNo = fromJson.get("tickNo").getAsInt();
-        var playerMovement = toVector2D(fromJson.getAsJsonObject("playerMovement"));
-        var enemyMovementMap = toEnemyMovementMap(fromJson.getAsJsonObject("enemyMovementMap"), game);
+        int tickNo = fromJson.get("tickNo").getAsInt();
+        Vector2D playerMovement = toVector2D(fromJson.getAsJsonObject("playerMovement"));
+        Map<Enemy, Vector2D> enemyMovementMap = toEnemyMovementMap(fromJson.getAsJsonObject("enemyMovementMap"), game);
         return new Moment(tickNo, playerMovement, enemyMovementMap);
     }
 
@@ -262,27 +234,124 @@ public class FileBasedPersistenceImpl implements Persistence {
     private JsonObject toJsonObject(Playback playback) {
         var playbackObject = new JsonObject();
         playbackObject.add("since", toJsonObject(playback.getSince()));
-        playbackObject.add("moments", toJsonFromMoments(playback.getMoments()));
+        playbackObject.add("moments", toJsonObjectFromMoments(playback.getMoments()));
         playbackObject.addProperty("endTickNo", playback.getEndTickNo());
         return playbackObject;
     }
 
     private JsonObject toJsonObject(Game game) {
-        // Use serialization for game object for temp. This needs to be changed later.
-        try (var bos = new ByteArrayOutputStream()) {
-            try (var oos = new ObjectOutputStream(bos)) {
-                oos.writeObject(game);
-
-                var gameObject = new JsonObject();
-                gameObject.addProperty("game", Base64.getEncoder().encodeToString(bos.toByteArray()));
-                return gameObject;
-            }
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+        JsonObject gameObject = new JsonObject();
+        gameObject.addProperty("id", game.getId());
+        gameObject.addProperty("tickNo", game.getTickNo());
+        gameObject.add("level", toJsonObject(game.getLevel()));
+        return gameObject;
     }
 
-    private JsonArray toJsonFromMoments(List<Moment> moments) {
+    private JsonObject toJsonObject(Level level) {
+        JsonObject gameObject = new JsonObject();
+        gameObject.addProperty("id", level.getId());
+        gameObject.addProperty("levelNo", level.getLevelNo());
+        gameObject.addProperty("width", level.getWidth());
+        gameObject.addProperty("height", level.getHeight());
+        gameObject.addProperty("timeoutInSeconds", level.getTimeoutInSeconds());
+        gameObject.add("tiles", toJsonArrayFromTiles(level.getTiles()));
+        gameObject.add("enemies", toJsonArrayFromEnemies(level.getEnemies()));
+        gameObject.add("player", toJsonObject(level.getPlayer()));
+        return gameObject;
+    }
+
+    private JsonArray toJsonArrayFromTiles(Set<Tile> tiles) {
+        JsonArray jsonArray = new JsonArray();
+        tiles.forEach(t -> jsonArray.add(toJsonObject(t)));
+        return jsonArray;
+    }
+
+    private JsonObject toJsonObject(Tile tile) {
+        JsonObject tileObject = new JsonObject();
+        tileObject.addProperty("id", tile.getId());
+        tileObject.add("position", toJsonObject(tile.getPosition()));
+        String type = tile.getClass().getSimpleName();
+        tileObject.addProperty("type", type);
+        switch (type) {
+            case "InfoField" -> {
+                tileObject.addProperty("message", ((InfoField) tile).getMessage());
+                tileObject.addProperty("active", ((InfoField) tile).isActive());
+            }
+            case "KeyTile" -> tileObject.addProperty("color", ((KeyTile) tile).getKey().getColor().toString());
+
+            case "LockedDoor" -> tileObject.addProperty("color", ((LockedDoor) tile).getColor().toString());
+            case "ChipTile", "Exit", "ExitLock", "Wall" -> {
+                // do nothing
+            }
+            default -> throw new IllegalArgumentException("Unsupported enemy type: " + tile.getClass());
+        }
+        return tileObject;
+    }
+
+    private JsonArray toJsonArrayFromEnemies(Set<Enemy> enemies) {
+        JsonArray jsonArray = new JsonArray();
+        enemies.forEach(e -> jsonArray.add(toJsonObject(e)));
+        return jsonArray;
+    }
+
+    private JsonObject toJsonObject(Enemy enemy) {
+        JsonObject enemyObject = new JsonObject();
+        enemyObject.addProperty("id", enemy.getId());
+        enemyObject.add("position", toJsonObject(enemy.getPosition()));
+        String type = enemy.getClass().getSimpleName();
+        enemyObject.addProperty("type", type);
+        switch (type) {
+            case "Patroller" -> {
+                Patroller patroller = (Patroller) enemy;
+                enemyObject.add("routine", toJsonArrayFromRoutine(patroller.getRoutine()));
+                enemyObject.addProperty("intervalInTicks", patroller.getIntervalInTicks());
+            }
+            default -> throw new IllegalArgumentException("Unsupported enemy type: " + enemy.getClass());
+        }
+        return enemyObject;
+    }
+
+    private JsonArray toJsonArrayFromRoutine(List<Vector2D> routine) {
+        JsonArray jsonArray = new JsonArray();
+        routine.forEach(e -> jsonArray.add(toJsonObject(e)));
+        return jsonArray;
+    }
+
+    private JsonObject toJsonObject(Player player) {
+        JsonObject playerObject = new JsonObject();
+        playerObject.addProperty("id", player.getId());
+        playerObject.add("position", toJsonObject(player.getPosition()));
+        playerObject.add("chips", toJsonArrayFromChips(player.getChips()));
+        playerObject.add("keys", toJsonArrayFromKeys(player.getKeys()));
+        return playerObject;
+    }
+
+    private JsonArray toJsonArrayFromKeys(Set<Key> keys) {
+        JsonArray jsonArray = new JsonArray();
+        keys.forEach(e -> jsonArray.add(toJsonObject(e)));
+        return jsonArray;
+    }
+
+    private JsonObject toJsonObject(Key key) {
+        JsonObject jsonObject = new JsonObject();
+        jsonObject.addProperty("id", key.getId());
+        jsonObject.addProperty("color", key.getColor().toString());
+        return jsonObject;
+    }
+
+    private JsonArray toJsonArrayFromChips(Set<Chip> chips) {
+        JsonArray jsonArray = new JsonArray();
+        chips.forEach(e -> jsonArray.add(toJsonObject(e)));
+        return jsonArray;
+    }
+
+    private JsonObject toJsonObject(Chip chip) {
+        JsonObject jsonObject = new JsonObject();
+        jsonObject.addProperty("id", chip.getId());
+        return jsonObject;
+    }
+
+    private JsonArray toJsonObjectFromMoments(List<Moment> moments) {
         var momentArray = new JsonArray();
         moments.forEach(m -> momentArray.add(toJsonObject(m)));
         return momentArray;
@@ -310,3 +379,4 @@ public class FileBasedPersistenceImpl implements Persistence {
     }
 
 }
+
