@@ -137,15 +137,6 @@ public final class TileMaker {
         return makeSprite(imageSupplier.get(), tile.getPosition());
     }
 
-    private static JComponent simpleTile(final Object tile) {
-        return new JLabel(tile.getClass().getSimpleName()) {
-            {
-                setBorder(BorderFactory.createLineBorder(Color.BLUE));
-                setToolTipText(getText());
-            }
-        };
-    }
-
     /**
      * Creates component representing an empty tile.
      *
