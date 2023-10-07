@@ -11,7 +11,6 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
-import java.awt.image.BufferedImage;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
@@ -148,11 +147,11 @@ public final class TileMaker {
     }
 
     static JComponent makePlayer(final PlayerInfo playerInfo) {
-        return makeSprite(DefaultImages.DEFAULT_PLAYER_IMAGE, playerInfo);
+        return makeSprite(ImageLoader.getPlayer(), playerInfo);
     }
 
     static JComponent makeEnemy(final EnemyInfo enemyInfo) {
-        return makeSprite(DefaultImages.DEFAULT_ENEMY_IMAGE, enemyInfo);
+        return makeSprite(ImageLoader.getEnemy(), enemyInfo);
     }
 
 
@@ -215,49 +214,4 @@ public final class TileMaker {
 
     }
 
-    private record DefaultImages() {
-        /**
-         * Size of our default images.
-         */
-        private static final int IMAGE_SIZE = 480;
-        /**
-         * The default image representing a player.
-         */
-        private static final Image DEFAULT_PLAYER_IMAGE = new BufferedImage(IMAGE_SIZE, IMAGE_SIZE,
-                BufferedImage.TYPE_INT_ARGB) {
-            public static final int VERTICAL_BORDER = 30; // /1/16
-            public static final int HORIZONTAL_BORDER = 60; // 2/16
-
-            {
-                Graphics2D g2d = createGraphics();
-                g2d.setColor(Color.YELLOW);
-
-                g2d.fillOval(HORIZONTAL_BORDER, VERTICAL_BORDER, IMAGE_SIZE - 2 * HORIZONTAL_BORDER,
-                        IMAGE_SIZE - 2 * VERTICAL_BORDER);
-
-                g2d.dispose();
-            }
-        };
-        /**
-         * The default image representing an enemy.
-         */
-        private static final Image DEFAULT_ENEMY_IMAGE = new BufferedImage(IMAGE_SIZE, IMAGE_SIZE,
-                BufferedImage.TYPE_INT_ARGB) {
-            public static final int BORDER = 40;
-            public static final int THICKNESS = 30;
-
-            {
-                Graphics2D g2d = createGraphics();
-
-                g2d.setColor(Color.BLACK);
-                g2d.setStroke(new BasicStroke(THICKNESS));
-                g2d.drawLine(0, 0, IMAGE_SIZE, IMAGE_SIZE);
-                g2d.drawLine(IMAGE_SIZE, 0, 0, IMAGE_SIZE);
-
-                g2d.setColor(Color.RED);
-                g2d.fillOval(BORDER, BORDER, IMAGE_SIZE - BORDER * 2, IMAGE_SIZE - BORDER * 2);
-                g2d.dispose();
-            }
-        };
-    }
 }
