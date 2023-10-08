@@ -1,4 +1,4 @@
-package nz.ac.wgtn.swen225.lc.levels.level1;
+package nz.ac.wgtn.swen225.lc.levels.level2;
 
 import nz.ac.wgtn.swen225.lc.domain.level.characters.Enemy;
 import nz.ac.wgtn.swen225.lc.utils.Vector2D;

@@ -10,7 +10,7 @@ import nz.ac.wgtn.swen225.lc.domain.level.characters.Player;
 import nz.ac.wgtn.swen225.lc.domain.level.items.Chip;
 import nz.ac.wgtn.swen225.lc.domain.level.items.Key;
 import nz.ac.wgtn.swen225.lc.domain.level.tiles.*;
-import nz.ac.wgtn.swen225.lc.levels.level1.Patroller;
+import nz.ac.wgtn.swen225.lc.levels.level2.Patroller;
 import nz.ac.wgtn.swen225.lc.recorder.Moment;
 import nz.ac.wgtn.swen225.lc.recorder.Playback;
 import nz.ac.wgtn.swen225.lc.utils.Vector2D;
