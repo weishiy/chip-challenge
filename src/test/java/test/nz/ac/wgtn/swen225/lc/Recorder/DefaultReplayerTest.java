@@ -2,7 +2,7 @@ package test.nz.ac.wgtn.swen225.lc.recorder;
 
 import nz.ac.wgtn.swen225.lc.app.GameEngine;
 import nz.ac.wgtn.swen225.lc.domain.level.characters.Enemy;
-import nz.ac.wgtn.swen225.lc.levels.level1.Patroller;
+import nz.ac.wgtn.swen225.lc.levels.level2.Patroller;
 import nz.ac.wgtn.swen225.lc.recorder.DefaultReplayer;
 import nz.ac.wgtn.swen225.lc.recorder.Moment;
 import nz.ac.wgtn.swen225.lc.recorder.Playback;

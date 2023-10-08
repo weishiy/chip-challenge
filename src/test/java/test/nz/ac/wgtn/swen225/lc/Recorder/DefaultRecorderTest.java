@@ -4,7 +4,7 @@ import nz.ac.wgtn.swen225.lc.domain.Game;
 import nz.ac.wgtn.swen225.lc.domain.level.Level;
 import nz.ac.wgtn.swen225.lc.domain.level.characters.Enemy;
 import nz.ac.wgtn.swen225.lc.domain.level.characters.Player;
-import nz.ac.wgtn.swen225.lc.levels.level1.Patroller;
+import nz.ac.wgtn.swen225.lc.levels.level2.Patroller;
 import nz.ac.wgtn.swen225.lc.persistency.Persistence;
 import nz.ac.wgtn.swen225.lc.recorder.DefaultRecorder;
 import nz.ac.wgtn.swen225.lc.recorder.Playback;
