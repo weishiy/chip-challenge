@@ -11,6 +11,12 @@ import java.awt.event.KeyEvent;
 import java.util.*;
 import java.util.stream.Collectors;
 
+/**
+ * The `DefaultReplayer` class implements the `Replayer` interface to control the replay
+ * of a game using key bindings and manage the playback speed.
+ *
+ * @author Sajja Syed 300551462
+ */
 public class DefaultReplayer implements Replayer {
 
     // Key Bindings for controlling the replay
@@ -33,10 +39,16 @@ public class DefaultReplayer implements Replayer {
 
     private float currentPlaybackSpeed = 1f; // Playback speed (allowed values: 0.25f, 0.5f, 1f, 2f, 4f)
 
+    /**
+     * Constructs a `DefaultReplayer` object with the provided `GameEngine` and `Playback`.
+     *
+     * @param gameEngine The game engine responsible for rendering and controlling the game.
+     * @param playback   The playback data containing recorded moments.
+     */
     public DefaultReplayer(GameEngine gameEngine, Playback playback) {
         this.gameEngine = gameEngine;
 
-        //Initialize player and enemy movement from playback data
+        // Initialize player and enemy movement from playback data
         this.playerMovements.putAll(
                 playback.getMoments()
                         .stream()
@@ -50,7 +62,6 @@ public class DefaultReplayer implements Replayer {
         this.timer = new Timer(1000 / Game.FRAME_RATE, e -> this.update());
     }
 
-
     @Override
     public void onStart() {
         this.bindKeyStrokes(); // Bind keys to control replay action
@@ -63,10 +74,13 @@ public class DefaultReplayer implements Replayer {
         this.unbindKeyStrokes(); // Unbind keys used for the replay control
     }
 
-    public void update(){
+    /**
+     * Update the replay, advancing it to the current tick.
+     */
+    public void update() {
         var currentTick = gameEngine.getTickNo();
         // Check if the replay has reached the end
-        if(currentTick == endTick) {
+        if (currentTick == endTick) {
             this.timer.stop();
             gameEngine.getGlassPane().add(new JLabel("Replay ended.")); // Display a message on the glass pane
             return;
@@ -78,6 +92,9 @@ public class DefaultReplayer implements Replayer {
         gameEngine.update(playerMoment, enemyMomentMap);
     }
 
+    /**
+     * Binds the "Play" action to a key binding.
+     */
     private void bindPlayAction() {
         gameEngine.bindInputWithAction(PLAY_KEY, e -> {
             if (!timer.isRunning()) {
@@ -86,6 +103,11 @@ public class DefaultReplayer implements Replayer {
         });
     }
 
+    /**
+     * Binds the "Pause" or "Stop" action to a key binding.
+     *
+     * @param keyStroke The key stroke to bind for the action (e.g., PAUSE_KEY or STOP_KEY).
+     */
     private void bindPauseORStopAction(KeyStroke keyStroke) {
         gameEngine.bindInputWithAction(keyStroke, e -> {
             if (timer.isRunning()) {
@@ -94,20 +116,18 @@ public class DefaultReplayer implements Replayer {
         });
     }
 
-/*    private void bindStopAction() {
-        gameEngine.bindInputWithAction(STOP_KEY, e -> {
-            if (timer.isRunning()) {
-                timer.stop();
-            }
-        });
-    }*/
-
+    /**
+     * Binds the "Jump" action to a key binding.
+     */
     private void bindJumpAction() {
         gameEngine.bindInputWithAction(JUMP_KEY, e -> {
             // TODO: Implement jump action
         });
     }
 
+    /**
+     * Binds the "Fast Reverse" action to a key binding.
+     */
     private void bindFastReverseAction() {
         gameEngine.bindInputWithAction(FAST_REVERSE_KEY, e -> {
             currentPlaybackSpeed /= 2f;
@@ -118,6 +138,9 @@ public class DefaultReplayer implements Replayer {
         });
     }
 
+    /**
+     * Binds the "Fast Forward" action to a key binding.
+     */
     private void bindFastForwardAction() {
         gameEngine.bindInputWithAction(FAST_FORWARD_KEY, e -> {
             currentPlaybackSpeed *= 2f;
@@ -128,16 +151,21 @@ public class DefaultReplayer implements Replayer {
         });
     }
 
-    // Binds keys to action for controlling the replay
+    /**
+     * Binds keys to their respective actions for controlling the replay.
+     */
     private void bindKeyStrokes() {
-        bindPlayAction(); // PLAY_KEY
-        bindPauseORStopAction(PAUSE_KEY); // PAUSE_KEY
-        bindPauseORStopAction(STOP_KEY); // STOP_KEY
-        bindJumpAction(); // JUMP_KEY
-        bindFastReverseAction(); // FAST_FORWARD_KEY
-        bindFastForwardAction(); // REVERSE_FORWARD_KEY
+        bindPlayAction();          // PLAY_KEY
+        bindPauseORStopAction(PAUSE_KEY);    // PAUSE_KEY
+        bindPauseORStopAction(STOP_KEY);     // STOP_KEY
+        bindJumpAction();          // JUMP_KEY
+        bindFastReverseAction();   // FAST_FORWARD_KEY
+        bindFastForwardAction();   // REVERSE_FORWARD_KEY
     }
 
+    /**
+     * Unbinds key strokes that were previously bound to actions for controlling the replay.
+     */
     private void unbindKeyStrokes() {
         gameEngine.unbindInputWithAction(PLAY_KEY);
         gameEngine.unbindInputWithAction(PAUSE_KEY);
@@ -146,6 +174,4 @@ public class DefaultReplayer implements Replayer {
         gameEngine.unbindInputWithAction(FAST_REVERSE_KEY);
         gameEngine.unbindInputWithAction(FAST_FORWARD_KEY);
     }
-
-
 }
