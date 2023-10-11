@@ -7,6 +7,7 @@ import nz.ac.wgtn.swen225.lc.domain.level.characters.Enemy;
 
 import javax.swing.*;
 import javax.swing.Timer;
+import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.util.*;
 import java.util.stream.Collectors;
