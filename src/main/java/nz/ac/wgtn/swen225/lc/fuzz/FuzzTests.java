@@ -93,6 +93,7 @@ public class FuzzTests {
                 }
 
                 // checks if an ID was assigned, if it was makes an issue assigned to that id
+                // uses the error.toString as the title and the cause as the description
                 if (assignee_id!=-1) {
                     GitLabIntegration.reportIssueWithAssign(e.toString(), e.getCause().toString(), ""+assignee_id);
 
@@ -100,7 +101,7 @@ public class FuzzTests {
                 } else {
                     System.out.println(
                             "Error when trying to assign to module, raising as issue without assignment instead.");
-                    GitLabIntegration.reportIssueNoAssign(e.getLocalizedMessage(), e.toString());
+                    GitLabIntegration.reportIssueNoAssign(e.toString(), e.getCause().toString());
                 }
             }
         });
@@ -170,8 +171,9 @@ public class FuzzTests {
                 }
 
                 // checks if an ID was assigned, if it was makes an issue assigned to that id
+                // uses the error.toString as the title and the cause as the description
                 if (assignee_id!=-1) {
-                    GitLabIntegration.reportIssueWithAssign(e.getLocalizedMessage(), e.toString(), ""+assignee_id);
+                    GitLabIntegration.reportIssueWithAssign(e.toString(), e.getCause().toString(), ""+assignee_id);
 
                     // otherwise just raises an issue without assignment
                 } else {
