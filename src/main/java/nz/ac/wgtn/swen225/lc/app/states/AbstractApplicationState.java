@@ -5,29 +5,55 @@ import nz.ac.wgtn.swen225.lc.app.GameEngine;
 
 import javax.swing.*;
 
+/**
+ * The `AbstractApplicationState` class provides a base implementation for application states.
+ * Subclasses can inherit common behavior and override specific methods as needed.
+ *
+ * @author Shuja M Syed
+ * Student ID: 300592409
+ */
 public abstract class AbstractApplicationState implements ApplicationState {
 
     private final Application application;
 
+    /**
+     * Constructs an `AbstractApplicationState` object.
+     *
+     * @param application The game application instance.
+     */
     public AbstractApplicationState(Application application) {
         this.application = application;
     }
 
+    /**
+     * Gets the game application instance associated with this state.
+     *
+     * @return The game application instance.
+     */
     public Application getApplication() {
         return application;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void onStateEnter() {
-        // do nothing
+        // Default implementation: do nothing
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void onNewGame(int levelNo) {
         var game = application.getPersistence().loadGame(levelNo);
         application.setApplicationState(new PlayingState(application, game));
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void onLoadGame() {
         onPauseGame();
@@ -43,26 +69,41 @@ public abstract class AbstractApplicationState implements ApplicationState {
         }
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void onPauseGame() {
-        // do nothing
+        // Default implementation: do nothing
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void onExitPause() {
-        // do nothing
+        // Default implementation: do nothing
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void onSaveAndExitGame() {
-        // do nothing
+        // Default implementation: do nothing
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void onExitGame() {
-        // do nothing
+        // Default implementation: do nothing
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void onLoadReplay() {
         onStateExit();
@@ -78,6 +119,9 @@ public abstract class AbstractApplicationState implements ApplicationState {
         }
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public GameEngine onNewGameInDebugMode(int levelNo) {
         var game = application.getPersistence().loadGame(levelNo);
@@ -85,9 +129,11 @@ public abstract class AbstractApplicationState implements ApplicationState {
         return null;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void onStateExit() {
-        // do nothing
+        // Default implementation: do nothing
     }
-
 }
