@@ -1,6 +1,6 @@
 package nz.ac.wgtn.swen225.lc.app;
 
-import nz.ac.wgtn.swen225.lc.domain.Game;
+
 import nz.ac.wgtn.swen225.lc.domain.Vector2D;
 import nz.ac.wgtn.swen225.lc.domain.events.GameEventListener;
 import nz.ac.wgtn.swen225.lc.domain.level.characters.Enemy;
