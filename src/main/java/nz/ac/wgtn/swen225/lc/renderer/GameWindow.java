@@ -51,6 +51,7 @@ public final class GameWindow extends JPanel implements GameEventListener {
      */
     public GameWindow(final Game game, final int windowSize) {
         this(game);
+        setSize(new Dimension(windowSize, windowSize));
         setPreferredSize(new Dimension(windowSize, windowSize));
     }
 
