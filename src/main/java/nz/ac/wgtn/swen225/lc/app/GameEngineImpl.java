@@ -184,7 +184,7 @@ public class GameEngineImpl implements GameEngine {
     }
 
     //This is just a small piece of code which I've added to allow fuzzer to access the player position
-    public Game getGame() {
-        return this.game;
+    public Vector2D getPlayerPos() {
+        return this.game.getLevel().getPlayer().getPosition();
     }
 }

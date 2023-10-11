@@ -22,6 +22,6 @@ public interface GameEngine extends GameEventListener {
     void unbindInputWithAction(KeyStroke keyStroke);
 
     // once again just a small change to allow fuzzer to access player positions
-    Game getGame();
+    Vector2D getPlayerPos();
     Container getGlassPane();
 }
