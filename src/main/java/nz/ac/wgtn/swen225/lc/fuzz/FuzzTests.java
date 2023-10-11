@@ -13,7 +13,6 @@ import java.util.List;
 import java.util.ArrayList;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
-import java.lang.Math;
 
 import static java.time.Duration.ofMinutes;
 
@@ -65,10 +64,45 @@ public class FuzzTests {
                 // wait for testing to complete or error out
                 future.get();
             } catch (InterruptedException | ExecutionException e) {
+                // prints a stacktrace
                 System.out.println("test1 met an exception");
                 e.printStackTrace();
-                // TODO raise a gitlab ticket
-                // I'm having trouble finding ways to do this, but this is the last thing left to do.
+
+                // a bit of setup to find who to assign the issue to
+                int assignee_id = -1;
+
+                // gets the package of the class which caused the error
+                String pName = e.getClass().getPackageName();
+
+                // checks which package it is and assigns the relevant user id
+                if (pName.contains("app")){
+                    // assign to Shuja
+                    assignee_id = 2730;
+                } else if (pName.contains("domain")){
+                    // assign to Shiyan
+                    assignee_id = 2952;
+                } else if (pName.contains("renderer")){
+                    // assign to Jeremy
+                    assignee_id = 3306;
+                } else if (pName.contains("recorder")){
+                    // assign to Sajja
+                    assignee_id = 3291;
+                } else if (pName.contains("persistency")){
+                    // assign to Brett
+                    assignee_id = 3287;
+                }
+
+                // checks if an ID was assigned, if it was makes an issue assigned to that id
+                // uses the error.toString as the title and the cause as the description
+                if (assignee_id!=-1) {
+                    GitLabIntegration.reportIssueWithAssign(e.toString(), e.getCause().toString(), ""+assignee_id);
+
+                    // otherwise just raises an issue without assignment
+                } else {
+                    System.out.println(
+                            "Error when trying to assign to module, raising as issue without assignment instead.");
+                    GitLabIntegration.reportIssueNoAssign(e.toString(), e.getCause().toString());
+                }
             }
         });
     }
@@ -85,7 +119,7 @@ public class FuzzTests {
         // CompletableFuture object to notify test1 whether the game has completed or there is an exception.
         var future = new CompletableFuture<Void>();
 
-        pos = engine.getGame().getLevel().getPlayer().getPosition();
+
         hasBeen = new HashSet<Vector2D>();
 
         Assertions.assertTimeoutPreemptively(ofMinutes(1), () -> {
@@ -108,10 +142,45 @@ public class FuzzTests {
                 // wait for testing to complete or error out
                 future.get();
             } catch (InterruptedException | ExecutionException e) {
-                System.out.println("test1 met an exception");
+                // prints a stacktrace
+                System.out.println("test2 met an exception");
                 e.printStackTrace();
-                // TODO raise a gitlab ticket
-                // I'm having trouble finding ways to do this, but this is the last thing left to do.
+
+                // a bit of setup to find who to assign the issue to
+                int assignee_id = -1;
+
+                // gets the package of the class which caused the error
+                String pName = e.getClass().getPackageName();
+
+                // checks which package it is and assigns the relevant user id
+                if (pName.contains("app")){
+                    // assign to Shuja
+                    assignee_id = 2730;
+                } else if (pName.contains("domain")){
+                    // assign to Shiyan
+                    assignee_id = 2952;
+                } else if (pName.contains("renderer")){
+                    // assign to Jeremy
+                    assignee_id = 3306;
+                } else if (pName.contains("recorder")){
+                    // assign to Sajja
+                    assignee_id = 3291;
+                } else if (pName.contains("persistency")){
+                    // assign to Brett
+                    assignee_id = 3287;
+                }
+
+                // checks if an ID was assigned, if it was makes an issue assigned to that id
+                // uses the error.toString as the title and the cause as the description
+                if (assignee_id!=-1) {
+                    GitLabIntegration.reportIssueWithAssign(e.toString(), e.getCause().toString(), ""+assignee_id);
+
+                    // otherwise just raises an issue without assignment
+                } else {
+                    System.out.println(
+                            "Error when trying to assign to module, raising as issue without assignment instead.");
+                    GitLabIntegration.reportIssueNoAssign(e.toString(), e.getCause().toString());
+                }
             }
         });
     }
@@ -135,29 +204,29 @@ public class FuzzTests {
          of an equals method in Vector2D). The code would be as follows:
         */
 
-        pos = engine.getGame().getLevel().getPlayer().getPosition();
+        pos = engine.getPlayerPos();
         // checks if the player has already tried to go to the square, if not adds it
         // to the randomMoveList as a possible move.
         List<Integer>randomMoveList = new ArrayList<Integer>();
         if(!hasBeen.contains(pos.add(Vector2D.LEFT))){
-        randomMoveList.add(0);
+            randomMoveList.add(0);
         }
         if(!hasBeen.contains(pos.add(Vector2D.RIGHT))){
-        randomMoveList.add(1);
+            randomMoveList.add(1);
         }
         if(!hasBeen.contains(pos.add(Vector2D.UP))){
-        randomMoveList.add(2);
+            randomMoveList.add(2);
         }
         if(!hasBeen.contains(pos.add(Vector2D.DOWN))){
-        randomMoveList.add(3);
+            randomMoveList.add(3);
         }
 
         // makes the move completely random if all adjacent squares have been moved to
         if (randomMoveList.isEmpty()){
-         randomMoveList.add(0);
-         randomMoveList.add(1);
-         randomMoveList.add(2);
-         randomMoveList.add(3);
+            randomMoveList.add(0);
+            randomMoveList.add(1);
+            randomMoveList.add(2);
+            randomMoveList.add(3);
         }
 
         //gets a random integer for the switch from the list of moves
@@ -165,13 +234,13 @@ public class FuzzTests {
         //moves the player
         switch (randomMove) {
             case 0 -> {engine.update(Vector2D.LEFT);
-                      hasBeen.add(pos.add(Vector2D.LEFT));}
+                hasBeen.add(pos.add(Vector2D.LEFT));}
             case 1 -> {engine.update(Vector2D.RIGHT);
-                      hasBeen.add(pos.add(Vector2D.RIGHT));}
+                hasBeen.add(pos.add(Vector2D.RIGHT));}
             case 2 -> {engine.update(Vector2D.UP);
-                      hasBeen.add(pos.add(Vector2D.UP));}
+                hasBeen.add(pos.add(Vector2D.UP));}
             case 3 -> {engine.update(Vector2D.DOWN);
-                      hasBeen.add(pos.add(Vector2D.DOWN));}
+                hasBeen.add(pos.add(Vector2D.DOWN));}
             default -> {
                 // do nothing
             }
