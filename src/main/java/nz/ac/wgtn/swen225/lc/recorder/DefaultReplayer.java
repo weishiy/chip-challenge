@@ -51,7 +51,6 @@ public class DefaultReplayer implements Replayer {
         this.endMessage = new JLabel("Replay ended.");
         this.endMessage.setForeground(Color.WHITE);
         this.endMessage.setFont(new Font("Serif", Font.PLAIN, 50));
-        endMessage.setFore
 
         // Initialize player and enemy movement from playback data
         this.playerMovements.putAll(
