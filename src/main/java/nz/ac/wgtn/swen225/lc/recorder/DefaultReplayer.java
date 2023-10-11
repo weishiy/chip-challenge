@@ -7,6 +7,7 @@ import nz.ac.wgtn.swen225.lc.domain.level.characters.Enemy;
 
 import javax.swing.*;
 import javax.swing.Timer;
+import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -36,6 +37,7 @@ public class DefaultReplayer implements Replayer {
     private final Map<Integer, Map<Enemy, Vector2D>> enemyMovements = new HashMap<>();
     private final int endTick;
     private final Timer timer;
+    private JLabel endMessage;
 
     private float currentPlaybackSpeed = 1f; // Playback speed (allowed values: 0.25f, 0.5f, 1f, 2f, 4f)
 
@@ -47,6 +49,9 @@ public class DefaultReplayer implements Replayer {
      */
     public DefaultReplayer(GameEngine gameEngine, Playback playback) {
         this.gameEngine = gameEngine;
+        this.endMessage = new JLabel("Replay ended.");
+        this.endMessage.setForeground(Color.WHITE);
+        this.endMessage.setFont(new Font("Serif", Font.PLAIN, 50));
 
         // Initialize player and enemy movement from playback data
         this.playerMovements.putAll(
@@ -72,17 +77,17 @@ public class DefaultReplayer implements Replayer {
     public void onDestroy() {
         this.timer.stop(); // Stop the timer
         this.unbindKeyStrokes(); // Unbind keys used for the replay control
+        this.gameEngine.getGlassPane().remove(endMessage);
+        this.gameEngine.getGlassPane().setVisible(false);
     }
 
-    /**
-     * Update the replay, advancing it to the current tick.
-     */
-    public void update() {
+    public void update(){
         var currentTick = gameEngine.getTickNo();
         // Check if the replay has reached the end
-        if (currentTick == endTick) {
+        if(currentTick == endTick) {
             this.timer.stop();
-            gameEngine.getGlassPane().add(new JLabel("Replay ended.")); // Display a message on the glass pane
+            this.gameEngine.getGlassPane().add(endMessage);
+            this.gameEngine.getGlassPane().setVisible(true);
             return;
         }
 
