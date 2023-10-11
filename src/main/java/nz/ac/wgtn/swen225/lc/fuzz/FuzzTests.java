@@ -22,6 +22,7 @@ import static java.time.Duration.ofMinutes;
  *
  * @author Oliver Berry
  * Student ID: 300474410
+ *
  */
 public class FuzzTests {
 

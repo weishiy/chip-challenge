@@ -12,6 +12,7 @@ import java.net.http.HttpResponse;
  *
  * @author Oliver Berry
  * Student ID: 300474410
+ *
  */
 
 public class GitLabIntegration {
