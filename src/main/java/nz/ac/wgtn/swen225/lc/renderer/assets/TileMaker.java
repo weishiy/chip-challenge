@@ -213,6 +213,19 @@ public final class TileMaker {
                 });
     }
 
+    /**
+     * Makes a key component from the given KeyTile.
+     *
+     * @param key The KeyTile to base the component on.
+     * @return A component representing the KeyTile.
+     */
+    public static JComponent makeKey(final KeyTile key) {
+        Objects.requireNonNull(key);
+        Vector2D position = key.getPosition();
+        Image image = NearWhiteFilter.filterImage(ImageLoader.getKey(), key.getKey().getColor());
+        return makeSprite(image, position);
+    }
+
     private static JComponent makeSprite(final Image image, final Object identity) {
         Objects.requireNonNull(image);
         Objects.requireNonNull(identity);
@@ -276,7 +289,9 @@ public final class TileMaker {
             int blue = 0x000000ff & rgb;
             double whiteness = ((double) red + green + blue) / (255.0 * 3.0);
 
-            if (whiteness > 0.8) {
+            final double threshold = 0.8;
+
+            if (whiteness > threshold) {
                 return color.getRGB();
             } else {
                 return rgb;

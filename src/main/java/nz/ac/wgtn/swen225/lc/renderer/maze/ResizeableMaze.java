@@ -4,10 +4,7 @@ import nz.ac.wgtn.swen225.lc.domain.level.Level;
 import nz.ac.wgtn.swen225.lc.domain.level.characters.Enemy;
 import nz.ac.wgtn.swen225.lc.domain.level.characters.Player;
 import nz.ac.wgtn.swen225.lc.domain.level.items.Key;
-import nz.ac.wgtn.swen225.lc.domain.level.tiles.ExitLock;
-import nz.ac.wgtn.swen225.lc.domain.level.tiles.LockedDoor;
-import nz.ac.wgtn.swen225.lc.domain.level.tiles.Tile;
-import nz.ac.wgtn.swen225.lc.domain.level.tiles.Wall;
+import nz.ac.wgtn.swen225.lc.domain.level.tiles.*;
 import nz.ac.wgtn.swen225.lc.renderer.assets.DoorComponent;
 import nz.ac.wgtn.swen225.lc.renderer.assets.TileMaker;
 import nz.ac.wgtn.swen225.lc.utils.Vector2D;
@@ -234,8 +231,13 @@ public class ResizeableMaze extends JLayeredPane {
                             addDoor(wallPositions, tile);
                             return;
                         }
+                        JComponent objectComponent;
+                        if (tile.getClass().equals(KeyTile.class)) {
+                            objectComponent = TileMaker.makeKey((KeyTile) tile);
+                        } else {
+                            objectComponent = TileMaker.makeTile(tile);
+                        }
 
-                        JComponent objectComponent = TileMaker.makeTile(tile);
                         objectComponent.setBounds(makeBounds(tile.getPosition()));
                         add(objectComponent);
                     });
