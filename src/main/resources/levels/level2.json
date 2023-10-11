@@ -1,0 +1,496 @@
+{
+  "id": 0,
+  "levelNo": 2,
+  "width": 9,
+  "height": 9,
+  "timeoutInSeconds": 60,
+  "tiles": [
+    {
+      "id": 21,
+      "position": {
+        "x": 1,
+        "y": 3
+      },
+      "type": "KeyTile",
+      "color": "YELLOW"
+    },
+    {
+      "id": 26,
+      "position": {
+        "x": 2,
+        "y": 4
+      },
+      "type": "Wall"
+    },
+    {
+      "id": 14,
+      "position": {
+        "x": 5,
+        "y": 2
+      },
+      "type": "Wall"
+    },
+    {
+      "id": 8,
+      "position": {
+        "x": 5,
+        "y": 1
+      },
+      "type": "KeyTile",
+      "color": "RED"
+    },
+    {
+      "id": 1,
+      "position": {
+        "x": 2,
+        "y": 0
+      },
+      "type": "Wall"
+    },
+    {
+      "id": 30,
+      "position": {
+        "x": 2,
+        "y": 5
+      },
+      "type": "LockedDoor",
+      "color": "RED"
+    },
+    {
+      "id": 12,
+      "position": {
+        "x": 2,
+        "y": 2
+      },
+      "type": "Wall"
+    },
+    {
+      "id": 29,
+      "position": {
+        "x": 0,
+        "y": 5
+      },
+      "type": "Wall"
+    },
+    {
+      "id": 4,
+      "position": {
+        "x": 5,
+        "y": 0
+      },
+      "type": "Wall"
+    },
+    {
+      "id": 13,
+      "position": {
+        "x": 4,
+        "y": 2
+      },
+      "type": "Wall"
+    },
+    {
+      "id": 41,
+      "position": {
+        "x": 7,
+        "y": 6
+      },
+      "type": "Wall"
+    },
+    {
+      "id": 39,
+      "position": {
+        "x": 4,
+        "y": 6
+      },
+      "type": "Wall"
+    },
+    {
+      "id": 6,
+      "position": {
+        "x": 2,
+        "y": 1
+      },
+      "type": "Wall"
+    },
+    {
+      "id": 46,
+      "position": {
+        "x": 6,
+        "y": 7
+      },
+      "type": "Wall"
+    },
+    {
+      "id": 31,
+      "position": {
+        "x": 6,
+        "y": 5
+      },
+      "type": "Wall"
+    },
+    {
+      "id": 44,
+      "position": {
+        "x": 2,
+        "y": 7
+      },
+      "type": "Wall"
+    },
+    {
+      "id": 48,
+      "position": {
+        "x": 3,
+        "y": 8
+      },
+      "type": "Wall"
+    },
+    {
+      "id": 37,
+      "position": {
+        "x": 2,
+        "y": 6
+      },
+      "type": "Wall"
+    },
+    {
+      "id": 3,
+      "position": {
+        "x": 4,
+        "y": 0
+      },
+      "type": "Wall"
+    },
+    {
+      "id": 42,
+      "position": {
+        "x": 8,
+        "y": 6
+      },
+      "type": "Wall"
+    },
+    {
+      "id": 16,
+      "position": {
+        "x": 7,
+        "y": 2
+      },
+      "type": "Wall"
+    },
+    {
+      "id": 45,
+      "position": {
+        "x": 3,
+        "y": 7
+      },
+      "type": "Exit"
+    },
+    {
+      "id": 18,
+      "position": {
+        "x": 3,
+        "y": 2
+      },
+      "type": "InfoField",
+      "message": "A tip",
+      "active": false
+    },
+    {
+      "id": 23,
+      "position": {
+        "x": 6,
+        "y": 3
+      },
+      "type": "LockedDoor",
+      "color": "YELLOW"
+    },
+    {
+      "id": 2,
+      "position": {
+        "x": 3,
+        "y": 0
+      },
+      "type": "Wall"
+    },
+    {
+      "id": 51,
+      "position": {
+        "x": 6,
+        "y": 8
+      },
+      "type": "Wall"
+    },
+    {
+      "id": 35,
+      "position": {
+        "x": 0,
+        "y": 6
+      },
+      "type": "Wall"
+    },
+    {
+      "id": 36,
+      "position": {
+        "x": 1,
+        "y": 6
+      },
+      "type": "Wall"
+    },
+    {
+      "id": 19,
+      "position": {
+        "x": 0,
+        "y": 3
+      },
+      "type": "Wall"
+    },
+    {
+      "id": 40,
+      "position": {
+        "x": 6,
+        "y": 6
+      },
+      "type": "Wall"
+    },
+    {
+      "id": 49,
+      "position": {
+        "x": 4,
+        "y": 8
+      },
+      "type": "Wall"
+    },
+    {
+      "id": 34,
+      "position": {
+        "x": 8,
+        "y": 5
+      },
+      "type": "Wall"
+    },
+    {
+      "id": 47,
+      "position": {
+        "x": 2,
+        "y": 8
+      },
+      "type": "Wall"
+    },
+    {
+      "id": 15,
+      "position": {
+        "x": 6,
+        "y": 2
+      },
+      "type": "Wall"
+    },
+    {
+      "id": 24,
+      "position": {
+        "x": 8,
+        "y": 3
+      },
+      "type": "Wall"
+    },
+    {
+      "id": 28,
+      "position": {
+        "x": 8,
+        "y": 4
+      },
+      "type": "Wall"
+    },
+    {
+      "id": 50,
+      "position": {
+        "x": 5,
+        "y": 8
+      },
+      "type": "Wall"
+    },
+    {
+      "id": 27,
+      "position": {
+        "x": 6,
+        "y": 4
+      },
+      "type": "Wall"
+    },
+    {
+      "id": 9,
+      "position": {
+        "x": 6,
+        "y": 1
+      },
+      "type": "Wall"
+    },
+    {
+      "id": 10,
+      "position": {
+        "x": 0,
+        "y": 2
+      },
+      "type": "Wall"
+    },
+    {
+      "id": 43,
+      "position": {
+        "x": 5,
+        "y": 6
+      },
+      "type": "ExitLock"
+    },
+    {
+      "id": 25,
+      "position": {
+        "x": 0,
+        "y": 4
+      },
+      "type": "Wall"
+    },
+    {
+      "id": 38,
+      "position": {
+        "x": 3,
+        "y": 6
+      },
+      "type": "Wall"
+    },
+    {
+      "id": 11,
+      "position": {
+        "x": 1,
+        "y": 2
+      },
+      "type": "Wall"
+    },
+    {
+      "id": 17,
+      "position": {
+        "x": 8,
+        "y": 2
+      },
+      "type": "Wall"
+    },
+    {
+      "id": 33,
+      "position": {
+        "x": 7,
+        "y": 5
+      },
+      "type": "ChipTile"
+    },
+    {
+      "id": 22,
+      "position": {
+        "x": 2,
+        "y": 3
+      },
+      "type": "Wall"
+    },
+    {
+      "id": 5,
+      "position": {
+        "x": 6,
+        "y": 0
+      },
+      "type": "Wall"
+    }
+  ],
+  "enemies": [
+    {
+      "id": 53,
+      "position": {
+        "x": 4,
+        "y": 5
+      },
+      "type": "Patroller",
+      "routine": [
+        {
+          "x": -1,
+          "y": 0
+        },
+        {
+          "x": 0,
+          "y": -1
+        },
+        {
+          "x": 0,
+          "y": -1
+        },
+        {
+          "x": 1,
+          "y": 0
+        },
+        {
+          "x": 1,
+          "y": 0
+        },
+        {
+          "x": 0,
+          "y": 1
+        },
+        {
+          "x": 0,
+          "y": 1
+        },
+        {
+          "x": -1,
+          "y": 0
+        }
+      ],
+      "intervalInTicks": 10
+    },
+    {
+      "id": 52,
+      "position": {
+        "x": 4,
+        "y": 3
+      },
+      "type": "Patroller",
+      "routine": [
+        {
+          "x": 1,
+          "y": 0
+        },
+        {
+          "x": 0,
+          "y": 1
+        },
+        {
+          "x": 0,
+          "y": 1
+        },
+        {
+          "x": -1,
+          "y": 0
+        },
+        {
+          "x": -1,
+          "y": 0
+        },
+        {
+          "x": 0,
+          "y": -1
+        },
+        {
+          "x": 0,
+          "y": -1
+        },
+        {
+          "x": 1,
+          "y": 0
+        }
+      ],
+      "intervalInTicks": 10
+    }
+  ],
+  "player": {
+    "id": 54,
+    "position": {
+      "x": 4,
+      "y": 4
+    },
+    "chips": [],
+    "keys": []
+  }
+}

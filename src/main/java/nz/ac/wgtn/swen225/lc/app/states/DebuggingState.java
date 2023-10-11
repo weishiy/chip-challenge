@@ -5,10 +5,22 @@ import nz.ac.wgtn.swen225.lc.app.GameEngine;
 import nz.ac.wgtn.swen225.lc.app.GameEngineImpl;
 import nz.ac.wgtn.swen225.lc.domain.Game;
 
+/**
+ * The `DebuggingState` class represents the state of the game in debugging mode.
+ *
+ * @author Shuja M Syed
+ * Student ID: 300592409
+ */
 public class DebuggingState implements ApplicationState {
 
     private final GameEngine gameEngine;
 
+    /**
+     * Constructs a `DebuggingState` object.
+     *
+     * @param application The game application instance.
+     * @param game        The current game being played in debugging mode.
+     */
     public DebuggingState(Application application, Game game) {
         this.gameEngine = new GameEngineImpl(
                 game,
