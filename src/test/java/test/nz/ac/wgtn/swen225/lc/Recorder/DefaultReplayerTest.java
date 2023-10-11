@@ -1,4 +1,4 @@
-package test.nz.ac.wgtn.swen225.lc.recorder;
+package test.nz.ac.wgtn.swen225.lc.Recorder;
 
 import nz.ac.wgtn.swen225.lc.app.GameEngine;
 import nz.ac.wgtn.swen225.lc.domain.level.characters.Enemy;
