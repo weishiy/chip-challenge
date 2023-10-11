@@ -6,12 +6,15 @@ import nz.ac.wgtn.swen225.lc.utils.Vector2D;
 import nz.ac.wgtn.swen225.lc.domain.level.Level;
 import nz.ac.wgtn.swen225.lc.domain.level.characters.Enemy;
 import nz.ac.wgtn.swen225.lc.domain.level.characters.Player;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.lang.reflect.Field;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.IntStream;
@@ -19,14 +22,17 @@ import java.util.stream.IntStream;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
 
-@ExtendWith(MockitoExtension.class)
 public class GameTest {
 
-    @InjectMocks
     private Game toTest;
 
-    @Mock
     private Level mockLevel;
+
+    @BeforeEach
+    public void before() {
+        mockLevel = mock(Level.class);
+        toTest = new Game(1, 0, mockLevel);
+    }
 
     @Test
     public void testUpdateWithNulls() {
@@ -46,9 +52,14 @@ public class GameTest {
     }
 
     @Test
-    public void testTimerEvents() {
+    @SuppressWarnings("unchecked")
+    public void testTimerEvents() throws NoSuchFieldException, IllegalAccessException {
         var listener = mock(GameEventListener.class);
-        toTest.addListener(listener);
+        Field field = toTest.getClass().getDeclaredField("listeners");
+        field.setAccessible(true);
+
+        List<GameEventListener> value = (List<GameEventListener>) field.get(toTest);
+        value.add(listener);
 
         when(mockLevel.getTimeoutInSeconds()).thenReturn(1);
         IntStream.range(0, Game.FRAME_RATE).forEach(i -> toTest.update(Vector2D.ZERO, Map.of()));
@@ -61,7 +72,8 @@ public class GameTest {
     }
 
     @Test
-    public void whenPlayCaughtByEnemies_shouldFirePlayDiedEvent() {
+    @SuppressWarnings("unchecked")
+    public void whenPlayCaughtByEnemies_shouldFirePlayDiedEvent() throws NoSuchFieldException, IllegalAccessException {
         var mockPlayer = mock(Player.class);
         when(mockPlayer.getPosition()).thenReturn(new Vector2D(10, 10));
         var mockEnemy = mock(Enemy.class);
@@ -71,7 +83,11 @@ public class GameTest {
         when(mockLevel.getEnemies()).thenReturn(Set.of(mockEnemy));
 
         var listener = mock(GameEventListener.class);
-        toTest.addListener(listener);
+        Field field = toTest.getClass().getDeclaredField("listeners");
+        field.setAccessible(true);
+        List<GameEventListener> value = (List<GameEventListener>) field.get(toTest);
+        value.add(listener);
+
         toTest.update(Vector2D.ZERO, Map.of());
         verify(listener).onGameEvent(any(PlayerDiedEvent.class));
     }
