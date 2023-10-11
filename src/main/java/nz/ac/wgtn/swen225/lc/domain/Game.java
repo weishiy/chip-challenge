@@ -14,6 +14,8 @@ import java.util.stream.Collectors;
 /**
  * Presents a game. Contains methods to update the game's internal state. It will notify other modules about those state
  * changes via Observer pattern
+ * @author Shiyan Wei
+ * Student ID: 300569298
  */
 public class Game extends Entity {
 
@@ -30,7 +32,9 @@ public class Game extends Entity {
     public Game() {
         super();
     }
-
+    /**
+     * Creates a new game.
+     */
     public Game(int id, int tickNo, Level level) {
         super(id);
         this.tickNo = tickNo;
@@ -85,34 +89,63 @@ public class Game extends Entity {
         listeners.addAll(listenersToAdd);
         listenersToAdd.clear();
     }
-
+    /**
+     * Gets the current level in the game.
+     *
+     * @return The current level.
+     */
     public Level getLevel() {
         return level;
     }
-
+    /**
+     * Sets the current level in the game.
+     *
+     * @param level The level to set.
+     */
     public void setLevel(Level level) {
         this.level = level;
         this.level.setGame(this);
     }
-
+    /**
+     * Gets the current tick number.
+     *
+     * @return The current tick number.
+     */
     public int getTickNo() {
         return tickNo;
     }
-
+    /**
+     * Sets the current tick number.
+     *
+     * @param tickNo The tick number to set.
+     */
     public void setTickNo(int tickNo) {
         this.tickNo = tickNo;
     }
-
+    /**
+     * Checks if the game is over.
+     *
+     * @return True if the game is over, false otherwise.
+     */
     public boolean isGameOver() {
         return gameOver;
     }
 
+    /**
+     * Adds a game event listener to the list of listeners.
+     *
+     * @param listener The listener to add.
+     */
     public void addListener(GameEventListener listener) {
         if (!listeners.contains(listener) && !listenersToAdd.contains(listener)) {
             listenersToAdd.add(listener);
         }
     }
-
+    /**
+     * Removes a game event listener from the list of listeners.
+     *
+     * @param listener The listener to remove.
+     */
     public void removeListener(GameEventListener listener) {
         listenersToRemove.add(listener);
     }
@@ -128,15 +161,28 @@ public class Game extends Entity {
         }
         listeners.forEach(l -> l.onGameEvent(gameEvent));
     }
-
+    /**
+     * Gets the countdown (time left in the game).
+     *
+     * @return The countdown in seconds.
+     */
     public int getCountDown() {
         return getLevel().getTimeoutInSeconds() - tickNo / FRAME_RATE;
     }
-
+    /**
+     * Gets the number of chips left on the level.
+     *
+     * @return The number of chips remaining.
+     */
     public int getChipsLeft() {
         return (int) getLevel().getTiles().stream().filter(t -> t instanceof ChipTile).count();
     }
 
+    /**
+     * Gets the list of game event listeners.
+     *
+     * @return The list of game event listeners.
+     */
     public List<GameEventListener> getListeners() {
         return List.copyOf(listeners);
     }
