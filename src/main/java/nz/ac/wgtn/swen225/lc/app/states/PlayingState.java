@@ -14,9 +14,16 @@ import nz.ac.wgtn.swen225.lc.recorder.DefaultRecorder;
 import nz.ac.wgtn.swen225.lc.recorder.Recorder;
 
 import javax.swing.*;
+import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.util.stream.Collectors;
 
+/**
+ * The `PlayingState` class represents the state of the game when actively playing.
+ *
+ * @author Shuja M Syed
+ * Student ID: 300592409
+ */
 public class PlayingState extends AbstractApplicationState implements GameEventListener {
 
     private final Game game;
@@ -24,8 +31,16 @@ public class PlayingState extends AbstractApplicationState implements GameEventL
     private final Recorder recorder;
     private final Timer timer;
 
+    JLabel paused = new JLabel("Paused");
+
     private Vector2D playerMovement = Vector2D.ZERO;
 
+    /**
+     * Constructs a `PlayingState` object.
+     *
+     * @param application The game application instance.
+     * @param game        The current game being played.
+     */
     public PlayingState(Application application, Game game) {
         super(application);
         this.game = game;
@@ -37,28 +52,46 @@ public class PlayingState extends AbstractApplicationState implements GameEventL
                 application.getChipsLeftLabel());
         recorder = new DefaultRecorder(getApplication().getPersistence(), game);
         timer = new Timer(1000 / Game.FRAME_RATE, e -> update());
+        paused.setForeground(Color.WHITE);
+        paused.setFont(new Font("Serif", Font.PLAIN, 50));
     }
 
+    /**
+     * Called when this state is entered. Starts the game engine, recorder, and timer.
+     */
     @Override
     public void onStateEnter() {
         gameEngine.onStart();
         recorder.onStart();
         game.addListener(this);
         bindKeyStrokes();
-
         timer.start();
     }
 
+    /**
+     * Called when the game is paused. Stops the timer and displays a "Paused" message.
+     */
     @Override
     public void onPauseGame() {
         timer.stop();
+        gameEngine.getGlassPane().add(paused);
+        gameEngine.getGlassPane().setVisible(true);
     }
 
+    /**
+     * Called when exiting the pause state. Resumes the timer and removes the "Paused" message.
+     */
     @Override
     public void onExitPause() {
         timer.start();
+        gameEngine.getGlassPane().remove(paused);
+        gameEngine.getGlassPane().setVisible(false);
     }
 
+    /**
+     * Called when saving and exiting the game. Stops the timer and prompts the user to save the game.
+     * Upon selecting a file to save, transitions to the welcoming state.
+     */
     @Override
     public void onSaveAndExitGame() {
         timer.stop();
@@ -74,22 +107,33 @@ public class PlayingState extends AbstractApplicationState implements GameEventL
         }
     }
 
+    /**
+     * Called when exiting the game. Stops the timer and transitions to the welcoming state.
+     */
     @Override
     public void onExitGame() {
         timer.stop();
         getApplication().setApplicationState(new WelcomingState(getApplication()));
     }
 
+    /**
+     * Called when this state is exited. Stops the timer, unbinds key strokes, removes listeners,
+     * and cleans up resources.
+     */
     @Override
     public void onStateExit() {
         timer.stop();
-
         unbindKeyStrokes();
         game.removeListener(this);
         recorder.onDestroy();
         gameEngine.onDestroy();
     }
 
+    /**
+     * Handles game events, such as game over events.
+     *
+     * @param gameEvent The game event to handle.
+     */
     @Override
     public void onGameEvent(GameEvent gameEvent) {
         if (gameEvent instanceof GameOverEvent g) {
@@ -97,6 +141,9 @@ public class PlayingState extends AbstractApplicationState implements GameEventL
         }
     }
 
+    /**
+     * Updates the game state, records player and enemy movements, and updates the game engine.
+     */
     private void update() {
         var enemyMovementMap =
                 game.getLevel()
@@ -108,6 +155,9 @@ public class PlayingState extends AbstractApplicationState implements GameEventL
         playerMovement = Vector2D.ZERO;
     }
 
+    /**
+     * Binds player movement to arrow keys.
+     */
     private void bindKeyStrokes() {
         gameEngine.bindInputWithAction(
                 KeyStroke.getKeyStroke(KeyEvent.VK_LEFT, 0),
@@ -123,11 +173,13 @@ public class PlayingState extends AbstractApplicationState implements GameEventL
                 e -> playerMovement = Vector2D.DOWN);
     }
 
+    /**
+     * Unbinds player movement from arrow keys.
+     */
     private void unbindKeyStrokes() {
         gameEngine.unbindInputWithAction(KeyStroke.getKeyStroke(KeyEvent.VK_LEFT, 0));
         gameEngine.unbindInputWithAction(KeyStroke.getKeyStroke(KeyEvent.VK_UP, 0));
         gameEngine.unbindInputWithAction(KeyStroke.getKeyStroke(KeyEvent.VK_RIGHT, 0));
         gameEngine.unbindInputWithAction(KeyStroke.getKeyStroke(KeyEvent.VK_DOWN, 0));
     }
-
 }
