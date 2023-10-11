@@ -16,7 +16,14 @@ import java.util.concurrent.ExecutionException;
 
 import static java.time.Duration.ofMinutes;
 
-
+/**
+ * The class containing the fuzz tests for levels 1
+ * and 2 for the "Chips Challenge" game.
+ *
+ * @author Oliver Berry
+ * Student ID: 300474410
+ *
+ */
 public class FuzzTests {
 
     private static final Random RANDOM = new Random();
@@ -29,6 +36,12 @@ public class FuzzTests {
 
 
     private Set<Vector2D> hasBeen;
+
+    /**
+     * Runs the fuzz test for level 1, if the game ends normally or it runs for 1 minute, nothing happens.
+     * If an error occurs while running, it makes an issue on the github with a title of the error and a description
+     * that is the cause of the error assigned to the user in charge of the package where the error was found.
+     */
 
     @Test
     public void test1() {
@@ -107,6 +120,12 @@ public class FuzzTests {
         });
     }
 
+
+    /**
+     * Runs the fuzz test for level 2, if the game ends normally or it runs for 1 minute, nothing happens.
+     * If an error occurs while running, it makes an issue on the github with a title of the error and a description
+     * that is the cause of the error assigned to the user in charge of the package where the error was found.
+     */
     @Test
     public void test2() {
         // Starts the game in debug mode.
@@ -186,6 +205,14 @@ public class FuzzTests {
     }
 
 
+    /**
+     * This method is used to progress the game by the tests above. It also is where
+     * the semi-intelligent random movement is handled. It does this by keeping track of the places
+     * that the player has attempted to move to. Every tick it will check all the adjacent positions which could be
+     * moved to. Any position which hasn't been moved to before will be put into a list and a random position from
+     * these will be selected and moved to. If the list is empty because the player has already attempted to move to
+     * all adjacent positions, then any of the adjacent positions will be chosen at random.
+     */
 
     private void nextTick(CompletableFuture<Void> future) {
 
@@ -248,7 +275,6 @@ public class FuzzTests {
         Note that in the switch cases above, the Vector2D is added to the hasBeen list whether or not
         the player successfully moves to that position. This is so the fuzz tester won't repeatedly run
         into a wall, particularly when all of the other squares have been covered.
-        With the above code implemented you can remove the block of code below.
          */
 
         }
