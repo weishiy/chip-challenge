@@ -3,6 +3,7 @@ package nz.ac.wgtn.swen225.lc.renderer.maze;
 import nz.ac.wgtn.swen225.lc.domain.level.Level;
 import nz.ac.wgtn.swen225.lc.domain.level.characters.Enemy;
 import nz.ac.wgtn.swen225.lc.domain.level.characters.Player;
+import nz.ac.wgtn.swen225.lc.domain.level.items.Key;
 import nz.ac.wgtn.swen225.lc.domain.level.tiles.ExitLock;
 import nz.ac.wgtn.swen225.lc.domain.level.tiles.LockedDoor;
 import nz.ac.wgtn.swen225.lc.domain.level.tiles.Tile;
@@ -246,6 +247,13 @@ public class ResizeableMaze extends JLayeredPane {
         }
 
         private void addDoor(final Set<Vector2D> wallPositions, final Tile door) {
+            final Key.Color colour;
+            if (door instanceof LockedDoor) {
+                colour = ((LockedDoor) door).getColor();
+            } else {
+                colour = null;
+            }
+
             final Vector2D position = door.getPosition();
             final Function<Vector2D, Boolean> isWallPresentFromOffset =
                     offset -> wallPositions.contains(position.add(offset));
@@ -258,17 +266,17 @@ public class ResizeableMaze extends JLayeredPane {
 
             //Depending on presence of walls around door, we choose different orientation
             if ((wallAbove && wallBelow) && !(wallLeft || wallRight)) {
-                DoorComponent doorComponent = TileMaker.makeLeftRightDoor(position);
+                DoorComponent doorComponent = TileMaker.makeLeftRightDoor(position, colour);
                 doorComponent.setDoorBounds(makeBounds(position));
                 add(doorComponent);
             } else if (!(wallAbove || wallBelow) && (wallLeft && wallRight)) {
-                DoorComponent doorComponent = TileMaker.makeUpDownDoor(position);
+                DoorComponent doorComponent = TileMaker.makeUpDownDoor(position, colour);
                 doorComponent.setDoorBounds(makeBounds(position));
                 add(doorComponent);
             } else {
                 //Default case, we make up-down door.
                 //Leave redundant if statement above in case we want to make different default door.
-                DoorComponent doorComponent = TileMaker.makeUpDownDoor(position);
+                DoorComponent doorComponent = TileMaker.makeUpDownDoor(position, colour);
                 doorComponent.setBounds(makeBounds(position));
                 add(doorComponent);
             }
@@ -325,7 +333,7 @@ public class ResizeableMaze extends JLayeredPane {
         /**
          * Adds the player to the board.
          *
-         * <p> If the player is null, does nothing.
+         * <p>If the player is null, does nothing.
          *
          * @param player The (possibly null) player to check if different.
          */

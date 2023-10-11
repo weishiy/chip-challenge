@@ -3,6 +3,7 @@ package nz.ac.wgtn.swen225.lc.renderer.assets;
 import nz.ac.wgtn.swen225.lc.domain.level.Level;
 import nz.ac.wgtn.swen225.lc.domain.level.characters.Enemy;
 import nz.ac.wgtn.swen225.lc.domain.level.characters.Player;
+import nz.ac.wgtn.swen225.lc.domain.level.items.Key;
 import nz.ac.wgtn.swen225.lc.domain.level.tiles.*;
 import nz.ac.wgtn.swen225.lc.utils.Vector2D;
 
@@ -10,6 +11,8 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
+import java.awt.image.FilteredImageSource;
+import java.awt.image.RGBImageFilter;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
@@ -139,20 +142,22 @@ public final class TileMaker {
      * Makes a vertical, up-down door.
      *
      * @param position Board position for identity.
+     * @param color    Key color for locked door. Can be null.
      * @return Component representing this door.
      */
-    public static DoorComponent makeUpDownDoor(final Vector2D position) {
-        return makeDoor(ImageLoader.getUpDownDoor(), position);
+    public static DoorComponent makeUpDownDoor(final Vector2D position, final Key.Color color) {
+        return makeDoor(ImageLoader.getUpDownDoor(), position, color);
     }
 
     /**
      * Makes a horizontal, left-right door.
      *
      * @param position Board position for identity.
+     * @param color    Key color for locked door. Can be null.
      * @return Component representing this door.
      */
-    public static DoorComponent makeLeftRightDoor(final Vector2D position) {
-        return makeDoor(ImageLoader.getLeftRightDoor(), position);
+    public static DoorComponent makeLeftRightDoor(final Vector2D position, final Key.Color color) {
+        return makeDoor(ImageLoader.getLeftRightDoor(), position, color);
     }
 
     /**
@@ -185,9 +190,18 @@ public final class TileMaker {
         return makeSprite(ImageLoader.getEnemy(), enemyInfo);
     }
 
-    private static DoorComponent makeDoor(final Image image, final Object identity) {
-        Objects.requireNonNull(image);
+    private static DoorComponent makeDoor(final Image inImage, final Object identity,
+                                          final Key.Color color) {
+        Objects.requireNonNull(inImage);
         Objects.requireNonNull(identity);
+
+        final Image image;
+        if (color != null) {
+            //Makes it so doors change color.
+            image = NearWhiteFilter.filterImage(inImage, color);
+        } else {
+            image = inImage;
+        }
 
         //Casting, *should* be safe, so long as `image` is always an image to a door.
         return (DoorComponent) cacheTileComponent.computeIfAbsent(
@@ -210,6 +224,67 @@ public final class TileMaker {
                     }
                 });
 
+    }
+
+    /**
+     * If a pixel is near white, replaces it with a color.
+     */
+    private static class NearWhiteFilter extends RGBImageFilter {
+
+        /**
+         * Maps key colours (assigned to doors and keys) to awt colours.
+         */
+        private static final Map<Key.Color, Color> FROM_KEY_COLORS = Map.of(Key.Color.RED,
+                Color.RED, Key.Color.BLUE, Color.BLUE, Key.Color.YELLOW, Color.YELLOW,
+                Key.Color.GREEN, Color.GREEN);
+        /**
+         * Stores filter arguments, to reduce calculations.
+         */
+        private static final Map<Arguments, Image> cache = new WeakHashMap<>();
+        /**
+         * The final colour to filter to.
+         */
+        private final Color color;
+
+        NearWhiteFilter(final Color endColor) {
+            this.color = endColor;
+        }
+
+        NearWhiteFilter(final Key.Color endColor) {
+            this(FROM_KEY_COLORS.get(endColor));
+        }
+
+        /**
+         * Uses this filter with the given color to make an image.
+         *
+         * @param inImage The image to filter.
+         * @param color   The Key.Color to replace near white with.
+         * @return A new image that has been filtered.
+         */
+        public static Image filterImage(final Image inImage, final Key.Color color) {
+            return cache.computeIfAbsent(new Arguments(inImage, color),
+                    arguments -> Toolkit.getDefaultToolkit().createImage(
+                            new FilteredImageSource(inImage.getSource(),
+                                    new NearWhiteFilter(color))));
+        }
+
+        @Override
+        public int filterRGB(final int x, final int y, final int rgb) {
+
+            int red = (0x00ff0000 & rgb) >> (4 * 4);
+            int green = (0x0000ff00 & rgb) >> (4 * 2);
+            int blue = 0x000000ff & rgb;
+            double whiteness = ((double) red + green + blue) / (255.0 * 3.0);
+
+            if (whiteness > 0.8) {
+                return color.getRGB();
+            } else {
+                return rgb;
+            }
+        }
+
+        private record Arguments(Image inImage, Key.Color color) {
+        }
     }
 
     /**
@@ -270,6 +345,11 @@ public final class TileMaker {
      * @param identity Something to unique identify which enemy this is.
      */
     public record EnemyInfo(Object identity) {
+        /**
+         * Constructs an info from a given enemy.
+         *
+         * @param enemy The enemy to construct from.
+         */
         public EnemyInfo(final Enemy enemy) {
             //In order to keep different enemies separate, we keep reference as identity
             this((Object) enemy);
@@ -281,6 +361,11 @@ public final class TileMaker {
      * Info describing the player sprite.
      */
     public record PlayerInfo() {
+        /**
+         * Constructs an info from a player.
+         *
+         * @param player The player instance.
+         */
         public PlayerInfo(final Player player) {
             this();
         }
