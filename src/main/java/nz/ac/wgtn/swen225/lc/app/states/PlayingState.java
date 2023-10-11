@@ -4,11 +4,8 @@ import nz.ac.wgtn.swen225.lc.app.Application;
 import nz.ac.wgtn.swen225.lc.app.GameEngine;
 import nz.ac.wgtn.swen225.lc.app.GameEngineImpl;
 import nz.ac.wgtn.swen225.lc.domain.Game;
+import nz.ac.wgtn.swen225.lc.domain.events.*;
 import nz.ac.wgtn.swen225.lc.utils.Vector2D;
-import nz.ac.wgtn.swen225.lc.domain.events.GameEvent;
-import nz.ac.wgtn.swen225.lc.domain.events.GameEventListener;
-import nz.ac.wgtn.swen225.lc.domain.events.GameOverEvent;
-import nz.ac.wgtn.swen225.lc.domain.events.PlayerWonEvent;
 import nz.ac.wgtn.swen225.lc.domain.level.characters.Enemy;
 import nz.ac.wgtn.swen225.lc.recorder.DefaultRecorder;
 import nz.ac.wgtn.swen225.lc.recorder.Recorder;
@@ -17,6 +14,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.util.stream.Collectors;
+import java.util.List;
 
 /**
  * The `PlayingState` class represents the state of the game when actively playing.
@@ -136,8 +134,20 @@ public class PlayingState extends AbstractApplicationState implements GameEventL
      */
     @Override
     public void onGameEvent(GameEvent gameEvent) {
-        if (gameEvent instanceof GameOverEvent g) {
-            getApplication().setApplicationState(new GameOverState(getApplication(), g instanceof PlayerWonEvent));
+        if (gameEvent instanceof PlayerWonEvent) {
+            int currentLevel = game.getLevel().getLevelNo();
+            List<Integer> availableLevels = getApplication().getPersistence().getAllLevelNos();
+            if (currentLevel == availableLevels.get(availableLevels.size() - 1)) {
+                // Player won the last level.
+                getApplication().setApplicationState(new GameOverState(getApplication(), true));
+            } else {
+                // Player won a level, advance to the next available level.
+                int nextLevelNo = availableLevels.get(availableLevels.indexOf(currentLevel) + 1);
+                onNewGame(nextLevelNo);
+            }
+        } else if (gameEvent instanceof PlayerDiedEvent || gameEvent instanceof TimeoutEvent) {
+            // Player lost the game, go to game over state (player lost).
+            getApplication().setApplicationState(new GameOverState(getApplication(), false));
         }
     }
 
