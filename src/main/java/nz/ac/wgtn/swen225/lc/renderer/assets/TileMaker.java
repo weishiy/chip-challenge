@@ -5,6 +5,7 @@ import nz.ac.wgtn.swen225.lc.domain.level.characters.Enemy;
 import nz.ac.wgtn.swen225.lc.domain.level.characters.Player;
 import nz.ac.wgtn.swen225.lc.domain.level.items.Key;
 import nz.ac.wgtn.swen225.lc.domain.level.tiles.*;
+import nz.ac.wgtn.swen225.lc.renderer.AdjacentWalls;
 import nz.ac.wgtn.swen225.lc.utils.Vector2D;
 
 import javax.swing.*;
@@ -17,8 +18,8 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import java.util.WeakHashMap;
-import java.util.function.BiFunction;
 import java.util.function.Supplier;
+import java.util.stream.Collectors;
 
 /**
  * Helper interface for making tiles for the maze.
@@ -35,9 +36,9 @@ public final class TileMaker {
      */
     private static final Map<Class<? extends Tile>, Supplier<Image>> TILE_MAPPING = Map.of(
             ChipTile.class, ImageLoader::getChip, Exit.class, ImageLoader::getExit, ExitLock.class,
-            ImageLoader::getDoor /*TODO: Uses default door for exit lock. Should be different. */,
-            InfoField.class, ImageLoader::getInfoIcon, KeyTile.class, ImageLoader::getKey,
-            LockedDoor.class, ImageLoader::getDoor, Wall.class, ImageLoader::getWall);
+            ImageLoader::getDoor, InfoField.class, ImageLoader::getInfoIcon, KeyTile.class,
+            ImageLoader::getKey, LockedDoor.class, ImageLoader::getDoor, Wall.class,
+            ImageLoader::getWall);
     /**
      * Caches scaled images.
      *
@@ -70,16 +71,9 @@ public final class TileMaker {
      * second dimension is <code>level.getHeight()</code>.
      */
     public static JComponent[][] makeBoard(final Level level) {
+        Set<Vector2D> wallPositions = getWallPositions(level);
+
         Set<Tile> tiles = level.getTiles();
-        BiFunction<Integer, Integer, JComponent> getTile = (x, y) -> tiles.stream()
-                //Gets first tile that matches coordinates
-                .filter(t -> {
-                    Vector2D position = t.getPosition();
-                    return position.x() == x && position.y() == y;
-                })
-                //If tile present, calls `makeTile`, else, calls `emptyTile`.
-                .findFirst().map(TileMaker::makeBoardTile).orElseGet(
-                        () -> TileMaker.emptyTile(new Vector2D(x, y)));
 
         int width = level.getWidth();
         int height = level.getHeight();
@@ -87,11 +81,29 @@ public final class TileMaker {
         var board = new JComponent[width][height];
         for (int x = 0; x < width; ++x) {
             for (int y = 0; y < height; ++y) {
-                board[x][y] = getTile.apply(x, y);
+                board[x][y] = getBoardTile(x, y, tiles, wallPositions);
             }
         }
 
         return board;
+    }
+
+    private static Set<Vector2D> getWallPositions(final Level level) {
+        return level.getTiles().stream().filter(tile -> Wall.class.equals(tile.getClass())).map(
+                Tile::getPosition).collect(Collectors.toSet());
+    }
+
+    private static JComponent getBoardTile(final int x, final int y, final Set<Tile> tiles,
+                                           final Set<Vector2D> wallPositions) {
+        return tiles.stream()
+                //Gets first tile that matches coordinates
+                .filter(t -> {
+                    Vector2D position = t.getPosition();
+                    return position.x() == x && position.y() == y;
+                })
+                //If tile present, calls `makeTile`, else, calls `emptyTile`.
+                .findFirst().map(tile -> makeBoardTile(tile, wallPositions)).orElseGet(
+                        () -> TileMaker.emptyTile(new Vector2D(x, y)));
     }
 
     /**
@@ -120,14 +132,18 @@ public final class TileMaker {
      *
      * <p>If the tile refers to an opaque object, then returns a space tile.
      *
-     * @param tile The tile to build the component from.
+     * @param tile          The tile to build the component from.
+     * @param wallPositions Where the walls are on the board.
      * @return A component representing the given tile, or a space tile.
      */
-    public static JComponent makeBoardTile(final Tile tile) {
+    public static JComponent makeBoardTile(final Tile tile, final Set<Vector2D> wallPositions) {
         Objects.requireNonNull(tile);
         Supplier<Image> imageSupplier;
         if (OBJECTS.contains(tile.getClass())) {
             imageSupplier = ImageLoader::getSpace;
+        } else if (tile.getClass().equals(Wall.class)) {
+            imageSupplier = () -> ImageLoader.getWall(
+                    AdjacentWalls.calculateAdjacentWalls(wallPositions, tile.getPosition()));
         } else {
             imageSupplier = TILE_MAPPING.get(tile.getClass());
         }

@@ -1,5 +1,7 @@
 package nz.ac.wgtn.swen225.lc.renderer.assets;
 
+import nz.ac.wgtn.swen225.lc.renderer.AdjacentWalls;
+
 import javax.imageio.ImageIO;
 import java.awt.*;
 import java.io.IOException;
@@ -7,8 +9,10 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.stream.IntStream;
 
 /**
  * Loads images corresponding to different assets used in game.
@@ -62,12 +66,55 @@ public final class ImageLoader {
     }
 
     /**
-     * Returns image for a wall.
+     * Returns default image for a wall.
      *
      * @return Image of a wall.
      */
     public static Image getWall() {
         return getImage(Resources.WALL_00);
+    }
+
+    /**
+     * Returns image for a wall depending on adjacency.
+     *
+     * @param adjacentWalls indicates which adjacent tiles are walls.
+     * @return Image for appropriate wall.
+     */
+    public static Image getWall(final AdjacentWalls adjacentWalls) {
+        //Wall images are arranged in 4-by-4 square, indexed 0-15, depending on the presence of
+        //adjacent walls.
+        final boolean above = adjacentWalls.wallAbove(), below = adjacentWalls.wallBelow();
+
+        //The row of the image grid. Commented out sections of the logic indicates unnecessary
+        // calculations, but included for clarity.
+        final int row;
+        if (!above && !below) {
+            row = 0;
+        } else if (!above /*&& below*/) {
+            row = 1;
+        } else if (/*above &&*/below) {
+            row = 2;
+        } else /*if (above && !below)*/ {
+            row = 3;
+        }
+
+        final boolean left = adjacentWalls.wallLeft(), right = adjacentWalls.wallRight();
+
+        //The column of the image grid.
+        final int column;
+        if (!left && !right) {
+            column = 0;
+        } else if (!left /*&& right*/) {
+            column = 1;
+        } else if (/*left &&*/right) {
+            column = 2;
+        } else /*if (left && !right)*/ {
+            column = 3;
+        }
+
+        final int index = 4 * row + column;
+
+        return getImage(Resources.WALLS.get(index));
     }
 
     /**
@@ -151,6 +198,14 @@ public final class ImageLoader {
          * Default wall image.
          */
         private static final URI WALL_00 = getResource("/images/walls/wall_00.png");
+
+        /**
+         * Different wall images, that correspond to which walls are adjacent.
+         *
+         * <p>There are 16 images, because each of the 4 sides may contain an adjacent wall. (2^4)
+         */
+        private static final List<URI> WALLS = IntStream.range(0, 16).mapToObj(
+                "/images/walls/wall_%02d.png"::formatted).map(Resources::getResource).toList();
 
         /**
          * Default enemy.

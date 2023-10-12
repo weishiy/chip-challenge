@@ -5,6 +5,7 @@ import nz.ac.wgtn.swen225.lc.domain.level.characters.Enemy;
 import nz.ac.wgtn.swen225.lc.domain.level.characters.Player;
 import nz.ac.wgtn.swen225.lc.domain.level.items.Key;
 import nz.ac.wgtn.swen225.lc.domain.level.tiles.*;
+import nz.ac.wgtn.swen225.lc.renderer.AdjacentWalls;
 import nz.ac.wgtn.swen225.lc.renderer.assets.DoorComponent;
 import nz.ac.wgtn.swen225.lc.renderer.assets.TileMaker;
 import nz.ac.wgtn.swen225.lc.utils.Vector2D;
@@ -13,7 +14,6 @@ import javax.swing.*;
 import java.awt.*;
 import java.util.Objects;
 import java.util.Set;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 
 /**
@@ -257,30 +257,27 @@ public class ResizeableMaze extends JLayeredPane {
             }
 
             final Vector2D position = door.getPosition();
-            final Function<Vector2D, Boolean> isWallPresentFromOffset =
-                    offset -> wallPositions.contains(position.add(offset));
-
-            boolean wallAbove = isWallPresentFromOffset.apply(Vector2D.UP);
-            boolean wallBelow = isWallPresentFromOffset.apply(Vector2D.DOWN);
-
-            boolean wallLeft = isWallPresentFromOffset.apply(Vector2D.LEFT);
-            boolean wallRight = isWallPresentFromOffset.apply(Vector2D.RIGHT);
+            final AdjacentWalls adjacentWalls = AdjacentWalls.calculateAdjacentWalls(wallPositions,
+                    position);
 
             //Depending on presence of walls around door, we choose different orientation
-            if ((wallAbove && wallBelow) && !(wallLeft || wallRight)) {
-                DoorComponent doorComponent = TileMaker.makeLeftRightDoor(position, colour);
-                doorComponent.setDoorBounds(makeBounds(position));
-                add(doorComponent);
-            } else if (!(wallAbove || wallBelow) && (wallLeft && wallRight)) {
-                DoorComponent doorComponent = TileMaker.makeUpDownDoor(position, colour);
-                doorComponent.setDoorBounds(makeBounds(position));
-                add(doorComponent);
-            } else {
-                //Default case, we make up-down door.
-                //Leave redundant if statement above in case we want to make different default door.
-                DoorComponent doorComponent = TileMaker.makeUpDownDoor(position, colour);
-                doorComponent.setBounds(makeBounds(position));
-                add(doorComponent);
+            switch (adjacentWalls.getPassage()) {
+                case HORIZONTAL_PASSAGE -> {
+                    DoorComponent doorComponent = TileMaker.makeLeftRightDoor(position, colour);
+                    doorComponent.setDoorBounds(makeBounds(position));
+                    add(doorComponent);
+                }
+                case VERTICAL_PASSAGE -> {
+                    DoorComponent doorComponent = TileMaker.makeUpDownDoor(position, colour);
+                    doorComponent.setDoorBounds(makeBounds(position));
+                    add(doorComponent);
+                }
+                default -> {
+                    //Default case, we make up-down door.
+                    DoorComponent doorComponent = TileMaker.makeUpDownDoor(position, colour);
+                    doorComponent.setBounds(makeBounds(position));
+                    add(doorComponent);
+                }
             }
         }
     }
