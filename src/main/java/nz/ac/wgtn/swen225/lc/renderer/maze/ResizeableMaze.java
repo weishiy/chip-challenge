@@ -1,14 +1,20 @@
 package nz.ac.wgtn.swen225.lc.renderer.maze;
 
-import nz.ac.wgtn.swen225.lc.utils.Vector2D;
 import nz.ac.wgtn.swen225.lc.domain.level.Level;
 import nz.ac.wgtn.swen225.lc.domain.level.characters.Enemy;
 import nz.ac.wgtn.swen225.lc.domain.level.characters.Player;
+import nz.ac.wgtn.swen225.lc.domain.level.items.Key;
+import nz.ac.wgtn.swen225.lc.domain.level.tiles.*;
+import nz.ac.wgtn.swen225.lc.renderer.AdjacentWalls;
+import nz.ac.wgtn.swen225.lc.renderer.assets.DoorComponent;
+import nz.ac.wgtn.swen225.lc.renderer.assets.TileMaker;
+import nz.ac.wgtn.swen225.lc.utils.Vector2D;
 
 import javax.swing.*;
 import java.awt.*;
 import java.util.Objects;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * Renders the tiles and characters on a level.
@@ -19,6 +25,11 @@ public class ResizeableMaze extends JLayeredPane {
      * Layer which contains tiles, not entities.
      */
     private final MazeBoard board = new MazeBoard();
+
+    /**
+     * Layer which contains objects (non-opaque tiles).
+     */
+    private final MazeObjects objects = new MazeObjects();
 
     /**
      * The layer which contains entities.
@@ -33,20 +44,25 @@ public class ResizeableMaze extends JLayeredPane {
      * Constructor.
      */
     public ResizeableMaze() {
-        setLayer(board, 1);
+        int layerIndex = 1;
+
+        setLayer(board, layerIndex);
         add(board);
 
-        setLayer(entities, 2);
+        setLayer(objects, ++layerIndex);
+        add(objects);
+
+        setLayer(entities, ++layerIndex);
         add(entities);
     }
 
     /**
      * Sets the level to render.
      *
-     * @param level The new level, or <code>null</code>.
+     * @param newLevel The new level, or <code>null</code>.
      */
-    public void setLevel(final Level level) {
-        this.level = level; //FIXME: externally mutable
+    public void setLevel(final Level newLevel) {
+        this.level = newLevel; //FIXME: externally mutable
     }
 
     /**
@@ -66,6 +82,7 @@ public class ResizeableMaze extends JLayeredPane {
      */
     public void render() {
         board.render();
+        objects.render();
         entities.render();
     }
 
@@ -95,6 +112,20 @@ public class ResizeableMaze extends JLayeredPane {
         Objects.requireNonNull(level);
         return new Dimension(level.getWidth() * getTileLength(),
                 level.getHeight() * getTileLength());
+    }
+
+    /**
+     * Creates bounds for a tile with its top-left at <code>position</code> and length of
+     * <code>getTileLength()</code>.
+     *
+     * @param position The position of the <code>Tile</code>.
+     * @return A <code>Rectangle</code> representing the bounds of the given object.
+     */
+    private Rectangle makeBounds(final Vector2D position) {
+        int left = position.x() * getTileLength();
+        int top = position.y() * getTileLength();
+
+        return new Rectangle(left, top, getTileLength(), getTileLength());
     }
 
     /**
@@ -160,6 +191,99 @@ public class ResizeableMaze extends JLayeredPane {
     }
 
     /**
+     * Renders non-opaque objects, like keys and chips.
+     */
+    private class MazeObjects extends JPanel {
+
+        MazeObjects() {
+            setLayout(null);
+            setOpaque(false);
+        }
+
+        /**
+         * Update objects in level.
+         */
+        public void render() {
+            try {
+                removeAll();
+
+                if (level == null) {
+                    return;
+                }
+
+                setSize(getCroppedSize());
+
+                addObjects();
+
+            } finally {
+                revalidate();
+            }
+        }
+
+        private void addObjects() {
+            final Set<Vector2D> wallPositions = getWallPositions();
+
+            level.getTiles().stream().filter(tile -> TileMaker.OBJECTS.contains(tile.getClass()))
+                    .forEach(tile -> {
+                        //Doors rendered specially
+                        if (tile.getClass().equals(LockedDoor.class) || tile.getClass().equals(
+                                ExitLock.class)) {
+                            addDoor(wallPositions, tile);
+                            return;
+                        }
+                        JComponent objectComponent;
+                        if (tile.getClass().equals(KeyTile.class)) {
+                            objectComponent = TileMaker.makeKey((KeyTile) tile);
+                        } else {
+                            objectComponent = TileMaker.makeTile(tile);
+                        }
+
+                        objectComponent.setBounds(makeBounds(tile.getPosition()));
+                        add(objectComponent);
+                    });
+        }
+
+        private Set<Vector2D> getWallPositions() {
+            return level.getTiles().stream().filter(tile -> Wall.class.equals(tile.getClass())).map(
+                    Tile::getPosition).collect(Collectors.toSet());
+        }
+
+        private void addDoor(final Set<Vector2D> wallPositions, final Tile door) {
+            final Key.Color colour;
+            if (door instanceof LockedDoor) {
+                colour = ((LockedDoor) door).getColor();
+            } else {
+                colour = null;
+            }
+
+            final Vector2D position = door.getPosition();
+            final AdjacentWalls adjacentWalls = AdjacentWalls.calculateAdjacentWalls(wallPositions,
+                    position);
+
+            //Depending on presence of walls around door, we choose different orientation
+            switch (adjacentWalls.getPassage()) {
+                case HORIZONTAL_PASSAGE -> {
+                    DoorComponent doorComponent = TileMaker.makeLeftRightDoor(position, colour);
+                    doorComponent.setDoorBounds(makeBounds(position));
+                    add(doorComponent);
+                }
+                case VERTICAL_PASSAGE -> {
+                    DoorComponent doorComponent = TileMaker.makeUpDownDoor(position, colour);
+                    doorComponent.setDoorBounds(makeBounds(position));
+                    add(doorComponent);
+                }
+                default -> {
+                    //Default case, we make up-down door.
+                    DoorComponent doorComponent = TileMaker.makeUpDownDoor(position, colour);
+                    doorComponent.setBounds(makeBounds(position));
+                    add(doorComponent);
+                }
+            }
+        }
+    }
+
+
+    /**
      * Renders entities, such as players and enemies.
      */
     private class MazeEntities extends JPanel {
@@ -168,16 +292,6 @@ public class ResizeableMaze extends JLayeredPane {
             setOpaque(false);
         }
 
-        /*
-         * Creates bounds for an object with its top-left at <code>position</code> and square
-         * length on <code>length</code>.
-         */
-        private Rectangle makeBounds(final Vector2D position) {
-            int left = position.x() * getTileLength();
-            int top = position.y() * getTileLength();
-
-            return new Rectangle(left, top, getTileLength(), getTileLength());
-        }
 
         /**
          * Update entities to account to changes in level.
@@ -218,7 +332,7 @@ public class ResizeableMaze extends JLayeredPane {
         /**
          * Adds the player to the board.
          *
-         * <p> If the player is null, does nothing.
+         * <p>If the player is null, does nothing.
          *
          * @param player The (possibly null) player to check if different.
          */
