@@ -1,6 +1,6 @@
 package nz.ac.wgtn.swen225.lc.app;
 
-import nz.ac.wgtn.swen225.lc.domain.Game;
+
 import nz.ac.wgtn.swen225.lc.utils.Vector2D;
 import nz.ac.wgtn.swen225.lc.domain.events.GameEventListener;
 import nz.ac.wgtn.swen225.lc.domain.level.characters.Enemy;
@@ -74,11 +74,11 @@ public interface GameEngine extends GameEventListener {
     void unbindInputWithAction(KeyStroke keyStroke);
 
     /**
-     * Allows accessing the game instance.
+     * Allows accessing the player position.
      *
      * @return The game instance.
      */
-    Game getGame();
+    Vector2D getPlayerPos();
 
     /**
      * Gets the glass pane component, which may be used for overlays or GUI elements.

@@ -1,12 +1,12 @@
 package nz.ac.wgtn.swen225.lc.app;
 
 import nz.ac.wgtn.swen225.lc.domain.Game;
-import nz.ac.wgtn.swen225.lc.utils.Vector2D;
 import nz.ac.wgtn.swen225.lc.domain.events.ChipPickedUpEvent;
 import nz.ac.wgtn.swen225.lc.domain.events.CountDownEvent;
 import nz.ac.wgtn.swen225.lc.domain.events.GameEvent;
 import nz.ac.wgtn.swen225.lc.domain.level.characters.Enemy;
 import nz.ac.wgtn.swen225.lc.renderer.GameWindow;
+import nz.ac.wgtn.swen225.lc.utils.Vector2D;
 
 import javax.swing.*;
 import java.awt.*;
@@ -226,7 +226,7 @@ public class GameEngineImpl implements GameEngine {
     }
 
     // This is just a small piece of code which I've added to allow fuzzer to access the player position
-    public Game getGame() {
-        return this.game;
+    public Vector2D getPlayerPos() {
+        return this.game.getLevel().getPlayer().getPosition();
     }
 }
