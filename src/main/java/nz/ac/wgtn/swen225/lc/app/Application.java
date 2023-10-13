@@ -32,6 +32,7 @@ public class Application extends JFrame implements ApplicationDebugger {
     private final JLabel levelNoLabel;
     private final JLabel timeLabel;
     private final JLabel chipsLeftLabel;
+    private final JPanel inventoryPanel;
 
     // Current application state
     private ApplicationState state;
@@ -55,7 +56,7 @@ public class Application extends JFrame implements ApplicationDebugger {
         // Create right panel for game stats and controls
         rightPanel = SwingHelper.addPanel(getContentPane(), 240, 600, 60, 0, 60, 60);
 
-        // Create a panel for displaying level number, time, and chips left
+        // Create a panel for displaying level number, time, chips left and inventory
         var statsPanel = SwingHelper.addPanel(rightPanel, 240, 240, 0, 0, 15, 0);
         statsPanel.setBackground(Color.LIGHT_GRAY);
         SwingHelper.addLabel(statsPanel, "LEVEL", 240, 20, SwingConstants.CENTER);
@@ -73,6 +74,12 @@ public class Application extends JFrame implements ApplicationDebugger {
         chipsLeftLabel.setOpaque(true);
         chipsLeftLabel.setBackground(Color.BLACK);
         chipsLeftLabel.setForeground(Color.WHITE);
+        SwingHelper.addLabel(statsPanel, "INVENTORY", 240, 20, SwingConstants.CENTER);
+        inventoryPanel = SwingHelper.addPanel(statsPanel, 240, 75);
+        inventoryPanel.setLayout(new FlowLayout(FlowLayout.LEFT));
+        inventoryPanel.setOpaque(true);
+        inventoryPanel.setBackground(Color.BLACK);
+        inventoryPanel.setForeground(Color.WHITE);
 
         // Create a panel for displaying control tips
         var tipsPanel = SwingHelper.addPanel(rightPanel, 240, 315, 0, 0, 15, 0);
@@ -206,6 +213,15 @@ public class Application extends JFrame implements ApplicationDebugger {
     }
 
     /**
+     * Gets the inventory panel for displaying inventory.
+     *
+     * @return The inventory panel.
+     */
+    public JPanel getInventoryPanel() {
+        return inventoryPanel;
+    }
+
+    /**
      * Gets the label displaying the current level number.
      *
      * @return The level number label.
@@ -254,4 +270,5 @@ public class Application extends JFrame implements ApplicationDebugger {
         state.onNewGameInDebugMode(levelNo);
         return ((DebuggingState) state).getGameEngine();
     }
+
 }

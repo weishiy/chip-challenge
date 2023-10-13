@@ -1,18 +1,18 @@
 package nz.ac.wgtn.swen225.lc.app;
 
 import nz.ac.wgtn.swen225.lc.domain.Game;
-import nz.ac.wgtn.swen225.lc.domain.events.ChipPickedUpEvent;
-import nz.ac.wgtn.swen225.lc.domain.events.CountDownEvent;
-import nz.ac.wgtn.swen225.lc.domain.events.GameEvent;
+import nz.ac.wgtn.swen225.lc.domain.events.*;
+import nz.ac.wgtn.swen225.lc.renderer.assets.ImageLoader;
+import nz.ac.wgtn.swen225.lc.utils.Vector2D;
 import nz.ac.wgtn.swen225.lc.domain.level.characters.Enemy;
 import nz.ac.wgtn.swen225.lc.renderer.GameWindow;
-import nz.ac.wgtn.swen225.lc.utils.Vector2D;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.util.HashSet;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
@@ -38,6 +38,7 @@ public class GameEngineImpl implements GameEngine {
     private final JLabel levelLabel;
     private final JLabel timeLabel;
     private final JLabel chipsLeftLabel;
+    private final Container inventoryContainer;
 
     /**
      * Constructor to initialize the GameEngineImpl with the game instance and UI components.
@@ -48,7 +49,8 @@ public class GameEngineImpl implements GameEngine {
      * @param timeLabel       The label displaying the remaining time.
      * @param chipsLeftLabel  The label displaying the number of chips left.
      */
-    public GameEngineImpl(Game game, JComponent parentComponent, JLabel levelLabel, JLabel timeLabel, JLabel chipsLeftLabel) {
+    public GameEngineImpl(Game game, JComponent parentComponent, JLabel levelLabel, JLabel timeLabel,
+                          JLabel chipsLeftLabel, Container inventoryContainer) {
         this.game = game;
         this.parentComponent = parentComponent;
 
@@ -86,6 +88,7 @@ public class GameEngineImpl implements GameEngine {
         this.levelLabel = levelLabel;
         this.timeLabel = timeLabel;
         this.chipsLeftLabel = chipsLeftLabel;
+        this.inventoryContainer = inventoryContainer;
     }
 
     // Create the game display component
@@ -111,6 +114,40 @@ public class GameEngineImpl implements GameEngine {
         this.levelLabel.setText(Integer.toString(this.game.getLevel().getLevelNo()));
         this.timeLabel.setText(Integer.toString(this.game.getCountDown()));
         this.chipsLeftLabel.setText(Integer.toString(this.game.getChipsLeft()));
+        setInventory();
+    }
+
+    private void setInventory() {
+        this.inventoryContainer.removeAll();
+        game.getLevel().getPlayer().getKeys().forEach(k ->
+                {
+                    var url = Objects.requireNonNull(ImageLoader.class.getResource("/images/keys_gems/key.png"));
+                    var originalImageIcon = new ImageIcon(url);
+                    var originalImage = originalImageIcon.getImage();
+                    var largerImage = originalImage.getScaledInstance(32, 32, Image.SCALE_SMOOTH);
+                    var largerImageIcon = new ImageIcon(largerImage) {
+                        @Override
+                        public synchronized void paintIcon(Component c, Graphics g, int x, int y) {
+                            super.paintIcon(c, g, x, y);
+                            g.setColor(switch (k.getColor()) {
+                                case GREEN -> Color.GREEN;
+                                case RED ->  Color.RED;
+                                case BLUE ->  Color.BLUE;
+                                case YELLOW ->  Color.YELLOW;
+                            });
+                            g.fillRect(x+14, y+8, 5, 5);
+                        }
+                    };
+                    var keyLabel = new JLabel(largerImageIcon);
+                    Dimension dimension = new Dimension(32, 32);
+                    keyLabel.setMinimumSize(dimension);
+                    keyLabel.setMaximumSize(dimension);
+                    keyLabel.setPreferredSize(dimension);
+                    keyLabel.setEnabled(true);
+                    this.inventoryContainer.add(keyLabel);
+                }
+        );
+        this.inventoryContainer.repaint();
     }
 
     @Override
@@ -143,7 +180,11 @@ public class GameEngineImpl implements GameEngine {
 
     @Override
     public void onDestroy() {
-        this.setLabels(); // Update labels displaying game information
+        this.levelLabel.setText("0");
+        this.timeLabel.setText("0");
+        this.chipsLeftLabel.setText("0");
+        this.inventoryContainer.removeAll();
+        this.inventoryContainer.repaint();
         this.unbindKeyStrokes(); // Unbind keyboard input action
         this.disableGameDisplay(); // Disable the game display
         removeGameDisplayFromParent(); // Remove the game display from the parent component
@@ -212,6 +253,8 @@ public class GameEngineImpl implements GameEngine {
             this.updateTimeLabel();
         } else if (gameEvent instanceof ChipPickedUpEvent) {
             this.updateChipsLeftLabel();
+        } else if (gameEvent instanceof KeyPickedUpEvent || gameEvent instanceof KeyConsumedEvent) {
+            setInventory();
         }
     }
 
@@ -230,3 +273,4 @@ public class GameEngineImpl implements GameEngine {
         return this.game.getLevel().getPlayer().getPosition();
     }
 }
+
