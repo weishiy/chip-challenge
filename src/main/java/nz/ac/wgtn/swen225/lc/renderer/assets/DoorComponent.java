@@ -7,6 +7,7 @@ import java.awt.*;
  * A component that represents a door.
  *
  * <p>Uses custom scaling, since the door sprite is larger than a tile.
+ * @author Jeremy Kanal-Scott 300624019
  */
 public class DoorComponent extends JLabel {
 

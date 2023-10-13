@@ -8,6 +8,8 @@ import java.awt.*;
 
 /**
  * Entry point for displaying ResizeableMaze.
+ *
+ * @author Jeremy Kanal-Scott 300624019
  */
 public final class ResizeableMazeTester {
 

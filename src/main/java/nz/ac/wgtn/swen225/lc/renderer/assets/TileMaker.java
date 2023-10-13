@@ -26,6 +26,8 @@ import java.util.stream.Collectors;
 
 /**
  * Helper interface for making tiles for the maze.
+ *
+ * @author Jeremy Kanal-Scott 300624019
  */
 public final class TileMaker {
 

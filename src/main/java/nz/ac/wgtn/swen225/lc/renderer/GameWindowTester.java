@@ -6,6 +6,11 @@ import nz.ac.wgtn.swen225.lc.domain.level.Level;
 import javax.swing.*;
 import java.awt.*;
 
+/**
+ * Tester class for <code>GameWindow</code>
+ *
+ * @author Jeremy Kanal-Scott 300624019
+ */
 public class GameWindowTester {
     private Game game = new Game();
 

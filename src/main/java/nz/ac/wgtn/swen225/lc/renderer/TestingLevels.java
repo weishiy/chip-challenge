@@ -1,12 +1,17 @@
 package nz.ac.wgtn.swen225.lc.renderer;
 
-import nz.ac.wgtn.swen225.lc.utils.Vector2D;
 import nz.ac.wgtn.swen225.lc.domain.level.Level;
 import nz.ac.wgtn.swen225.lc.domain.level.characters.Enemy;
 import nz.ac.wgtn.swen225.lc.domain.level.characters.Player;
 import nz.ac.wgtn.swen225.lc.domain.level.items.Key;
 import nz.ac.wgtn.swen225.lc.domain.level.tiles.*;
+import nz.ac.wgtn.swen225.lc.utils.Vector2D;
 
+/**
+ * Custom made levels for internal testing.
+ *
+ * @author Jeremy Kanal-Scott 300624019
+ */
 public class TestingLevels {
     private static Wall w(int x, int y) {
         return new Wall(new Vector2D(x, y));

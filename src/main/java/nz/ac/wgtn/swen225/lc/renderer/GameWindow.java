@@ -15,6 +15,8 @@ import java.awt.*;
  *
  * <p>To use the Renderer module, construct this object, introduce it into your Swing or AWT
  * hierarchy, and then enable it with <code>setEnabled</code>.
+ *
+ * @author Jeremy Kanal-Scott 300624019
  */
 public final class GameWindow extends JPanel implements GameEventListener {
     /**

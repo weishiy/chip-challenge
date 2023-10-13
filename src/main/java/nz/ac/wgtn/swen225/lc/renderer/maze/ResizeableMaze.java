@@ -20,6 +20,8 @@ import java.util.stream.Collectors;
 
 /**
  * Renders the tiles and characters on a level.
+ *
+ * @author Jeremy Kanal-Scott 300624019
  */
 public class ResizeableMaze extends JLayeredPane {
 

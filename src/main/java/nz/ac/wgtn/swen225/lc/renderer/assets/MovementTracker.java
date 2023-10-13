@@ -12,6 +12,11 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.WeakHashMap;
 
+/**
+ * Tracks movements of entities, via <code>GameEventListener</code>.
+ *
+ * @author Jeremy Kanal-Scott 300624019
+ */
 public final class MovementTracker implements GameEventListener {
     /**
      * Enemies we know the orientation of.

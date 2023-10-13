@@ -17,6 +17,8 @@ import java.util.stream.IntStream;
 
 /**
  * Loads images corresponding to different assets used in game.
+ *
+ * @author Jeremy Kanal-Scott 300624019
  */
 public final class ImageLoader {
 
