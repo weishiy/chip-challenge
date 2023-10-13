@@ -12,10 +12,13 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 /**
  * Loads images corresponding to different assets used in game.
+ *
+ * @author Jeremy Kanal-Scott 300624019
  */
 public final class ImageLoader {
 
@@ -127,12 +130,32 @@ public final class ImageLoader {
     }
 
     /**
+     * Returns image of enemy with orientation
+     *
+     * @param orientation The facing of the enemy.
+     * @return Image representing the enemy.
+     */
+    public static Image getEnemy(MovementTracker.Orientation orientation) {
+        return getImage(Resources.DOG_ORIENTATIONS.get(orientation));
+    }
+
+    /**
      * Returns image of player.
      *
      * @return Image of player.
      */
     public static Image getPlayer() {
         return getImage(Resources.PLAYER_DOWN_1);
+    }
+
+    /**
+     * Returns player sprite with given orientation.
+     *
+     * @param orientation The orientation of the player.
+     * @return Image representing the player.
+     */
+    public static Image getPlayer(final MovementTracker.Orientation orientation) {
+        return getImage(Resources.PLAYER_ORIENTATIONS.get(orientation));
     }
 
     /**
@@ -216,6 +239,34 @@ public final class ImageLoader {
          * Default player sprite.
          */
         private static final URI PLAYER_DOWN_1 = getResource("/images/player/player_down_1.png");
+
+        /**
+         * Dog sprites for given orientations.
+         */
+        private static final Map<MovementTracker.Orientation, URI> DOG_ORIENTATIONS =
+                //Stream operations for "shortness"
+                //Map of orientation to string fragments
+                Map.of(MovementTracker.Orientation.UP, "dog_up_1", MovementTracker.Orientation.DOWN,
+                                "dog_down_1", MovementTracker.Orientation.LEFT, "dog_left_1",
+                                MovementTracker.Orientation.RIGHT, "dog_right_1")
+                        //Maps string fragments to URI, recollects into map
+                        .entrySet().stream().map(entry -> Map.entry(entry.getKey(),
+                                getResource("/images/enemies/dog/%s.png".formatted(entry.getValue()))))
+                        .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+
+        /**
+         * Player sprites for given orientations.
+         */
+        private static final Map<MovementTracker.Orientation, URI> PLAYER_ORIENTATIONS =
+                //Stream operations for "shortness"
+                //Map of orientation to string fragments
+                Map.of(MovementTracker.Orientation.UP, "up_1", MovementTracker.Orientation.DOWN,
+                                "down_1", MovementTracker.Orientation.LEFT, "left_1",
+                                MovementTracker.Orientation.RIGHT, "right_1")
+                        //Maps string fragments to URI, recollects into map
+                        .entrySet().stream().map(entry -> Map.entry(entry.getKey(),
+                                getResource("/images/player/player_%s.png".formatted(entry.getValue()))))
+                        .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
 
         /**
          * Default space.

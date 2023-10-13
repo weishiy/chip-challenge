@@ -1,5 +1,6 @@
 package nz.ac.wgtn.swen225.lc.renderer.maze;
 
+import nz.ac.wgtn.swen225.lc.domain.Game;
 import nz.ac.wgtn.swen225.lc.domain.level.Level;
 import nz.ac.wgtn.swen225.lc.domain.level.characters.Enemy;
 import nz.ac.wgtn.swen225.lc.domain.level.characters.Player;
@@ -7,6 +8,7 @@ import nz.ac.wgtn.swen225.lc.domain.level.items.Key;
 import nz.ac.wgtn.swen225.lc.domain.level.tiles.*;
 import nz.ac.wgtn.swen225.lc.renderer.AdjacentWalls;
 import nz.ac.wgtn.swen225.lc.renderer.assets.DoorComponent;
+import nz.ac.wgtn.swen225.lc.renderer.assets.MovementTracker;
 import nz.ac.wgtn.swen225.lc.renderer.assets.TileMaker;
 import nz.ac.wgtn.swen225.lc.utils.Vector2D;
 
@@ -18,6 +20,8 @@ import java.util.stream.Collectors;
 
 /**
  * Renders the tiles and characters on a level.
+ *
+ * @author Jeremy Kanal-Scott 300624019
  */
 public class ResizeableMaze extends JLayeredPane {
 
@@ -36,14 +40,23 @@ public class ResizeableMaze extends JLayeredPane {
      */
     private final MazeEntities entities = new MazeEntities();
     /**
+     * Helps determine where entities are.
+     */
+    private final MovementTracker movementTracker;
+    /**
      * The level this maze is rendering.
      */
     private Level level;
 
     /**
      * Constructor.
+     *
+     * @param game The game to represent. Can be null.
      */
-    public ResizeableMaze() {
+    public ResizeableMaze(final Game game) {
+        movementTracker = new MovementTracker(game);
+
+
         int layerIndex = 1;
 
         setLayer(board, layerIndex);
@@ -323,7 +336,8 @@ public class ResizeableMaze extends JLayeredPane {
          */
         private void addEnemies(final Set<Enemy> enemies) {
             for (Enemy enemy : enemies) {
-                JComponent enemyComponent = TileMaker.makeEnemy(new TileMaker.EnemyInfo(enemy));
+                JComponent enemyComponent = TileMaker.makeEnemy(
+                        new TileMaker.EnemyInfo(enemy, movementTracker.getEnemyOrientation(enemy)));
                 enemyComponent.setBounds(makeBounds(enemy.getPosition()));
                 add(enemyComponent);
             }
@@ -341,7 +355,8 @@ public class ResizeableMaze extends JLayeredPane {
                 return;
             }
 
-            JComponent playerComponent = TileMaker.makePlayer(new TileMaker.PlayerInfo(player));
+            JComponent playerComponent = TileMaker.makePlayer(
+                    new TileMaker.PlayerInfo(movementTracker.getPlayerOrientation()));
 
             playerComponent.setBounds(makeBounds(player.getPosition()));
             add(playerComponent);

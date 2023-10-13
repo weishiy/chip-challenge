@@ -8,6 +8,8 @@ import java.awt.*;
 
 /**
  * Entry point for displaying ResizeableMaze.
+ *
+ * @author Jeremy Kanal-Scott 300624019
  */
 public final class ResizeableMazeTester {
 
@@ -28,7 +30,7 @@ public final class ResizeableMazeTester {
             mazeFrame.setLocationByPlatform(true);
             mazeFrame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
 
-            var maze = new ResizeableMaze();
+            var maze = new ResizeableMaze(null);
             maze.setLevel(level);
             mazeFrame.add(maze, BorderLayout.CENTER);
 

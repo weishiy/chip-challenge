@@ -1,8 +1,11 @@
 package nz.ac.wgtn.swen225.lc.renderer.assets;
 
+import com.google.common.cache.Cache;
+import com.google.common.cache.CacheBuilder;
+import com.google.common.cache.CacheLoader;
+import com.google.common.cache.LoadingCache;
 import nz.ac.wgtn.swen225.lc.domain.level.Level;
 import nz.ac.wgtn.swen225.lc.domain.level.characters.Enemy;
-import nz.ac.wgtn.swen225.lc.domain.level.characters.Player;
 import nz.ac.wgtn.swen225.lc.domain.level.items.Key;
 import nz.ac.wgtn.swen225.lc.domain.level.tiles.*;
 import nz.ac.wgtn.swen225.lc.renderer.AdjacentWalls;
@@ -17,12 +20,14 @@ import java.awt.image.RGBImageFilter;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
-import java.util.WeakHashMap;
+import java.util.concurrent.ExecutionException;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 /**
  * Helper interface for making tiles for the maze.
+ *
+ * @author Jeremy Kanal-Scott 300624019
  */
 public final class TileMaker {
 
@@ -39,16 +44,11 @@ public final class TileMaker {
             ImageLoader::getDoor, InfoField.class, ImageLoader::getInfoIcon, KeyTile.class,
             ImageLoader::getKey, LockedDoor.class, ImageLoader::getDoor, Wall.class,
             ImageLoader::getWall);
-    /**
-     * Caches scaled images.
-     *
-     * <p>Caches scaling, to avoid excessive computation, to avoid repeating calculations while
-     * keeping functional orientation.
-     *
-     * @see #makeSprite(Image, Object)
-     */
-    private static final Map<ScaleImageArgument, Icon> memoizeScaledIcon = new WeakHashMap<>();
 
+    /**
+     * How many components we cache.
+     */
+    private static final int COMPONENT_CACHE_SIZE = 500;
     /**
      * Caches tile components.
      *
@@ -56,8 +56,12 @@ public final class TileMaker {
      * ones with images) results in flickering. This caching avoids this, while still being
      * outwardly functional.
      */
-    private static final Map<NewComponentArgument, JComponent> cacheTileComponent =
-            new WeakHashMap<>();
+    private static final Cache<NewComponentArgument, JComponent> cacheTileComponent =
+            CacheBuilder.newBuilder().maximumSize(COMPONENT_CACHE_SIZE).build();
+    /**
+     * How many images we cache.
+     */
+    private static final int IMAGE_CACHE_SIZE = 50;
 
     private TileMaker() {
         //empty
@@ -193,7 +197,7 @@ public final class TileMaker {
      * @return Component representing this player.
      */
     public static JComponent makePlayer(final PlayerInfo playerInfo) {
-        return makeSprite(ImageLoader.getPlayer(), playerInfo);
+        return makeSprite(ImageLoader.getPlayer(playerInfo.orientation), playerInfo);
     }
 
     /**
@@ -203,7 +207,7 @@ public final class TileMaker {
      * @return Component representing this enemy.
      */
     public static JComponent makeEnemy(final EnemyInfo enemyInfo) {
-        return makeSprite(ImageLoader.getEnemy(), enemyInfo);
+        return makeSprite(ImageLoader.getEnemy(enemyInfo.orientation), enemyInfo);
     }
 
     private static DoorComponent makeDoor(final Image inImage, final Object identity,
@@ -219,14 +223,17 @@ public final class TileMaker {
             image = inImage;
         }
 
+        var argument = new NewComponentArgument(image, identity);
         //Casting, *should* be safe, so long as `image` is always an image to a door.
-        return (DoorComponent) cacheTileComponent.computeIfAbsent(
-                new NewComponentArgument(image, identity),
-                componentArgument -> new DoorComponent() {
-                    {
-                        componentArgument.keepIconScaled(this);
-                    }
-                });
+        try {
+            return (DoorComponent) cacheTileComponent.get(argument, () -> new DoorComponent() {
+                {
+                    argument.keepIconScaled(this);
+                }
+            });
+        } catch (ExecutionException e) {
+            throw new Error("Door Component generator threw.", e);
+        }
     }
 
     /**
@@ -246,12 +253,17 @@ public final class TileMaker {
         Objects.requireNonNull(image);
         Objects.requireNonNull(identity);
 
-        return cacheTileComponent.computeIfAbsent(new NewComponentArgument(image, identity),
-                componentArgument -> new JLabel() {
-                    {
-                        componentArgument.keepIconScaled(this);
-                    }
-                });
+        var argument = new NewComponentArgument(image, identity);
+
+        try {
+            return cacheTileComponent.get(argument, () -> new JLabel() {
+                {
+                    argument.keepIconScaled(this);
+                }
+            });
+        } catch (ExecutionException e) {
+            throw new Error("Unexpected throwing in component generator.", e);
+        }
 
     }
 
@@ -269,7 +281,11 @@ public final class TileMaker {
         /**
          * Stores filter arguments, to reduce calculations.
          */
-        private static final Map<Arguments, Image> cache = new WeakHashMap<>();
+        private static final LoadingCache<Arguments, Image> cache =
+                CacheBuilder.newBuilder().maximumSize(IMAGE_CACHE_SIZE).build(CacheLoader.from(
+                        arguments -> Toolkit.getDefaultToolkit().createImage(
+                                new FilteredImageSource(arguments.inImage().getSource(),
+                                        new NearWhiteFilter(arguments.color())))));
         /**
          * The final colour to filter to.
          */
@@ -291,10 +307,7 @@ public final class TileMaker {
          * @return A new image that has been filtered.
          */
         public static Image filterImage(final Image inImage, final Key.Color color) {
-            return cache.computeIfAbsent(new Arguments(inImage, color),
-                    arguments -> Toolkit.getDefaultToolkit().createImage(
-                            new FilteredImageSource(inImage.getSource(),
-                                    new NearWhiteFilter(color))));
+            return cache.getUnchecked(new Arguments(inImage, color));
         }
 
         @Override
@@ -327,6 +340,19 @@ public final class TileMaker {
      */
     record NewComponentArgument(Image image, Object identity) {
         /**
+         * Caches scaled images.
+         *
+         * <p>Caches scaling, to avoid excessive computation, to avoid repeating calculations while
+         * keeping functional orientation.
+         *
+         * @see #makeSprite(Image, Object)
+         */
+        private static final LoadingCache<ScaleImageArgument, Icon> memoizeScaledIcon =
+                CacheBuilder.newBuilder().maximumSize(IMAGE_CACHE_SIZE).build(CacheLoader.from(
+                        r -> new ImageIcon(r.notScaled()
+                                .getScaledInstance(r.width(), r.height(), Image.SCALE_FAST))));
+
+        /**
          * Whenever this label is resized, updates the icons scale.
          *
          * @param label The label to keep updated.
@@ -350,56 +376,50 @@ public final class TileMaker {
             if (label.getWidth() <= 0 || label.getHeight() <= 0) {
                 return; //Can't scale image if 0 dimensions.
             }
-            Icon scaledIcon = memoizeScaledIcon.computeIfAbsent(
-                    new ScaleImageArgument(image, label.getWidth(), label.getHeight()),
-                    r -> new ImageIcon(r.notScaled()
-                            .getScaledInstance(label.getWidth(), label.getHeight(),
-                                    Image.SCALE_FAST)));
+            Icon scaledIcon = memoizeScaledIcon.getUnchecked(
+                    new ScaleImageArgument(image, label.getWidth(), label.getHeight()));
 
             label.setIcon(scaledIcon);
         }
+
+        /**
+         * Arguments used to generate a scaled image.
+         *
+         * @param notScaled <code>Image</code> used as a base.
+         * @param width     Width of scaling in pixels.
+         * @param height    Height of scaling in pixels.
+         */
+        record ScaleImageArgument(Image notScaled, int width, int height) {
+        }
     }
 
-    /**
-     * Arguments used to generate a scaled image.
-     *
-     * @param notScaled <code>Image</code> used as a base.
-     * @param width     Width of scaling in pixels.
-     * @param height    Height of scaling in pixels.
-     */
-    record ScaleImageArgument(Image notScaled, int width, int height) {
-    }
 
     /**
      * Info describing an enemy sprite.
      *
-     * @param identity Something to unique identify which enemy this is.
+     * @param identity    Something to unique identify which enemy this is.
+     * @param orientation The orientation of the enemy.
      */
-    public record EnemyInfo(Object identity) {
+    public record EnemyInfo(Object identity, MovementTracker.Orientation orientation) {
         /**
          * Constructs an info from a given enemy.
          *
-         * @param enemy The enemy to construct from.
+         * @param enemy          The enemy to construct from.
+         * @param newOrientation The orientation of the enemy.
          */
-        public EnemyInfo(final Enemy enemy) {
+        public EnemyInfo(final Enemy enemy, final MovementTracker.Orientation newOrientation) {
             //In order to keep different enemies separate, we keep reference as identity
-            this((Object) enemy);
+            this((Object) enemy, newOrientation);
         }
 
     }
 
     /**
      * Info describing the player sprite.
+     *
+     * @param orientation The orientation of the player.
      */
-    public record PlayerInfo() {
-        /**
-         * Constructs an info from a player.
-         *
-         * @param player The player instance.
-         */
-        public PlayerInfo(final Player player) {
-            this();
-        }
+    public record PlayerInfo(MovementTracker.Orientation orientation) {
     }
 
 }

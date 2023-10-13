@@ -15,6 +15,8 @@ import java.awt.*;
  *
  * <p>To use the Renderer module, construct this object, introduce it into your Swing or AWT
  * hierarchy, and then enable it with <code>setEnabled</code>.
+ *
+ * @author Jeremy Kanal-Scott 300624019
  */
 public final class GameWindow extends JPanel implements GameEventListener {
     /**
@@ -25,18 +27,20 @@ public final class GameWindow extends JPanel implements GameEventListener {
     /**
      * Shows the entire level.
      */
-    private final ResizeableMaze maze = new ResizeableMaze();
+    private final ResizeableMaze maze;
 
     /**
      * Constructor.
      *
      * <p>Only shows the maze when enabled.
      *
-     * @param game The game world to be rendered.
+     * @param newGame The game world to be rendered.
      */
-    public GameWindow(final Game game) {
+    public GameWindow(final Game newGame) {
+        maze = new ResizeableMaze(newGame);
+
         setLayout(new BorderLayout());
-        this.game = game; //FIXME: Vulnerable to EI_EXPOSE_REP2, but solution is non-obvious.
+        this.game = newGame; //FIXME: Vulnerable to EI_EXPOSE_REP2, but solution is non-obvious.
         setEnabled(false);
 
 
@@ -46,11 +50,11 @@ public final class GameWindow extends JPanel implements GameEventListener {
     /**
      * Constructs with the given preferred size.
      *
-     * @param game       The game world to be rendered.
+     * @param newGame       The game world to be rendered.
      * @param windowSize Preferred length of this panel.
      */
-    public GameWindow(final Game game, final int windowSize) {
-        this(game);
+    public GameWindow(final Game newGame, final int windowSize) {
+        this(newGame);
         setSize(windowSize, windowSize);
         setPreferredSize(new Dimension(windowSize, windowSize));
     }

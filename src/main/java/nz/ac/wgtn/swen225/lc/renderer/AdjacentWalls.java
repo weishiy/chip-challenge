@@ -12,6 +12,8 @@ import java.util.function.Function;
  * @param wallBelow If a wall is below this position.
  * @param wallLeft  If a wall is left of this position.
  * @param wallRight If a wall is right of this position.
+ *
+ * @author Jeremy Kanal-Scott 300624019
  */
 public record AdjacentWalls(boolean wallAbove, boolean wallBelow, boolean wallLeft,
                             boolean wallRight) {
