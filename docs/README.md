@@ -362,5 +362,6 @@ ApplicationDebugger.newGameInDebugMode(int levelNo). Fuzz then can use the retur
 game. (Have a look of the specification of GameEngine interface above in Application to see what's available. )
 
 
+**UML**
 
-
+<img alt="uml.png" src="uml.png" width="640">
