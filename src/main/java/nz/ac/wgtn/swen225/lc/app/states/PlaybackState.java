@@ -38,7 +38,8 @@ public class PlaybackState extends AbstractApplicationState implements GameEvent
                 application.getMainPanel(),
                 application.getLevelNoLabel(),
                 application.getTimeLabel(),
-                application.getChipsLeftLabel());
+                application.getChipsLeftLabel(),
+                application.getInventoryPanel());
         this.replayer = new DefaultReplayer(gameEngine, playback);
     }
 

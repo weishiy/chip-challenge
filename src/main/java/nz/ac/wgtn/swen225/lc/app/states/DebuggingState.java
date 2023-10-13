@@ -27,7 +27,8 @@ public class DebuggingState implements ApplicationState {
                 application.getMainPanel(),
                 application.getLevelNoLabel(),
                 application.getTimeLabel(),
-                application.getChipsLeftLabel());
+                application.getChipsLeftLabel(),
+                application.getInventoryPanel());
     }
 
     @Override

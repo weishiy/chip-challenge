@@ -47,7 +47,8 @@ public class PlayingState extends AbstractApplicationState implements GameEventL
                 application.getMainPanel(),
                 application.getLevelNoLabel(),
                 application.getTimeLabel(),
-                application.getChipsLeftLabel());
+                application.getChipsLeftLabel(),
+                application.getInventoryPanel());
         recorder = new DefaultRecorder(getApplication().getPersistence(), game);
         timer = new Timer(1000 / Game.FRAME_RATE, e -> update());
         paused.setForeground(Color.WHITE);
