@@ -6,7 +6,6 @@ import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
 import nz.ac.wgtn.swen225.lc.domain.level.Level;
 import nz.ac.wgtn.swen225.lc.domain.level.characters.Enemy;
-import nz.ac.wgtn.swen225.lc.domain.level.characters.Player;
 import nz.ac.wgtn.swen225.lc.domain.level.items.Key;
 import nz.ac.wgtn.swen225.lc.domain.level.tiles.*;
 import nz.ac.wgtn.swen225.lc.renderer.AdjacentWalls;
@@ -45,6 +44,10 @@ public final class TileMaker {
             ImageLoader::getWall);
 
     /**
+     * How many components we cache.
+     */
+    private static final int COMPONENT_CACHE_SIZE = 500;
+    /**
      * Caches tile components.
      *
      * <p>Creating new <code>JComponent</code>  is expensive, and doing so regularly (especially
@@ -52,7 +55,11 @@ public final class TileMaker {
      * outwardly functional.
      */
     private static final Cache<NewComponentArgument, JComponent> cacheTileComponent =
-            CacheBuilder.newBuilder().maximumSize(500).build();
+            CacheBuilder.newBuilder().maximumSize(COMPONENT_CACHE_SIZE).build();
+    /**
+     * How many images we cache.
+     */
+    private static final int IMAGE_CACHE_SIZE = 50;
 
     private TileMaker() {
         //empty
@@ -188,7 +195,7 @@ public final class TileMaker {
      * @return Component representing this player.
      */
     public static JComponent makePlayer(final PlayerInfo playerInfo) {
-        return makeSprite(ImageLoader.getPlayer(), playerInfo);
+        return makeSprite(ImageLoader.getPlayer(playerInfo.orientation), playerInfo);
     }
 
     /**
@@ -198,7 +205,7 @@ public final class TileMaker {
      * @return Component representing this enemy.
      */
     public static JComponent makeEnemy(final EnemyInfo enemyInfo) {
-        return makeSprite(ImageLoader.getEnemy(), enemyInfo);
+        return makeSprite(ImageLoader.getEnemy(enemyInfo.orientation), enemyInfo);
     }
 
     private static DoorComponent makeDoor(final Image inImage, final Object identity,
@@ -273,7 +280,7 @@ public final class TileMaker {
          * Stores filter arguments, to reduce calculations.
          */
         private static final LoadingCache<Arguments, Image> cache =
-                CacheBuilder.newBuilder().maximumSize(50).build(CacheLoader.from(
+                CacheBuilder.newBuilder().maximumSize(IMAGE_CACHE_SIZE).build(CacheLoader.from(
                         arguments -> Toolkit.getDefaultToolkit().createImage(
                                 new FilteredImageSource(arguments.inImage().getSource(),
                                         new NearWhiteFilter(arguments.color())))));
@@ -339,8 +346,9 @@ public final class TileMaker {
          * @see #makeSprite(Image, Object)
          */
         private static final LoadingCache<ScaleImageArgument, Icon> memoizeScaledIcon =
-                CacheBuilder.newBuilder().maximumSize(50).build(CacheLoader.from(r -> new ImageIcon(
-                        r.notScaled().getScaledInstance(r.width(), r.height(), Image.SCALE_FAST))));
+                CacheBuilder.newBuilder().maximumSize(IMAGE_CACHE_SIZE).build(CacheLoader.from(
+                        r -> new ImageIcon(r.notScaled()
+                                .getScaledInstance(r.width(), r.height(), Image.SCALE_FAST))));
 
         /**
          * Whenever this label is resized, updates the icons scale.
@@ -387,33 +395,29 @@ public final class TileMaker {
     /**
      * Info describing an enemy sprite.
      *
-     * @param identity Something to unique identify which enemy this is.
+     * @param identity    Something to unique identify which enemy this is.
+     * @param orientation The orientation of the enemy.
      */
-    public record EnemyInfo(Object identity) {
+    public record EnemyInfo(Object identity, MovementTracker.Orientation orientation) {
         /**
          * Constructs an info from a given enemy.
          *
-         * @param enemy The enemy to construct from.
+         * @param enemy          The enemy to construct from.
+         * @param newOrientation The orientation of the enemy.
          */
-        public EnemyInfo(final Enemy enemy) {
+        public EnemyInfo(final Enemy enemy, final MovementTracker.Orientation newOrientation) {
             //In order to keep different enemies separate, we keep reference as identity
-            this((Object) enemy);
+            this((Object) enemy, newOrientation);
         }
 
     }
 
     /**
      * Info describing the player sprite.
+     *
+     * @param orientation The orientation of the player.
      */
-    public record PlayerInfo() {
-        /**
-         * Constructs an info from a player.
-         *
-         * @param player The player instance.
-         */
-        public PlayerInfo(final Player player) {
-            this();
-        }
+    public record PlayerInfo(MovementTracker.Orientation orientation) {
     }
 
 }

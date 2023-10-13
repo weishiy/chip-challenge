@@ -29,7 +29,7 @@ public final class FixedSizeMazeTester {
             mazeFrame.setLocationByPlatform(true);
             mazeFrame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
 
-            var maze = new FixedSizeMaze();
+            var maze = new FixedSizeMaze(null);
             maze.setLevel(level);
             mazeFrame.add(maze);
 

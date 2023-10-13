@@ -28,7 +28,7 @@ public final class ResizeableMazeTester {
             mazeFrame.setLocationByPlatform(true);
             mazeFrame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
 
-            var maze = new ResizeableMaze();
+            var maze = new ResizeableMaze(null);
             maze.setLevel(level);
             mazeFrame.add(maze, BorderLayout.CENTER);
 

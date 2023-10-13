@@ -1,5 +1,7 @@
 package nz.ac.wgtn.swen225.lc.renderer.maze;
 
+import nz.ac.wgtn.swen225.lc.domain.Game;
+
 import java.awt.*;
 
 /**
@@ -23,6 +25,15 @@ public class FixedSizeMaze extends ResizeableMaze {
      * Internally used to decide when size can be set.
      */
     private boolean canSetSize = false;
+
+    /**
+     * Constructor.
+     *
+     * @param game The game the maze represents.
+     */
+    public FixedSizeMaze(final Game game) {
+        super(game);
+    }
 
     private void assertCanSetSize() {
         if (!canSetSize) {
